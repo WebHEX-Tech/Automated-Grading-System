@@ -1,4 +1,4 @@
-<?php 
+<?php
 
 session_start();
 
@@ -10,26 +10,27 @@ if (!isset($_SESSION['user_role']) || (isset($_SESSION['user_role']) && $_SESSIO
 
 <!DOCTYPE html>
 <html lang="en">
-<?php 
-	$title = 'Home';
-  $home_page = 'active';
-	include './includes/head.php';
+<?php
+$title = 'Home';
+$home_page = 'active';
+include './includes/head.php';
 ?>
+
 <body>
   <div class="home">
     <div class="side">
       <?php
-        require_once('./includes/sidepanel.php')
-      ?> 
+      require_once('./includes/sidepanel.php')
+        ?>
     </div>
     <main>
-      <div class="header" >
-      <?php
+      <div class="header">
+        <?php
         require_once('./includes/header.php')
-      ?>
+          ?>
       </div>
-      
-      <div class="flex-md-nowrap p-1 title_page shadow" style="background-color: whitesmoke;" >
+
+      <div class="flex-md-nowrap p-1 title_page shadow" style="background-color: whitesmoke;">
         <div class="d-none d-md-block">
           <div class="container-fluid d-flex justify-content-center">
             <span class="fs-2 h1 m-0">Subject Assigned</span>
@@ -41,39 +42,48 @@ if (!isset($_SESSION['user_role']) || (isset($_SESSION['user_role']) && $_SESSIO
         <div class="details">
           <p class="fw-bolder">Name: <span class="fw-bold brand-color"><?= ucwords($_SESSION['name']) ?></span></p>
           <p class="fw-bolder">Desgnation: <span class="fw-bold brand-color">Desgnation</span></p>
-          <p class="fw-bolder">Academic Rank: <span class="fw-bold brand-color"><?= ucwords($_SESSION['acad_rank']) ?></span></p>
+          <p class="fw-bolder">Academic Rank: <span
+              class="fw-bold brand-color"><?= ucwords($_SESSION['acad_rank']) ?></span></p>
           <p class="fw-bolder">Release Time: <span class="fw-bold brand-color">Release Time</span></p>
         </div>
 
         <div class="content container-fluid mw-100 border rounded shadow p-3">
-          <div class="row mb-4">
-            <div class="col-6">
-              <button type="button" class="btn border border-danger dropdown-toggle form-select" data-bs-toggle="dropdown">
-                School Year
-              </button>
-              <ul class="dropdown-menu">
-                <li><a class="dropdown-item" href="#">2021 - 2022</a></li>
-                <li><a class="dropdown-item" href="#">2022 - 2023</a></li>
-                <li><a class="dropdown-item" href="#">2023 - 2024</a></li>
-              </ul>
-            </div>
-            
-            <div class="col-6">
-              <button type="button" class="btn border border-danger dropdown-toggle form-select" data-bs-toggle="dropdown">
-                Semester
-              </button>
-              <ul class="dropdown-menu">
-                <li><a class="dropdown-item" href="#">Midterm</a></li>
-                <li><a class="dropdown-item" href="#">Finalterm</a></li>
-              </ul>
+          <div class="btn-toolbar d-flex justify-content-between">
+            <form class="d-flex" role="search">
+              <input class="form-control me-2" type="search" placeholder="Search" aria-label="Search">
+            </form>
+
+            <div class="btn-group gap-3">
+              <div class="dropdown">
+                <button type="button" class="btn border border-danger dropdown-toggle w-full" data-bs-toggle="dropdown">
+                  School Year
+                </button>
+                <ul class="dropdown-menu">
+                  <li><a class="dropdown-item" href="#">2021 - 2022</a></li>
+                  <li><a class="dropdown-item" href="#">2022 - 2023</a></li>
+                  <li><a class="dropdown-item" href="#">2023 - 2024</a></li>
+                </ul>
+              </div>
+
+              <div class="dropdown">
+                <button type="button" class="btn border border-danger dropdown-toggle" data-bs-toggle="dropdown">
+                  Semester
+                </button>
+                <ul class="dropdown-menu">
+                  <li><a class="dropdown-item" href="#">Midterm</a></li>
+                  <li><a class="dropdown-item" href="#">Finalterm</a></li>
+                </ul>
+              </div>
             </div>
           </div>
+
+          <hr>
 
           <div class="d-flex flex-column align-items-center">
             <h3>S.Y 2023 - 2024</h3>
             <h4>First Semester</h4>
           </div>
-          
+
 
           <table id="home_table" class="table table-striped" style="width:125%">
             <thead>
@@ -140,6 +150,7 @@ if (!isset($_SESSION['user_role']) || (isset($_SESSION['user_role']) && $_SESSIO
 
   <script src="./js/main.js"></script>
   <script src="./js/index_table.js"></script>
-  
+
 </body>
+
 </html>

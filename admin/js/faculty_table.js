@@ -1,123 +1,87 @@
-$(document).ready(function(){
-  dataTable = $("#main_faculty_regular").DataTable({
-    dom: 'Brtp',
+$(document).ready(function () {
+  // Initialize DataTable for Regular Lecturers
+  var dataTableRegular = $("#main_faculty_regular").DataTable({
+    dom: "Brtp",
     scrollX: true,
     pageLength: 10,
     buttons: [
       {
-        remove: 'true',
-      }
+        remove: "true",
+      },
     ],
-    'columnDefs': [ {
-        'targets': [1,3,4,5,6,7,8], /* column index */
-        'orderable': false, /* true or false */
-    }]
+    columnDefs: [
+      {
+        targets: [1, 3, 4, 5, 6, 8, 9], // Columns to disable sorting
+        orderable: false,
+      },
+    ],
   });
 
-  var table = dataTable;
-  var filter = createFilter(table, [1,2,3]);
-
-  function createFilter(table, columns) {
-    var input = $('input#keyword').on("keyup", function() {
-      table.draw();
-    });
-    
-    $.fn.dataTable.ext.search.push(function(
-      settings,
-      searchData,
-      index,
-      rowData,
-      counter
-    ) {
-      var val = input.val().toLowerCase();
-  
-      for (var i = 0, ien = columns.length; i < ien; i++) {
-        if (searchData[columns[i]].toLowerCase().indexOf(val) !== -1) {
-        return true;
-        }
-      }
-  
-      return false;
-    });
-    
-    return input;
-  }
-
-  $('select#school_year').on('change', function(e){
-    var status = $(this).val();
-    dataTable.columns([7]).search(status).draw();
-  });
-
-  $('select#semester').on('change', function(e){
-    var status = $(this).val();
-    dataTable.columns([8]).search(status).draw();
-  });
-})
-
-
-$(document).ready(function () {
-  // Initialize DataTable
-  dataTable = $("#main_faculty_visiting").DataTable({
-    dom: 'Brtp',
+  // Initialize DataTable for Visiting Lecturers
+  var dataTableVisiting = $("#main_faculty_visiting").DataTable({
+    dom: "Brtp",
     pageLength: 10,
     buttons: [
       {
-        remove: 'true',
-      }
+        remove: "true",
+      },
     ],
-    'columnDefs': [
+    columnDefs: [
       {
-        'targets': [1, 3, 4, 5, 6, 7, 8], /* column index */
-        'orderable': false, /* true or false */
-      }
-    ]
+        targets: [1, 3, 4, 5, 6, 8, 9], // Columns to disable sorting
+        orderable: false,
+      },
+    ],
   });
 
-  // Function to create filter input
-  var table = dataTable;
-  var filter = createFilter(table, [1, 2, 3]);
-
-  function createFilter(table, columns) {
-    var input = $('input#keyword').on("keyup", function () {
+  function createFilter(table, inputSelector, columns) {
+    var input = $(inputSelector).on("keyup", function () {
       table.draw();
     });
 
-    $.fn.dataTable.ext.search.push(function (
-      settings,
-      searchData,
-      index,
-      rowData,
-      counter
-    ) {
-      var val = input.val().toLowerCase();
+    $.fn.dataTable.ext.search.push(function (settings, searchData) {
+      var val = $(inputSelector).val().toLowerCase();
+      if (!val) return true; 
 
-      for (var i = 0, ien = columns.length; i < ien; i++) {
-        if (searchData[columns[i]].toLowerCase().indexOf(val) !== -1) {
+      for (var i = 0; i < columns.length; i++) {
+        if (searchData[columns[i]].toLowerCase().includes(val)) {
           return true;
         }
       }
-
       return false;
     });
 
     return input;
   }
 
-  // Event handler for Bootstrap tab shown event
-  $('a[data-toggle="tab"]').on('shown.bs.tab', function (e) {
-    // Adjust DataTable columns when the tab becomes visible
+  createFilter(dataTableRegular, "#keyword", [1, 2]); 
+  createFilter(dataTableVisiting, "#keyword1", [1, 2]);
+
+  // Function to adjust columns when switching tabs
+  $('a[data-bs-toggle="tab"]').on("shown.bs.tab", function () {
+    // Adjust columns for all visible DataTables
     $($.fn.dataTable.tables(true)).DataTable().columns.adjust();
   });
 
-  // Event handler for school year filter
-  $('select#school_year').on('change', function (e) {
+  // Filters for Regular Lecturers
+  $("select#school_year").on("change", function () {
     var status = $(this).val();
-    dataTable.columns([7]).search(status).draw();
+    dataTableRegular.columns([7]).search(status).draw();
   });
 
-  // Event handler for semester filter
-  $('select#semester').on('change', function (e) {
+  $("select#semester").on("change", function () {
     var status = $(this).val();
-    dataTable.columns([8]).search(status).draw();
+    dataTableRegular.columns([8]).search(status).draw();
+  });
+
+  // Filters for Visiting Lecturers
+  $("select#school_year").on("change", function () {
+    var status = $(this).val();
+    dataTableVisiting.columns([7]).search(status).draw();
+  });
+
+  $("select#semester").on("change", function () {
+    var status = $(this).val();
+    dataTableVisiting.columns([8]).search(status).draw();
   });
 });

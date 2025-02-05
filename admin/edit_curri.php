@@ -1,4 +1,4 @@
-<?php 
+<?php
 
 require_once '../tools/functions.php';
 require_once '../classes/curr_year.class.php';
@@ -10,52 +10,46 @@ if (!isset($_SESSION['user_role']) || (isset($_SESSION['user_role']) && $_SESSIO
   header('location: ../login');
 }
 
-if(isset($_GET['curr_year_id'])){
-  $curr_year = new Curr_year();
-  $record = $curr_year_id->fetch($_GET['curr_year_id']);
+$errors = "";
+$message = '';
+$success = false;
+$curr_year = new Curr_year();
+
+if (isset($_GET['curr_year_id'])) {
+  $record = $curr_year->fetch($_GET['curr_year_id']);
+
+  $curr_year->curr_year_id = $record['curr_year_id'];
   $curr_year->year_start = $record['year_start'];
   $curr_year->year_end = $record['year_end'];
 }
 
+
 if (isset($_POST['edit_curr_year'])) {
-  try {
-    $user = new User();
-    $record = $user->fetch($_SESSION['user_id']);
-    $user->user_id = $_SESSION['user_id'];
+  $curr_year->curr_year_id = $_GET['curr_year_id'];
+  $curr_year->year_start = intval($_POST['year_start']);
+  $curr_year->year_end = intval($_POST['year_end']);
 
-    $curr_year = new Curr_year();
-    //sanitize
-    $curr_year->curr_year_id = $_GET['curr_year_id'];
-    $curr_year->year_start = htmlentities($_POST['year_start']);
-    $curr_year->year_end = htmlentities($_POST['year_end']);
+  if (!validate_field($curr_year->year_start)) {
+    $errors = 'Please enter Curriculum Year Start.';
+  }
 
-    $curr_year = new Curr_year();
+  if ($curr_year->is_year_exist($curr_year->year_start)) {
+    $errors = 'Curriculum Year Start already exists.';
+  }
 
-    // Validation
-    $errors = [];
-    if (!validate_field($curr_year->year_start)) {
-      $errors[] = 'Please enter Subject Code';
-    }
-    if ($curr_year->is_year_exist($curr_year->year_start)) {
-      $errors[] = 'Subject Code already exists';
-    }
-    if (!validate_field($curr_year->year_end)) {
-      $errors[] = 'Please enter Subject Name';
-    }
+  if (!validate_field($curr_year->year_end)) {
+    $errors = 'Please enter Curriculum Year End.';
+  } elseif ($curr_year->year_end !== $curr_year->year_start + 1) {
+    $errors = 'Year End must be equal to Year Start + 1.';
+  }
 
-    if (empty($errors)) {
-      if ($curr_year->edit()) {
-        $redirect_url = './index?year_id=' . $_GET['year_id'];
-        header('location: ' . $redirect_url);
-        exit;
-      } else {
-        $message = 'Something went wrong editing subject.';
-      }
+  if (empty($errors)) {
+    if ($curr_year->edit()) {
+      $message = 'Curriculum updated successfully.';
+      $success = true;
     } else {
-      throw new Exception(implode('<br>', $errors));
+      $message = 'Something went wrong while editing the curriculum.';
     }
-  } catch (Exception $e) {
-    $error_message = $e->getMessage();
   }
 }
 
@@ -65,27 +59,28 @@ $currentYear = date('Y');
 <!DOCTYPE html>
 <html lang="en">
 <?php
-	$title = 'Admin | Edit Curriculum';
-  $curriculum_page = 'active';
-	include '../includes/admin_head.php';
+$title = 'Admin | Edit Curriculum';
+$curriculum_page = 'active';
+include '../includes/admin_head.php';
 ?>
+
 <body>
   <div class="home">
     <div class="side">
       <?php
-        require_once('../includes/admin_sidepanel.php')
-      ?> 
+      require_once('../includes/admin_sidepanel.php')
+        ?>
     </div>
     <main>
-      <div class="header" >
-      <?php
+      <div class="header">
+        <?php
         require_once('../includes/admin_header.php')
-      ?>
+          ?>
       </div>
-      
-      <div class="flex-md-nowrap p-1 title_page shadow" style="background-color: whitesmoke;" >
+
+      <div class="flex-md-nowrap p-1 title_page shadow" style="background-color: whitesmoke;">
         <div class="d-flex align-items-center">
-          <button onclick="history.back()" class="bg-none" ><i class='bx bx-chevron-left fs-2 brand-color'></i></button>
+          <button onclick="history.back()" class="bg-none"><i class='bx bx-chevron-left fs-2 brand-color'></i></button>
           <div class="container-fluid d-flex justify-content-center">
             <span class="fs-2 fw-bold h1 m-0 brand-color">Edit Curriculum</span>
           </div>
@@ -94,68 +89,62 @@ $currentYear = date('Y');
 
       <div class="m-4">
         <form action="#" method="post">
-        <?php
-        if (isset($_POST['add_curr-year']) && isset($message)) {
+          <?php if (!empty($errors)): ?>
+            <div class="alert alert-danger">
+              <?= htmlspecialchars($errors) ?>
+            </div>
+          <?php endif; ?>
 
-          echo "<script> alert('" . $message . "'); window.location.href='./add_curri.php'; </script>";
-        }
-        ?>
+          <?php if (!empty($message)): ?>
+            <div class="alert alert-success gap-2">
+            <i class='bx bx-check-circle'></i> <?= htmlspecialchars($message) ?>
+            </div>
+          <?php endif; ?>
+
           <div class="row row-cols-1 row-cols-md-2">
             <div class="col">
               <div class="mb-3">
                 <label for="year_start" class="form-label">Curriculum Year Start</label>
-                <input type="number" class="form-control" placeholder="YYYY" min="1999" max="<?php echo $currentYear; ?>" id="year_start" aria-describedby="year_start" name="year_start" value="<?php if (isset($_POST['year_start'])) {
-                                                                                                                                                                                                         echo $_POST['year_start'];
-                                                                                                                                                                                                       } else if (isset($curr_year->year_start)) {
-                                                                                                                                                                                                         echo $curr_year->year_start;
-                                                                                                                                                                                                       } ?>">
-                <?php
-                if (isset($_POST['year_start']) && $curr_year->is_year_exist($_POST['year_start'])) {
-                ?>
-                  <p>Year already exists</p>
-                <?php
-                }
-                ?>             
+                <input type="number" class="form-control" placeholder="YYYY" min="1999" 
+                  id="year_start" name="year_start" value="<?= htmlspecialchars($curr_year->year_start ?? '') ?>">
               </div>
 
               <div class="mb-3">
                 <label for="year_end" class="form-label">Curriculum Year End</label>
-                <input type="number" class="form-control" placeholder="YYYY" id="year_end" aria-describedby="year_end" name="year_end" value="<?php if (isset($_POST['year_end'])) {
-                                                                                                                                                      echo $_POST['year_end'];
-                                                                                                                                                    } else if (isset($curr_year->year_end)) {
-                                                                                                                                                      echo $curr_year->year_end;
-                                                                                                                                                    } ?>">
-                <?php                 
-                if (isset($_POST['year_end']) && ($_POST['year_end'] != (intval($_POST['year_start']) + 1))) {
-                ?>
-                  Year End must be equal to Year Start + 1
-                <?php
-                }
-                ?>
+                <input type="number" class="form-control" placeholder="YYYY" id="year_end" name="year_end"
+                  value="<?= htmlspecialchars($curr_year->year_end ?? '') ?>" readonly>
               </div>
             </div>
           </div>
-          <button type="button" class="btn btn-secondary">Cancel</button>
-          <button type="submit" class="btn brand-bg-color" id="edit_curr_year" name="edit_curr_year">Save</button>
+
+          <button type="button" class="btn btn-secondary" onclick="history.back()">Cancel</button>
+          <button type="submit" class="btn brand-bg-color" name="edit_curr_year">Save</button>
         </form>
+
       </div>
 
     </main>
   </div>
 
   <script src="./js/main.js"></script>
-  
-  <script>
-  $(document).ready(function () {
-    $('#year_start').on('input', function () {
-      var startYear = parseInt($(this).val());
-      if (!isNaN(startYear)) {
-        $('#year_end').attr('value', startYear + 1);
-      }
-    });
-  });
 
+  <script>
+    $(document).ready(function () {
+      $('#year_start').on('input', function () {
+        var startYear = parseInt($(this).val());
+        if (!isNaN(startYear)) {
+          $('#year_end').attr('value', startYear + 1);
+        }
+      });
+    });
+
+    <?php if ($success): ?>
+      setTimeout(function () {
+        window.location.href = './index.php';
+      }, 1500);
+    <?php endif; ?>
   </script>
-  
+
 </body>
+
 </html>
