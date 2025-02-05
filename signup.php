@@ -22,7 +22,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
   $user->f_name = htmlentities($_POST['f_name']);
   $user->l_name = htmlentities($_POST['l_name']);
   $user->m_name = htmlentities($_POST['m_name']);
-  $user->acad_rank = htmlentities($_POST['acad_rank']);
+  $user->faculty_type = htmlentities($_POST['faculty_type']);
 
   if ($user->is_emp_id_exist()) {
     $message = 'Employee ID already exists.';
@@ -152,10 +152,10 @@ include_once './includes/head.php'
               } ?>">
             </div>
             <div class="field">
-              <label for="acad_rank">Academic Rank</label>
-              <select name="acad_rank" id="acad_rank">
-                <option value="Regular Lecturer" <?php echo (isset($_POST['acad_rank']) && $_POST['acad_rank'] == 'Regular Lecturer') ? 'selected' : ''; ?>>Regular Lecturer</option>
-                <option value="Visiting Lecturer" <?php echo (isset($_POST['acad_rank']) && $_POST['acad_rank'] == 'Visiting Lecturer') ? 'selected' : ''; ?>>Visiting Lecturer</option>
+              <label for="faculty_type">Faculty Type</label>
+              <select name="faculty_type" id="faculty_type">
+                <option value="Regular Lecturer" <?php echo (isset($_POST['faculty_type']) && $_POST['faculty_type'] == 'Regular Lecturer') ? 'selected' : ''; ?>>Regular Lecturer</option>
+                <option value="Visiting Lecturer" <?php echo (isset($_POST['faculty_type']) && $_POST['faculty_type'] == 'Visiting Lecturer') ? 'selected' : ''; ?>>Visiting Lecturer</option>
               </select>
             </div>
           </div>

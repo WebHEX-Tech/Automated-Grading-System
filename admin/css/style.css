@@ -1,4 +1,4 @@
-@import url('https://fonts.googleapis.com/css2?family=Poppins:wght@200;300;400;500;600;700;800&family=Roboto:wght@100;300;400;500;700&display=swap');
+@import url("https://fonts.googleapis.com/css2?family=Poppins:wght@200;300;400;500;600;700;800&family=Roboto:wght@100;300;400;500;700&display=swap");
 
 :root {
   --primary-color: #952323;
@@ -7,13 +7,12 @@
 
 .color-black {
   color: var(--dark-color);
-  transition: .1s linear;
+  transition: 0.1s linear;
 }
-
 .color-black:hover {
   color: rgb(20, 20, 20) !important;
   letter-spacing: 2px;
-} 
+}
 
 .bg-none {
   background-color: #ffffff00;
@@ -21,8 +20,11 @@
 
 .brand-color {
   color: var(--primary-color) !important;
+  padding: 0.5em 0 !important;
 }
-
+.change-pass:hover {
+  text-decoration: underline !important;
+}
 .brand-border-color {
   border: var(--primary-color) 2px solid !important;
 }
@@ -31,7 +33,7 @@
   background-color: var(--primary-color) !important;
   color: whitesmoke !important;
   border: none;
-  transition: .1s linear;
+  transition: 0.1s linear;
 }
 
 .brand-bg-color:hover {
@@ -53,20 +55,21 @@ header .dropdown-toggle::after {
   display: none !important;
 }
 
-*:focus, *:active {
+*:focus,
+*:active {
   outline: none !important;
   box-shadow: none !important;
 }
 
 * {
-  font-family: 'Roboto', sans-serif;
+  font-family: "Roboto", sans-serif;
   margin: 0;
   padding: 0;
   box-sizing: border-box;
   outline: none;
   border: none;
-  text-decoration: none !important; 
-  transition: .1s linear;
+  text-decoration: none !important;
+  transition: 0.1s linear;
 }
 
 html {
@@ -77,11 +80,11 @@ html {
 
 body .home main {
   margin-left: 215px;
-  transition: .1s linear;
+  transition: 0.1s linear;
 }
 /* sidepanel collapse */
 body .home.collapse {
-  display: block; 
+  display: block;
 }
 
 body .home.collapse main {
@@ -127,21 +130,40 @@ body .home.collapse .side .link-grp .nav-link {
   gap: 0 !important;
 }
 
- #sidebarMenu.collapsed {
-    width: 50px !important;
-  }
+#sidebarMenu.collapsed {
+  width: 50px !important;
+}
 
 .home .side .nav-item .nav-link.active {
   background-color: var(--primary-color);
 }
 
+.home .side .nav-item .nav-link:hover {
+  background-color: #ee7e7e;
+}
+
 .home.collapse .side .nav-item .nav-link.active {
-  margin-bottom: .2rem !important;
+  margin-bottom: 0.2rem !important;
   gap: 0px !important;
 }
 
 header .dropdown-menu.text-small.shadow.show {
   left: -135px !important;
+}
+
+.custom-dropdown {
+  width: 400px !important;
+}
+.custom-item p {
+  display: -webkit-box; 
+  -webkit-box-orient: vertical; 
+  -webkit-line-clamp: 3;
+  overflow: hidden; 
+  text-overflow: ellipsis; 
+  word-wrap: break-word;
+  line-height: 1.5;
+  max-height: calc(1.5em * 3); 
+  white-space: normal;
 }
 
 .curriculum .bx {
@@ -159,18 +181,18 @@ header .dropdown-menu.text-small.shadow.show {
 
 table.dataTable tbody th,
 table.dataTable tbody td {
-    white-space: nowrap !important;
+  white-space: nowrap !important;
 }
 
 #main_faculty_visiting_wrapper {
-    overflow:auto;
+  overflow: auto;
 }
 
 /* USER PROFILE CHENGE */
 
 .user .profile-pic {
   color: transparent;
-  transition: all .3s ease;
+  transition: all 0.3s ease;
   display: flex;
   justify-content: center;
   align-items: center;
@@ -193,14 +215,14 @@ table.dataTable tbody td {
   background-color: rgba(0, 0, 0, 0.5);
   color: #fff;
   z-index: 1000;
-  transition: background-color .2s ease-in-out;
+  transition: background-color 0.2s ease-in-out;
   border-radius: 5px;
   margin-bottom: 0;
 }
 
-.user .profile-pic .label span{
+.user .profile-pic .label span {
   display: inline-flex;
-  padding: .2em;
+  padding: 0.2em;
   height: 2em;
   font-size: 1em;
 }
@@ -231,26 +253,31 @@ table.dataTable tbody td {
   top: 100%;
   right: 0;
   background-color: #ffffff;
-  border: 1px solid #ddd;
   box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
   z-index: 1000;
   border-radius: 4px;
 }
 
+.curriculum .bx-dots-vertical-rounded:hover {
+  cursor: pointer;
+  background-color: #fc7272;
+  border-radius: 50%;
+}
+
 .curriculum .dropdown-menu .dropdown-item {
   display: block;
   padding: 8px 16px;
-  color: #333;
   text-decoration: none;
 }
 
 .curriculum .dropdown-menu .dropdown-item:hover {
-  background-color: #f8f9fa;
+  background-color: #ee7e7e;
+  cursor: pointer;
 }
 
-.curriculum .dropdown-container:hover .dropdown-menu {
+/* .curriculum .dropdown-container:hover .dropdown-menu {
   display: block;
-}
+} */
 
 .curriculum .stretched-link {
   position: absolute;
@@ -261,8 +288,6 @@ table.dataTable tbody td {
   z-index: 1;
 }
 
-
 .curriculum .bx.bx-dots-vertical-rounded {
   z-index: 2;
 }
-

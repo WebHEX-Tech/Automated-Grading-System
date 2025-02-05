@@ -8,11 +8,13 @@ if (!isset($_SESSION['verification_id']) || empty($_SESSION['verification_id']))
 
 require_once './tools/functions.php';
 require_once './classes/user.class.php';
+require_once './classes/notification.class.php';
 $error = "";
 $success = false;
 
 if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['reset'])) {
   $user = new User();
+  $notification = new Notification();
   $user->password = htmlentities($_POST['password']);
   $confirm_password = trim($_POST['confirm_password']);
   ;
@@ -25,8 +27,24 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['reset'])) {
     $error = "Password must be at least 8 characters long.";
   } else {
     if ($user->update_pass($_SESSION['verification_id'])) {
-      $success = true;
-      session_destroy();
+      $userInfo = $user->fetch($_SESSION['verification_id']);
+      if ($userInfo) {
+        $email = $userInfo['email'];
+        $emp_id = $userInfo['emp_id'];
+
+        $message = `The account <span style="color:blue;">$email($emp_id)</span> has successfully changed its password.`;
+
+        $notification = new Notification();
+        $notification->user_role = 2;
+        $notification->message = $message;
+
+        if ($notification->add()) {
+          $success = true;
+          session_destroy();
+        } else {
+          $error = "Password updated, but notification could not be added.";
+        }
+      }
     } else {
       $error = "Failed to update the password. Please try again.";
     }
@@ -73,7 +91,7 @@ include_once './includes/head.php'
                 <?php
               }
               ?>
-              <button type="button" class="toggle-password" style="background: none; color: black;"
+              <button type="button" class="toggle-password" style="background: none; color: white;"
                 onclick="togglePasswordVisibility('password', this)">
                 <i class="bx bx-show"></i>
               </button>
@@ -92,7 +110,7 @@ include_once './includes/head.php'
                 <?php
               }
               ?>
-              <button type="button" class="toggle-password" style="background: none; color: black;"
+              <button type="button" class="toggle-password" style="background: none; color: white;"
                 onclick="togglePasswordVisibility('confirm_password', this)">
                 <i class="bx bx-show"></i>
               </button>

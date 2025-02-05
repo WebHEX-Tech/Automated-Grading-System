@@ -42,7 +42,7 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
       $mail->Port = 587;
 
       $mail->setFrom('wmsu@gmail.com', 'MyWMSU');
-      $mail->addAddress($user->email); // Add recipient's email
+      $mail->addAddress($user->email); 
 
       $mail->isHTML(true);
       $mail->Subject = 'Password Reset Verification Code';

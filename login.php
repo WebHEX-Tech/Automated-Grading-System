@@ -94,7 +94,7 @@ include_once './includes/head.php'
               <?php
             }
             ?>
-            <button type="button" class="toggle-password" style="background: none; color: black;"
+            <button type="button" class="toggle-password" style="background: none; color: white;"
               onclick="togglePasswordVisibility('password', this)">
               <i class="bx bx-show"></i>
             </button>
@@ -107,7 +107,7 @@ include_once './includes/head.php'
           </div>
           <button type="submit" name="login" class="btn d-flex p-2 p-sm-3 justify-content-center">LOGIN</button>
           <div id="emailHelp" class="form-text d-flex justify-content-center">
-            <p>Don't have an account?<a href="signup.php" style="color: #00FF38;"> Sign up</a></p>
+            <p>Don't have an account?<a href="signup.php" style="color: #7797f7;"> Sign up</a></p>
           </div>
         </form>
       </div>

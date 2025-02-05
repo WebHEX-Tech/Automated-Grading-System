@@ -10,7 +10,7 @@ $(document).ready(function(){
       }
     ],
     'columnDefs': [ {
-        'targets': [1,2,6], /* column index */
+        'targets': [3,7], /* column index */
         'orderable': false, /* true or false */
     }]
   });

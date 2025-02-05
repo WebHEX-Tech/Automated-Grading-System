@@ -8,6 +8,9 @@ if (!isset($_SESSION['user_role']) || (isset($_SESSION['user_role']) && $_SESSIO
   header('location: ../login');
 }
 
+$error_message = '';
+$success = false;
+
 if (isset($_POST['add_faculty'])) {
   $profiling = new Profiling();
   //sanitize
@@ -37,9 +40,10 @@ if (isset($_POST['add_faculty'])) {
 
     if ($profiling->add()) {
       header('location: ./profiling.php');
-      $message = 'Faculty successfully added.';
+      $message = 'Faculty added';
+      $success = true;
     } else {
-      $message = 'Something went wrong adding Faculty.';
+      $error_message = 'Something went wrong adding Faculty.';
     }
   }
 }
@@ -47,28 +51,30 @@ if (isset($_POST['add_faculty'])) {
 
 <!DOCTYPE html>
 <html lang="en">
-<?php 
-	$title = 'Grade Posted';
-  $manage_acc = 'active';
-	include '../includes/admin_head.php';
+<?php
+$title = 'Grade Posted';
+$manage_acc = 'active';
+include '../includes/admin_head.php';
 ?>
+
 <body>
   <div class="home">
     <div class="side">
       <?php
-        require_once('../includes/admin_sidepanel.php')
-      ?> 
+      require_once('../includes/admin_sidepanel.php')
+        ?>
     </div>
     <main>
-      <div class="header" >
-      <?php
+      <div class="header">
+        <?php
         require_once('../includes/admin_header.php')
-      ?>
+          ?>
       </div>
-      
-      <div class="flex-md-nowrap p-1 title_page shadow" style="background-color: whitesmoke;" >
+
+      <div class="flex-md-nowrap p-1 title_page shadow" style="background-color: whitesmoke;">
         <div class="d-flex align-items-center">
-          <button onclick="history.back()" class="bg-none d-flex align-items-center" ><i class='bx bx-chevron-left fs-2 brand-color'></i></button>
+          <button onclick="history.back()" class="bg-none d-flex align-items-center"><i
+              class='bx bx-chevron-left fs-2 brand-color'></i></button>
           <div class="container-fluid d-flex justify-content-center">
             <span class="fs-2 fw-bold h1 m-0 brand-color">Add User</span>
           </div>
@@ -77,45 +83,51 @@ if (isset($_POST['add_faculty'])) {
 
       <div class="m-4">
         <form action="#" method="post">
-          <?php
-          if (isset($_POST['add_faculty']) && isset($message)) {
-            echo "<script> alert('" . $message . "'); window.location.href='./profiling.php'; </script>";
-          }
-          ?>
+          <?php if (!empty($error_message)): ?>
+            <div class="alert alert-danger">
+              <?= htmlspecialchars($error_message) ?>
+            </div>
+          <?php endif; ?>
+
+          <?php if ($success): ?>
+            <div class="alert alert-success gap-2">
+              <i class='bx bx-check-circle'></i> <?= htmlspecialchars($message) ?> successfully!
+            </div>
+          <?php endif; ?>
+
           <div class="row row-cols-1 row-cols-md-2">
             <div class="col">
               <div class="mb-3">
                 <label for="emp_id" class="form-label">Employee ID</label>
-                <input type="text" class="form-control" id="emp_id" name="emp_id" aria-describedby="emp_id" value="<?php if (isset($_POST['emp_id'])) { 
-                                                                                                                           echo $_POST['emp_id']; 
-                                                                                                                         } ?>">
+                <input type="text" class="form-control" id="emp_id" name="emp_id" aria-describedby="emp_id" value="<?php if (isset($_POST['emp_id'])) {
+                  echo $_POST['emp_id'];
+                } ?>">
 
                 <?php
                 if (isset($_POST['emp_id']) && !validate_field($_POST['emp_id'])) {
-                ?>
+                  ?>
                   <p class="text-danger my-1">Please enter Employee ID</p>
-                <?php
+                  <?php
                 }
                 ?>
                 <?php
                 if (isset($_POST['emp_id']) && $profiling->is_empId_exist($_POST['emp_id'])) {
-                ?>
+                  ?>
                   <p>Employee ID already exists</p>
-                <?php
+                  <?php
                 }
                 ?>
               </div>
               <div class="mb-3">
                 <label for="f_name" class="form-label">First Name</label>
                 <input type="text" class="form-control" id="f_name" name="f_name" aria-describedby="f_name" value="<?php if (isset($_POST['f_name'])) {
-                                                                                                                           echo $_POST['f_name'];
-                                                                                                                         } ?>" 
-                oninput="capitalizeFirstLetter(this)">
+                  echo $_POST['f_name'];
+                } ?>" oninput="capitalizeFirstLetter(this)">
                 <?php
                 if (isset($_POST['f_name']) && !validate_field($_POST['f_name'])) {
-                ?>
+                  ?>
                   <p class="text-danger my-1">Please enter first name</p>
-                <?php
+                  <?php
                 }
                 ?>
               </div>
@@ -123,14 +135,13 @@ if (isset($_POST['add_faculty'])) {
               <div class="mb-3">
                 <label for="l_name" class="form-label">Last Name</label>
                 <input type="text" class="form-control" id="l_name" name="l_name" aria-describedby="l_name" value="<?php if (isset($_POST['l_name'])) {
-                                                                                                                           echo $_POST['l_name'];
-                                                                                                                         } ?>" 
-                oninput="capitalizeFirstLetter(this)">
+                  echo $_POST['l_name'];
+                } ?>" oninput="capitalizeFirstLetter(this)">
                 <?php
                 if (isset($_POST['l_name']) && !validate_field($_POST['l_name'])) {
-                ?>
+                  ?>
                   <p class="text-danger my-1">Please enter last name</p>
-                <?php
+                  <?php
                 }
                 ?>
               </div>
@@ -138,65 +149,96 @@ if (isset($_POST['add_faculty'])) {
               <div class="mb-3">
                 <label for="m_name" class="form-label">Middle Name</label>
                 <input type="text" class="form-control" id="m_name" name="m_name" aria-describedby="m_name" value="<?php if (isset($_POST['m_name'])) {
-                                                                                                                           echo $_POST['m_name'];
-                                                                                                                         } ?>" 
-                oninput="capitalizeFirstLetter(this)">
+                  echo $_POST['m_name'];
+                } ?>" oninput="capitalizeFirstLetter(this)">
                 <?php
                 if (isset($_POST['m_name']) && !validate_field($_POST['m_name'])) {
-                ?>
+                  ?>
                   <p class="text-danger my-1">Please enter middle name</p>
-                <?php
+                  <?php
                 }
                 ?>
               </div>
               <div class="mb-3">
                 <label for="email" class="form-label">Email</label>
                 <input type="email" class="form-control" id="email" name="email" aria-describedby="email" value="<?php if (isset($_POST['email'])) {
-                                                                                                            echo $_POST['email'];
-                                                                                                          } ?>">
+                  echo $_POST['email'];
+                } ?>">
                 <?php
                 if (isset($_POST['email']) && !validate_field($_POST['email'])) {
-                ?>
+                  ?>
                   <p class="text-danger my-1">Please enter email address</p>
-                <?php
+                  <?php
                 }
                 ?>
                 <?php
                 if (isset($_POST['email']) && $profiling->is_email_exist($_POST['email'])) {
-                ?>
+                  ?>
                   <p> email address already exists</p>
-                <?php
+                  <?php
                 }
                 ?>
               </div>
             </div>
 
             <div class="col">
-          
+              <div class="row row-cols-md-2">
+
+                <div class="col">
+                  <div class="mb-3">
+                    <label for="start_service" class="form-label">Start Service</label>
+                    <input type="date" class="form-control" id="start_service" name="start_service"
+                      aria-describedby="start_service" value="<?php if (isset($_POST['start_service'])) {
+                        echo $_POST['start_service'];
+                      } ?>">
+                    <?php
+                    if (isset($_POST['start_service']) && !validate_field($_POST['start_service'])) {
+                      ?>
+                      <p class="text-danger my-1">Please enter start</p>
+                      <?php
+                    }
+                    ?>
+                  </div>
+                </div>
+
+                <div class="col">
+                  <div class="mb-3">
+                    <label for="end_service" class="form-label">End Service</label>
+                    <input type="date" class="form-control" id="end_service" name="end_service"
+                      aria-describedby="end_service" value="<?php if (isset($_POST['end_service'])) {
+                        echo $_POST['end_service'];
+                      } ?>">
+                  </div>
+                </div>
+              </div>
               <div class="mb-3" <?= isset($_GET['department_id']) ? 'style="display: none;"' : '' ?>>
                 <?php
-                  require_once '../classes/department.class.php';
-                  require_once '../tools/functions.php';
-                            
-                  $department = new Department();
-                            
-                  $department_array = $department->show();
-                            
-                  $show_collapse = false; 
-                  if (isset($_GET['department_id'])) {
-                    $show_collapse = true; 
-                  }
+                require_once '../classes/department.class.php';
+                require_once '../tools/functions.php';
+
+                $department = new Department();
+
+                $department_array = $department->show();
+
+                $show_collapse = false;
+                if (isset($_GET['department_id'])) {
+                  $show_collapse = true;
+                }
                 ?>
                 <label for="department_id" class="form-label">Department</label>
                 <select class="dropdown-toggle form-select" id="department_id" name="department_id">
                   <?php
-                    if ($department_array) {
-                      foreach ($department_array as $item) {
-                  ?>
-                  <option value="<?= $item['department_id'] ?>" <?php if(isset($_GET['department_id']) && $_GET['department_id'] == $item['department_id']) { echo 'selected'; } ?>><?php echo $item['department_name'] ?></option>
-                  <?php
-                      }
+                  if ($department_array) {
+                    foreach ($department_array as $item) {
+                      ?>
+                      <option value="<?= $item['department_id'] ?>" <?php if (isset($_GET['department_id']) && $_GET['department_id'] == $item['department_id']) {
+                          echo 'selected';
+                        } ?>>
+                        <?php echo $item['department_name'] ?>
+                      </option>
+                      <?php
                     }
+                  }
                   ?>
                 </select>
               </div>
@@ -204,53 +246,82 @@ if (isset($_POST['add_faculty'])) {
 
               <div class="mb-3">
                 <label for="acad_type" class="form-label">Academic Rank</label>
-                <select type="button" class="dropdown-toggle form-select" data-bs-toggle="dropdown" id="acad_type" name="acad_type">
+                <select type="button" class="dropdown-toggle form-select" data-bs-toggle="dropdown" id="acad_type"
+                  name="acad_type">
                   <!-- <option value="">Select Rank</option> -->
-                  <option value="Adjunct Faculty" <?php if(isset($_POST['acad_type']) && $_POST['acad_type'] == 'Adjunct Faculty') { echo 'selected'; } ?>>Adjunct Faculty</option>
-                  <option value="Instructor" <?php if(isset($_POST['acad_type']) && $_POST['acad_type'] == 'Instructor') { echo 'selected'; } ?>>Instructor</option>
-                  <option value="Instructor II" <?php if(isset($_POST['acad_type']) && $_POST['acad_type'] == 'Instructor II') { echo 'selected'; } ?>>Instructor II</option>
-                  <option value="Instructor III" <?php if(isset($_POST['acad_type']) && $_POST['acad_type'] == 'Instructor III') { echo 'selected'; } ?>>Instructor III</option>
-                  <option value="Professor I" <?php if(isset($_POST['acad_type']) && $_POST['acad_type'] == 'Professor I') { echo 'selected'; } ?>>Professor I</option>
-                  <option value="Professor II" <?php if(isset($_POST['acad_type']) && $_POST['acad_type'] == 'Professor II') { echo 'selected'; } ?>>Professor II</option>
-                  <option value="Professor III" <?php if(isset($_POST['acad_type']) && $_POST['acad_type'] == 'Professor III') { echo 'selected'; } ?>>Professor III</option>
+                  <option value="Adjunct Faculty" <?php if (isset($_POST['acad_type']) && $_POST['acad_type'] == 'Adjunct Faculty') {
+                    echo 'selected';
+                  } ?>>Adjunct Faculty</option>
+                  <option value="Instructor" <?php if (isset($_POST['acad_type']) && $_POST['acad_type'] == 'Instructor') {
+                    echo 'selected';
+                  } ?>>Instructor</option>
+                  <option value="Instructor II" <?php if (isset($_POST['acad_type']) && $_POST['acad_type'] == 'Instructor II') {
+                    echo 'selected';
+                  } ?>>Instructor II</option>
+                  <option value="Instructor III" <?php if (isset($_POST['acad_type']) && $_POST['acad_type'] == 'Instructor III') {
+                    echo 'selected';
+                  } ?>>Instructor III</option>
+                  <option value="Professor I" <?php if (isset($_POST['acad_type']) && $_POST['acad_type'] == 'Professor I') {
+                    echo 'selected';
+                  } ?>>Professor I</option>
+                  <option value="Professor II" <?php if (isset($_POST['acad_type']) && $_POST['acad_type'] == 'Professor II') {
+                    echo 'selected';
+                  } ?>>Professor II</option>
+                  <option value="Professor III" <?php if (isset($_POST['acad_type']) && $_POST['acad_type'] == 'Professor III') {
+                    echo 'selected';
+                  } ?>>Professor III</option>
                 </select>
                 <?php
-                if(isset($_POST['acad_type']) && !validate_field($_POST['acad_type'])){
-                ?>
+                if (isset($_POST['acad_type']) && !validate_field($_POST['acad_type'])) {
+                  ?>
                   <p class="text-danger my-1">Select Academic Rank!</p>
-                <?php
+                  <?php
                 }
                 ?>
               </div>
               <div class="mb-3">
                 <label for="faculty_type" class="form-label">Faculty Type</label>
-                <select type="button" class="dropdown-toggle form-select" data-bs-toggle="dropdown" id="faculty_type" name="faculty_type">
+                <select type="button" class="dropdown-toggle form-select" data-bs-toggle="dropdown" id="faculty_type"
+                  name="faculty_type">
                   <!-- <option value="">Select Type</option> -->
-                  <option value="Regular Lecturer" <?php if(isset($_POST['faculty_type']) && $_POST['faculty_type'] == 'Regular Lecturer') { echo 'selected'; } ?>>Regular Lecturer</option>
-                  <option value="Visiting Lecturer" <?php if(isset($_POST['faculty_type']) && $_POST['faculty_type'] == 'Visiting Lecturer') { echo 'selected'; } ?>>Visiting Lecturer</option>
+                  <option value="Regular Lecturer" <?php if (isset($_POST['faculty_type']) && $_POST['faculty_type'] == 'Regular Lecturer') {
+                    echo 'selected';
+                  } ?>>Regular Lecturer</option>
+                  <option value="Visiting Lecturer" <?php if (isset($_POST['faculty_type']) && $_POST['faculty_type'] == 'Visiting Lecturer') {
+                    echo 'selected';
+                  } ?>>Visiting Lecturer</option>
                 </select>
                 <?php
-                if(isset($_POST['faculty_type']) && !validate_field($_POST['faculty_type'])){
-                ?>
+                if (isset($_POST['faculty_type']) && !validate_field($_POST['faculty_type'])) {
+                  ?>
                   <p class="text-danger my-1">Select Faculty Type!</p>
-                <?php
+                  <?php
                 }
                 ?>
               </div>
               <div class="mb-3">
                 <label for="designation" class="form-label">Designation</label>
-                <select type="button" class="dropdown-toggle form-select" data-bs-toggle="dropdown" id="designation" name="designation">
+                <select type="button" class="dropdown-toggle form-select" data-bs-toggle="dropdown" id="designation"
+                  name="designation">
                   <!-- <option value="">Select Designation</option> -->
-                  <option value="Professor" <?php if(isset($_POST['designation']) && $_POST['designation'] == 'Professor') { echo 'selected'; } ?>>Professor</option>
-                  <option value="Assistant professor" <?php if(isset($_POST['designation']) && $_POST['designation'] == 'Assistant professor') { echo 'selected'; } ?>>Assistant professor</option>
-                  <option value="Academic staff" <?php if(isset($_POST['designation']) && $_POST['designation'] == 'Academic staff') { echo 'selected'; } ?>>Academic staff</option>
-                  <option value="Associate Professor" <?php if(isset($_POST['designation']) && $_POST['designation'] == 'Associate Professor') { echo 'selected'; } ?>>Associate Professor</option>
+                  <option value="Professor" <?php if (isset($_POST['designation']) && $_POST['designation'] == 'Professor') {
+                    echo 'selected';
+                  } ?>>Professor</option>
+                  <option value="Assistant Professor" <?php if (isset($_POST['designation']) && $_POST['designation'] == 'Assistant Professor') {
+                    echo 'selected';
+                  } ?>>Assistant Professor</option>
+                  <option value="Academic Staff" <?php if (isset($_POST['designation']) && $_POST['designation'] == 'Academic Staff') {
+                    echo 'selected';
+                  } ?>>Academic Staff</option>
+                  <option value="Associate Professor" <?php if (isset($_POST['designation']) && $_POST['designation'] == 'Associate Professor') {
+                    echo 'selected';
+                  } ?>>Associate Professor</option>
                 </select>
                 <?php
-                if(isset($_POST['designation']) && !validate_field($_POST['designation'])){
-                ?>
+                if (isset($_POST['designation']) && !validate_field($_POST['designation'])) {
+                  ?>
                   <p class="text-danger my-1">Select Designation!</p>
-                <?php
+                  <?php
                 }
                 ?>
               </div>
@@ -265,7 +336,7 @@ if (isset($_POST['add_faculty'])) {
 
     </main>
   </div>
-  
+
   <script src="./js/main.js"></script>
   <script src="./js/curriculum-table.js"></script>
   <script>
@@ -273,6 +344,7 @@ if (isset($_POST['add_faculty'])) {
       input.value = input.value.charAt(0).toUpperCase() + input.value.slice(1);
     }
   </script>
-  
+
 </body>
+
 </html>
