@@ -107,8 +107,8 @@ include '../includes/admin_head.php';
             <div class="col">
               <!-- Subject Code -->
               <div class="mb-3">
-                <label for="sub_code" class="form-label">Code</label>
-                <input type="text" class="form-control" id="sub_code" name="sub_code"
+                <label for="sub_code" class="form-label">Subject Code</label>
+                <input type="text" class="form-control" id="sub_code" placeholder="eg. ETHICS 101" name="sub_code" 
                   value="<?= isset($_POST['sub_code']) ? htmlspecialchars($_POST['sub_code']) : '' ?>">
                 <?php if (isset($_POST['sub_code']) && !$curr_table->is_subcode_exist($_POST['sub_code'])): ?>
                   <p class="text-danger my-1">Subject code already exists.</p>
@@ -118,7 +118,7 @@ include '../includes/admin_head.php';
               <!-- Subject Name -->
               <div class="mb-3">
                 <label for="sub_name" class="form-label">Subject Name</label>
-                <input type="text" class="form-control" id="sub_name" name="sub_name"
+                <input type="text" class="form-control" id="sub_name" placeholder="eg. Ethics 1" name="sub_name"
                   value="<?= isset($_POST['sub_name']) ? htmlspecialchars($_POST['sub_name']) : '' ?>">
               </div>
 

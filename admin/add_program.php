@@ -27,8 +27,8 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['add_program'])) {
     } else {
         // Save the program
         $program = new Course_curr();
-        $program->name = htmlentities($program_name);
-        $program->degree_level = htmlentities($degree_level);
+        $program->name = ucwords(strtolower(htmlentities($program_name)));
+        $program->degree_level = $degree_level;
 
         if ($program->add()) {
             $success = true;
@@ -86,7 +86,7 @@ include '../includes/admin_head.php';
                         <div class="col">
                             <div class="mb-3">
                                 <label for="program_name" class="form-label">Program Name</label>
-                                <input type="text" class="form-control" placeholder="Enter program name" id="program_name"
+                                <input type="text" class="form-control" placeholder="eg. Civil Engineering" id="program_name"
                                     name="program_name" value="<?= htmlspecialchars($_POST['program_name'] ?? '') ?>" required>
                             </div>
 

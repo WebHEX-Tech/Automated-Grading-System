@@ -120,29 +120,23 @@ class Curr_table
     return $data;
   }
 
-  function showAll($order_by)
-{
-    $allowed_columns = ['college_course_id', 'name', 'some_other_column']; 
-
-    if (!in_array($order_by, $allowed_columns)) {
-        $order_by = 'name'; 
-    }
-
-    $sql = "
-        SELECT DISTINCT ct.*, cc.name
-        FROM curr_table ct
-        INNER JOIN course_curr cc ON ct.college_course_id = cc.college_course_id
-        ORDER BY $order_by ASC, ct.sub_code ASC;
-    ";
+  function showAll($dept_name)
+  {
+    $sql = "SELECT DISTINCT ct.*, cc.name
+            FROM curr_table ct
+            INNER JOIN course_curr cc ON ct.college_course_id = cc.college_course_id
+            WHERE cc.name = :dept_name
+            ORDER BY sub_code ASC;";
 
     $query = $this->db->connect()->prepare($sql);
+    $query->bindParam(':dept_name', $dept_name);
     $data = null;
 
     if ($query->execute()) {
-        $data = $query->fetchAll();
+      $data = $query->fetchAll();
     }
     return $data;
-}
+  }
 
 
 
@@ -188,8 +182,6 @@ class Curr_table
     return $data;
   }
 
-
-
   function delete($curr_id)
   {
     $sql = "DELETE FROM curr_table WHERE curr_id = :curr_id;";
@@ -202,7 +194,28 @@ class Curr_table
     }
   }
 
+  function copyCurrTableData($previousYear, $newYear)
+  {
+    $sql = "INSERT INTO curr_table (curr_year_id, college_course_id, year_level_id, semester_id, time_id, sub_code, sub_name, sub_prerequisite, lec, lab)
+            SELECT :newYear, college_course_id, year_level_id, semester_id, time_id, sub_code, sub_name, sub_prerequisite, lec, lab
+            FROM curr_table
+            WHERE curr_year_id = :previousYear;";
 
+    $query = $this->db->connect()->prepare($sql);
+    $query->bindParam(':newYear', $newYear);
+    $query->bindParam(':previousYear', $previousYear);
+
+    if ($query->execute()) {
+      // Log the number of rows copied
+      $rowCount = $query->rowCount();
+      error_log("Rows copied: " . $rowCount);
+      return true;
+    } else {
+      // Log the error
+      error_log("Error copying curriculum data: " . implode(" ", $query->errorInfo()));
+      return false;
+    }
+  }
 }
 
 ?>

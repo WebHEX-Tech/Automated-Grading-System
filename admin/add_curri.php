@@ -8,20 +8,21 @@ if (!isset($_SESSION['user_role']) || (isset($_SESSION['user_role']) && $_SESSIO
 
 require_once '../tools/functions.php';
 require_once '../classes/curr_year.class.php';
+require_once '../classes/curri_page.class.php';
 require_once '../classes/user.class.php';
+
+$user = new User();
+$curr_year = new Curr_year();
+$subjects = new Curr_table();
 
 $success = false;
 $errors = '';
 $message = '';
+$currentYear = date('Y');
 
 if (isset($_POST['add_curr-year'])) {
-
-  $user = new User();
-
   $record = $user->fetch($_SESSION['user_id']);
   $user->user_id = $_SESSION['user_id'];
-
-  $curr_year = new Curr_year();
 
   $curr_year->user_id = $_SESSION['user_id'];
   $curr_year->year_start = htmlentities($_POST['year_start']);
@@ -29,24 +30,31 @@ if (isset($_POST['add_curr-year'])) {
 
   if (!validate_field($curr_year->year_start)) {
     $errors = 'Please enter Curriculum Year Start.';
-  }
-
-  if ($curr_year->is_year_exist($curr_year->year_start)) {
+  } elseif ($curr_year->is_year_exist($curr_year->year_start)) {
     $errors = 'Curriculum Year Start already exists.';
-  }
-
-  if (
+  } elseif ($curr_year->year_start < $currentYear) {
+    $errors = 'Please enter the current year or a future year.';
+  } elseif (!validate_field($curr_year->year_end)) {
+    $errors = 'Please enter Curriculum Year End.';
+  } elseif (
     validate_field($curr_year->year_start) && !$curr_year->is_year_exist($curr_year->year_start) &&
     validate_field($curr_year->year_end)
   ) {
-    if ($curr_year->add()) {
-      $message = 'Curriculum Year is successfuly added.';
+    if ($newData = $curr_year->add()) {
+      // Copy existing data from the previous curriculum year to the new curriculum year
+      $previous = $curr_year->year_start - 1;
+      $previous_id = $curr_year->fetchByYearStart($previous);
+      $new_data = $curr_year->year_start;
+      $new_id = $curr_year->fetchByYearStart($new_data);
+      if ($previous_id && $new_id) {
+        $subjects->copyCurrTableData($previous_id['curr_year_id'], $new_id['curr_year_id']);
+      }
+      $message = 'Curriculum Year is successfully added.';
       $success = true;
     } else {
       $message = 'Something went wrong adding Curriculum Year.';
     }
   }
-
 }
 
 $currentYear = date('Y');
@@ -128,7 +136,7 @@ include '../includes/admin_head.php';
       $('#year_start').on('input', function () {
         var startYear = parseInt($(this).val());
         if (!isNaN(startYear)) {
-          $('#year_end').attr('value', startYear + 1);
+          $('#year_end').val(startYear + 1);
         }
       });
     });

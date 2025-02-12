@@ -8,12 +8,18 @@ if (!isset($_SESSION['user_role']) || (isset($_SESSION['user_role']) && $_SESSIO
 
 require_once '../classes/year_lvl.class.php';
 require_once '../classes/semester.class.php';
+require_once '../classes/curr_year.class.php';
 
+$curr_year = new Curr_year();
 $year_lvl = new Year_lvl();
 $semester = new Semester();
 
 $year_level_id = $_GET['year_level_id'];
 $semester_id = $_GET['semester_id'];
+
+$yearRange = $curr_year->getYearRangeById($_GET['year_id']);
+$current_year = date('Y');
+$is_previous_year = $yearRange['year_end'] < $current_year;
 
 if (
   !isset($_GET['year_id']) ||
@@ -209,9 +215,11 @@ include '../includes/admin_head.php';
                 <button class="btn btn-outline-secondary brand-bg-color" type="button"><i class='bx bx-search'
                     aria-hidden="true"></i></button>
               </div>
-              <a href="./curri_add_sub?year_id=<?= $_GET['year_id'] ?>&course_id=<?= $_GET['course_id'] ?>&time_id=<?= $_GET['time_id'] ?>&year_level_id=<?= $_GET['year_level_id'] ?>&semester_id=<?= $_GET['semester_id'] ?>"
-                class="btn btn-outline-secondary btn-add ms-3 brand-bg-color" type="button"><i
-                  class='bx bx-plus-circle'></i></a>
+              <?php if (!$is_previous_year): ?>
+                <a href="./curri_add_sub?year_id=<?= $_GET['year_id'] ?>&course_id=<?= $_GET['course_id'] ?>&time_id=<?= $_GET['time_id'] ?>&year_level_id=<?= $_GET['year_level_id'] ?>&semester_id=<?= $_GET['semester_id'] ?>"
+                  class="btn btn-outline-secondary btn-add ms-3 brand-bg-color" type="button"><i
+                    class='bx bx-plus-circle'></i></a>
+              <?php endif; ?>
             </div>
           </div>
 
@@ -282,7 +290,8 @@ include '../includes/admin_head.php';
             </tbody>
             <tfoot>
               <tr>
-                <td colspan="6" class="text-end fw-bold border-start border-top border-secondary-subtle pe-2">Total Units:</td>
+                <td colspan="6" class="text-end fw-bold border-start border-top border-secondary-subtle pe-2">Total
+                  Units:</td>
                 <td class="fw-bold border-top border-secondary-subtle ps-2 py-2"><?= $overallTotalUnits ?></td>
                 <td class="border-end border-top border-secondary-subtle"></td>
               </tr>

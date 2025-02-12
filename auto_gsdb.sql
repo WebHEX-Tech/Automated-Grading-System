@@ -3,7 +3,7 @@
 -- https://www.phpmyadmin.net/
 --
 -- Host: 127.0.0.1:3306
--- Generation Time: Feb 05, 2025 at 06:49 PM
+-- Generation Time: Feb 12, 2025 at 11:26 PM
 -- Server version: 10.4.27-MariaDB
 -- PHP Version: 8.1.12
 
@@ -81,13 +81,15 @@ CREATE TABLE `course_curr` (
 --
 
 INSERT INTO `course_curr` (`college_course_id`, `name`, `degree_level`) VALUES
-(11, 'Civil Engineering', 'Bachelor&#039;s Degree'),
-(12, 'Nursing', 'Bachelor&#039;s Degree'),
-(13, 'Information Technology', 'Doctoral&#039;s Degree'),
+(11, 'Civil Engineering', 'Bachelor\'s Degree'),
+(12, 'Nursing', 'Bachelor\'s Degree'),
+(13, 'Information Technology', 'Doctoral\'s Degree'),
 (14, 'Information Technology', 'Associate Degree'),
-(15, 'Computer Science', 'Bachelor&#039;s Degree'),
-(16, 'Information Technology', 'Bachelor&#039;s Degree'),
-(17, 'Psychology', 'Bachelor&#039;s Degree');
+(15, 'Computer Science', 'Bachelor\'s Degree'),
+(16, 'Information Technology', 'Bachelor\'s Degree'),
+(17, 'Psychology', 'Bachelor\'s Degree'),
+(20, 'Computer Engineering', 'Bachelor\'s Degree'),
+(22, 'Mechanical Engineering', 'Bachelor\'s Degree');
 
 -- --------------------------------------------------------
 
@@ -114,16 +116,21 @@ CREATE TABLE `curr_table` (
 --
 
 INSERT INTO `curr_table` (`curr_id`, `curr_year_id`, `college_course_id`, `time_id`, `year_level_id`, `semester_id`, `sub_code`, `sub_name`, `sub_prerequisite`, `lec`, `lab`) VALUES
-(34, 6, 15, 1, 1, 1, 'CC 101', 'Computer Programming 1', '', 1, 2),
-(35, 6, 15, 1, 1, 1, 'CC 100', 'Introduction To Computing', '', 1, 2),
-(37, 6, 15, 1, 1, 1, 'EUTH A', 'Euthenics A', '', 1, 0),
-(38, 6, 15, 1, 1, 1, 'MATH 100', 'Mathematics in the Modern World', '', 1, 1),
-(39, 6, 15, 1, 1, 1, 'PE 101', 'Physical Education 1', '', 1, 0),
+(34, 6, 15, 1, 1, 1, 'CC 101', 'Computer Programming 1', NULL, 1, 2),
+(35, 6, 15, 1, 1, 1, 'CC 100', 'Introduction To Computing', NULL, 1, 2),
+(37, 6, 15, 1, 1, 1, 'EUTH A', 'Euthenics A', NULL, 1, 0),
+(38, 6, 15, 1, 1, 1, 'MATH 100', 'Mathematics in the Modern World', NULL, 1, 1),
+(39, 6, 15, 1, 1, 1, 'PE 101', 'Physical Education 1', NULL, 1, 0),
 (40, 6, 15, 1, 1, 2, 'CC102', 'Computer Programming 2', 'CC 101', 1, 2),
 (41, 6, 15, 1, 1, 2, 'EUTH B', 'Euthenics B', 'EUTH A', 1, 0),
 (42, 6, 15, 1, 1, 2, 'MATH 103', 'Calculus 1', 'MATH 100', 1, 1),
 (43, 6, 15, 1, 1, 2, 'PE 102', 'Physical Education 2', 'PE 101', 1, 0),
-(44, 6, 15, 1, 1, 2, 'STS 100', 'Science, Technology, and Society', '', 1, 0);
+(44, 6, 15, 1, 1, 2, 'STS 100', 'Science, Technology, and Society', NULL, 1, 0),
+(46, 6, 11, 1, 1, 1, 'MATH 105', 'Calculus 1', NULL, 1, 2),
+(47, 6, 22, 1, 1, 1, 'MATH 105', 'Calculus 1', NULL, 1, 2),
+(48, 6, 16, 1, 1, 1, 'CS 135', 'Software Engineering', NULL, 1, 2),
+(49, 6, 16, 1, 1, 1, 'PE 102', 'Physical Education 1', NULL, 3, 0),
+(50, 6, 16, 1, 3, 1, 'CC 104', 'Computer Programming 2', NULL, 1, 2);
 
 -- --------------------------------------------------------
 
@@ -188,9 +195,12 @@ CREATE TABLE `faculty_schedule` (
 --
 
 INSERT INTO `faculty_schedule` (`sched_id`, `profiling_id`, `release_time`, `hrs_per_week`, `school_yr`, `semester`) VALUES
-(5, 30, 0, 40, '2022 - 2023', 1),
-(7, 31, 0, 6, '2025', 2),
-(13, 29, 0, 35, '2023 - 2026', 3);
+(5, 30, 0, 40, '2024 - 2025', 1),
+(7, 31, 0, 6, '2024 - 2025', 2),
+(13, 29, 0, 35, '2023 - 2026', 3),
+(14, 35, 0, 46, '2021 - 2025', 2),
+(15, 31, 0, 48, '2024 - 2025', 1),
+(16, 31, 0, 67, '2023 - 2024', 1);
 
 -- --------------------------------------------------------
 
@@ -201,7 +211,7 @@ INSERT INTO `faculty_schedule` (`sched_id`, `profiling_id`, `release_time`, `hrs
 CREATE TABLE `faculty_subjects` (
   `faculty_sub_id` int(11) NOT NULL,
   `sched_id` int(11) NOT NULL,
-  `sub_code` varchar(255) NOT NULL,
+  `curr_id` int(11) NOT NULL,
   `yr_sec` varchar(255) NOT NULL,
   `no_students` int(11) NOT NULL,
   `lec_days` varchar(255) DEFAULT NULL,
@@ -218,9 +228,11 @@ CREATE TABLE `faculty_subjects` (
 -- Dumping data for table `faculty_subjects`
 --
 
-INSERT INTO `faculty_subjects` (`faculty_sub_id`, `sched_id`, `sub_code`, `yr_sec`, `no_students`, `lec_days`, `lab_days`, `lec_time`, `lab_time`, `lec_room`, `lab_room`, `lec_units`, `lab_units`) VALUES
-(7, 5, 'CC102', 'BSCS 2A', 32, 'MF', 'TF', '1:22 PM - 1:22 PM', '1:22 PM - 1:22 PM', 'LR 2', 'LAB 2', 1, 2),
-(9, 5, 'EUTH A', 'BSCS 1A', 32, 'MTH', NULL, '1:28 PM - 1:28 PM', NULL, 'CLA 12', NULL, 1, NULL);
+INSERT INTO `faculty_subjects` (`faculty_sub_id`, `sched_id`, `curr_id`, `yr_sec`, `no_students`, `lec_days`, `lab_days`, `lec_time`, `lab_time`, `lec_room`, `lab_room`, `lec_units`, `lab_units`) VALUES
+(15, 15, 50, 'BSIT 3A', 32, 'MTH', 'TF', '10:55 AM - 10:55 AM', '10:56 AM - 10:56 AM', 'LR 2', 'LAB 2', 1, 2),
+(16, 15, 48, 'BSIT 1A', 30, 'M', 'MT', '10:57 AM - 10:57 AM', '10:57 AM - 10:57 AM', 'LR 2', 'LAB 2', 1, 2),
+(17, 7, 49, 'BSIT 3A', 32, 'M', NULL, '10:58 AM - 10:58 AM', NULL, 'LR 2', NULL, 3, NULL),
+(18, 16, 50, 'BSIT 3A', 32, 'M', 'M', '3:51 AM - 3:51 AM', '3:51 AM - 3:51 AM', 'LR 2', 'LAB 2', 1, 2);
 
 -- --------------------------------------------------------
 
@@ -295,9 +307,10 @@ CREATE TABLE `profiling_table` (
 --
 
 INSERT INTO `profiling_table` (`profiling_id`, `emp_id`, `f_name`, `l_name`, `m_name`, `email`, `start_service`, `end_service`, `acad_type`, `faculty_type`, `designation`, `department_id`, `is_created`, `is_updated`) VALUES
-(29, '2021-00089', 'Sairyl', 'Manabat', '', 'sonarshironji@gmail.com', '2025-01-03', '2025-02-28', 'Instructor III', 'Regular Lecturer', 'Professor', 20, '2025-01-26 13:12:59', '2025-01-28 11:40:51'),
+(29, '2021-00089', 'Sairyl', 'Manabat', '', 'sonarshironji@gmail.com', '2025-01-03', '2025-02-28', 'Adjunct Faculty', 'Visiting Lecturer', 'Professor', 18, '2025-01-26 13:12:59', '2025-02-10 21:18:56'),
 (30, '2021-000009', 'Alco', 'Plus', 'Iso', 'email@email.com', '2025-01-04', '2025-03-19', 'Professor II', 'Regular Lecturer', 'Professor', 20, '2025-01-26 13:54:43', '2025-01-28 11:21:01'),
-(31, '2021-000023', 'Raf', 'Saludo', '', 'saludoraf@gmail.com', '2025-01-03', '2025-01-30', 'Instructor', 'Visiting Lecturer', 'Assistant Professor', 17, '2025-01-26 14:32:56', '2025-01-26 14:32:56');
+(31, '2021-000023', 'Raf', 'Saludo', '', 'saludoraf@gmail.com', '2025-01-03', '2025-01-30', 'Instructor', 'Visiting Lecturer', 'Assistant Professor', 17, '2025-01-26 14:32:56', '2025-01-26 14:32:56'),
+(35, '2021-00150', 'Franklin', 'Oliveros', 'Ituralde', 'ofranklinjames@gmail.com', '2025-02-01', '2025-02-25', 'Adjunct Faculty', 'Visiting Lecturer', 'Professor', 18, '2025-02-10 21:21:38', '2025-02-10 21:21:38');
 
 -- --------------------------------------------------------
 
@@ -397,8 +410,9 @@ INSERT INTO `user` (`user_id`, `emp_id`, `user_role`, `email`, `password`, `f_na
 (1, '2021-00150', 1, 'ofranklinjames@gmail.com', '$2y$10$oefvsQpyW0dBtXpNOWlFjOsiNaeTV8Nj0JskhRZzrJBLiy68Y6jSa', 'Franklin', 'Oliveros', 'Ituralde', 'Visiting Lecturer', NULL, '2024-01-25 14:07:56', '2024-01-28 08:19:11'),
 (2, '2021-00151', 2, 'admin@gmail.com', '$2y$10$SnuD42TMnd7XB1t/UULH0eWd3d9r9KodyflG5Lp.MslLebbY9Z0V6', 'Admin', 'Main', '', 'regular ', 'admin-profile.png', '2024-01-28 04:49:03', '2025-01-09 13:11:49'),
 (3, '2021-000009', 1, 'email@email.com', '$2y$10$g37cVIDEYRsCfYmIPMwybOLTd/JFqCR6Y48T2MQ4muzx/WCnpYI6u', 'Alco', 'Plus', 'Iso', 'Regular Lecturer', NULL, '2024-01-30 01:29:48', '2024-11-20 06:38:26'),
-(12, '2021-000023', 1, 'saludoraf@gmail.com', '$2y$10$SnuD42TMnd7XB1t/UULH0eWd3d9r9KodyflG5Lp.MslLebbY9Z0V6', 'Raf', 'Saludo', '', 'Visiting Lecturer', NULL, '2024-11-21 22:30:34', '2025-01-09 14:44:41'),
-(13, '2021-00089', 1, 'sonarshironji@gmail.com', '$2y$10$lReSRFWPxTJFHwrM1p3PWOXW5/izol3xtvzdsLBX0nlZ85lYiql4e', 'Sairyl', 'Manabat', '', 'Visiting Lecturer', NULL, '2024-11-24 19:49:16', '2024-11-24 19:49:16');
+(12, '2021-000023', 1, 'saludoraf@gmail.com', '$2y$10$x1CiJCUkNZ1WttyHuwSbH.2ZZmT1QHpFx60id3H5Lkuy8gRXlYEcm', 'Raf', 'Saludo', '', 'Visiting Lecturer', NULL, '2024-11-21 22:30:34', '2025-02-10 20:26:05'),
+(13, '2021-00089', 1, 'sonarshironji@gmail.com', '$2y$10$lReSRFWPxTJFHwrM1p3PWOXW5/izol3xtvzdsLBX0nlZ85lYiql4e', 'Sairyl', 'Manabat', '', 'Visiting Lecturer', NULL, '2024-11-24 19:49:16', '2024-11-24 19:49:16'),
+(15, '2021-1111', 1, 'bbrightwin12xx@wmsu.edu.ph', '$2y$10$kMl.i.Yy0A1NKfRyB771ve2fZ7.8Ii23F69f6gdy0L7xqf4/Nmui2', 'First', 'Last', 'Middle', 'Regular Lecturer', NULL, '2025-02-11 03:41:57', '2025-02-11 03:41:57');
 
 -- --------------------------------------------------------
 
@@ -450,10 +464,9 @@ ALTER TABLE `curr_table`
   ADD PRIMARY KEY (`curr_id`),
   ADD KEY `college_course_id` (`college_course_id`),
   ADD KEY `time_id` (`time_id`),
-  ADD KEY `year_lvl_id` (`year_level_id`),
+  ADD KEY `year_level_id` (`year_level_id`),
   ADD KEY `semester_id` (`semester_id`),
-  ADD KEY `curr_year_id` (`curr_year_id`),
-  ADD KEY `sub_code` (`sub_code`);
+  ADD KEY `curr_year_id` (`curr_year_id`);
 
 --
 -- Indexes for table `curr_time`
@@ -472,15 +485,16 @@ ALTER TABLE `curr_year`
 --
 ALTER TABLE `faculty_schedule`
   ADD PRIMARY KEY (`sched_id`),
-  ADD KEY `semester` (`semester`);
+  ADD KEY `semester` (`semester`),
+  ADD KEY `faculty_schedule_ibfk_3` (`profiling_id`);
 
 --
 -- Indexes for table `faculty_subjects`
 --
 ALTER TABLE `faculty_subjects`
   ADD PRIMARY KEY (`faculty_sub_id`),
-  ADD KEY `sub_code` (`sub_code`),
-  ADD KEY `sched_id` (`sched_id`);
+  ADD KEY `sched_id` (`sched_id`),
+  ADD KEY `curr_id` (`curr_id`);
 
 --
 -- Indexes for table `grades`
@@ -501,8 +515,7 @@ ALTER TABLE `notifications`
 -- Indexes for table `profiling_table`
 --
 ALTER TABLE `profiling_table`
-  ADD PRIMARY KEY (`profiling_id`),
-  ADD KEY `department_id` (`department_id`);
+  ADD PRIMARY KEY (`profiling_id`);
 
 --
 -- Indexes for table `quiz`
@@ -527,8 +540,7 @@ ALTER TABLE `student`
 -- Indexes for table `user`
 --
 ALTER TABLE `user`
-  ADD PRIMARY KEY (`user_id`),
-  ADD KEY `user_role` (`user_role`);
+  ADD PRIMARY KEY (`user_id`);
 
 --
 -- Indexes for table `year_lvl`
@@ -556,13 +568,13 @@ ALTER TABLE `college_department_table`
 -- AUTO_INCREMENT for table `course_curr`
 --
 ALTER TABLE `course_curr`
-  MODIFY `college_course_id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=18;
+  MODIFY `college_course_id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=23;
 
 --
 -- AUTO_INCREMENT for table `curr_table`
 --
 ALTER TABLE `curr_table`
-  MODIFY `curr_id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=46;
+  MODIFY `curr_id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=126;
 
 --
 -- AUTO_INCREMENT for table `curr_time`
@@ -574,31 +586,31 @@ ALTER TABLE `curr_time`
 -- AUTO_INCREMENT for table `curr_year`
 --
 ALTER TABLE `curr_year`
-  MODIFY `curr_year_id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=12;
+  MODIFY `curr_year_id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=29;
 
 --
 -- AUTO_INCREMENT for table `faculty_schedule`
 --
 ALTER TABLE `faculty_schedule`
-  MODIFY `sched_id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=14;
+  MODIFY `sched_id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=17;
 
 --
 -- AUTO_INCREMENT for table `faculty_subjects`
 --
 ALTER TABLE `faculty_subjects`
-  MODIFY `faculty_sub_id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=10;
+  MODIFY `faculty_sub_id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=19;
 
 --
 -- AUTO_INCREMENT for table `notifications`
 --
 ALTER TABLE `notifications`
-  MODIFY `notif_id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=17;
+  MODIFY `notif_id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=19;
 
 --
 -- AUTO_INCREMENT for table `profiling_table`
 --
 ALTER TABLE `profiling_table`
-  MODIFY `profiling_id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=32;
+  MODIFY `profiling_id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=38;
 
 --
 -- AUTO_INCREMENT for table `quiz`
@@ -616,7 +628,7 @@ ALTER TABLE `semester`
 -- AUTO_INCREMENT for table `user`
 --
 ALTER TABLE `user`
-  MODIFY `user_id` int(100) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=14;
+  MODIFY `user_id` int(100) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=16;
 
 --
 -- AUTO_INCREMENT for table `year_lvl`
@@ -633,7 +645,7 @@ ALTER TABLE `year_lvl`
 --
 ALTER TABLE `curr_table`
   ADD CONSTRAINT `college_course_id` FOREIGN KEY (`college_course_id`) REFERENCES `course_curr` (`college_course_id`),
-  ADD CONSTRAINT `curr_year_id` FOREIGN KEY (`curr_year_id`) REFERENCES `curr_year` (`curr_year_id`),
+  ADD CONSTRAINT `curr_year_id` FOREIGN KEY (`curr_year_id`) REFERENCES `curr_year` (`curr_year_id`) ON DELETE CASCADE,
   ADD CONSTRAINT `semester_id` FOREIGN KEY (`semester_id`) REFERENCES `semester` (`semester_id`),
   ADD CONSTRAINT `time_id` FOREIGN KEY (`time_id`) REFERENCES `curr_time` (`time_id`),
   ADD CONSTRAINT `year_lvl_id` FOREIGN KEY (`year_level_id`) REFERENCES `year_lvl` (`year_level_id`);
@@ -643,14 +655,14 @@ ALTER TABLE `curr_table`
 --
 ALTER TABLE `faculty_schedule`
   ADD CONSTRAINT `faculty_schedule_ibfk_2` FOREIGN KEY (`semester`) REFERENCES `semester` (`semester_id`),
-  ADD CONSTRAINT `faculty_schedule_ibfk_3` FOREIGN KEY (`profiling_id`) REFERENCES `profiling_table` (`profiling_id`);
+  ADD CONSTRAINT `faculty_schedule_ibfk_3` FOREIGN KEY (`profiling_id`) REFERENCES `profiling_table` (`profiling_id`) ON DELETE CASCADE;
 
 --
 -- Constraints for table `faculty_subjects`
 --
 ALTER TABLE `faculty_subjects`
-  ADD CONSTRAINT `faculty_subjects_ibfk_1` FOREIGN KEY (`sub_code`) REFERENCES `curr_table` (`sub_code`),
-  ADD CONSTRAINT `faculty_subjects_ibfk_2` FOREIGN KEY (`sched_id`) REFERENCES `faculty_schedule` (`sched_id`);
+  ADD CONSTRAINT `faculty_subjects_ibfk_2` FOREIGN KEY (`sched_id`) REFERENCES `faculty_schedule` (`sched_id`),
+  ADD CONSTRAINT `faculty_subjects_ibfk_3` FOREIGN KEY (`curr_id`) REFERENCES `curr_table` (`curr_id`) ON DELETE CASCADE;
 
 --
 -- Constraints for table `grades`

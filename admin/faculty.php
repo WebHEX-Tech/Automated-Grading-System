@@ -21,7 +21,7 @@ $schedArray2 = $sched->show2($_GET['department_id']);
 <html lang="en">
 <?php
 $title = 'Admin | Faculty';
-$userfaculty_page = 'active';
+$faculty_page = 'active';
 include '../includes/admin_head.php';
 ?>
 

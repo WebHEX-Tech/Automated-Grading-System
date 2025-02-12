@@ -39,14 +39,16 @@ include '../includes/admin_head.php';
     <main>
       <div class="header">
         <?php
-        require_once('../includes/admin_header.php')
-          ?>
+        require_once('../includes/admin_header.php');
+        ?>
       </div>
 
       <div class="flex-md-nowrap p-1 title_page shadow" style="background-color: whitesmoke;">
         <div class="d-flex align-items-center">
           <div class="container-fluid d-flex justify-content-center">
-            <span class="fs-2 fw-bold h1 m-0 brand-color">CURRICULUM</span>
+            <span class='fs-2 fw-bold h1 m-0 brand-color'>
+              Curriculum
+            </span>
           </div>
         </div>
       </div>
@@ -130,7 +132,8 @@ include '../includes/admin_head.php';
               <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
             </div>
             <div class="modal-body">
-              Are you sure you want to delete this Curriculum?
+              <h6>Are you sure you want to delete this Curriculum?</h6>
+              <span class="text-danger">(This action will also delete existing data in the curriculum)</span>
             </div>
             <div class="modal-footer">
               <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancel</button>
@@ -167,8 +170,7 @@ include '../includes/admin_head.php';
           });
       }
     }
-  </script>
-  <script>
+    
     document.addEventListener('DOMContentLoaded', () => {
       const dropdownContainers = document.querySelectorAll('.dropdown-container');
 

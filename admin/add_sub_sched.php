@@ -30,7 +30,7 @@ if (!isset($_SESSION['user_role']) || (isset($_SESSION['user_role']) && $_SESSIO
 }
 
 if (isset($_POST['add_fac_sub'])) {
-    $sub_code = htmlentities($_POST['sub_code']);
+    $curr_id = htmlentities($_POST['curr_id']);
     $yr_section = htmlentities($_POST['yr_section']);
     $no_students = htmlentities($_POST['no_students']);
     $lec_check = isset($_POST['lec_check']) ? 1 : 0;
@@ -54,7 +54,7 @@ if (isset($_POST['add_fac_sub'])) {
     $lab_time_end_12hr = $lab_time_end ? convertTo12hrFormat($lab_time_end) : NULL;
 
     $fac_sub->sched_id = $_GET['sched_id'];
-    $fac_sub->sub_code = $sub_code;
+    $fac_sub->curr_id = $curr_id;
     $fac_sub->yr_sec = $yr_section;
     $fac_sub->no_students = $no_students;
     $fac_sub->lec_days = $lec_days;
@@ -81,7 +81,7 @@ if (isset($_POST['add_fac_sub'])) {
 <html lang="en">
 <?php
 $title = 'Add Subject';
-$profiling_page = 'active';
+$faculty_page = 'active';
 include '../includes/admin_head.php';
 ?>
 
@@ -125,15 +125,15 @@ include '../includes/admin_head.php';
                     <div class="row row-cols-1 row-cols-md-2">
                         <div class="col">
                             <div class="mb-3">
-                                <label for="sub_code" class="form-label">Select Subject</label>
-                                <input type="hidden" id="sub_code" name="sub_code" value="">
-                                <select class="form-select select2" id="sub_code" name="sub_code"
+                                <label for="curr_id" class="form-label">Select Subject</label>
+                                <input type="hidden" id="curr_id" name="curr_id" value="">
+                                <select class="form-select select2" id="curr_id" name="curr_id"
                                     onchange="populateDetails(this)" required>
                                     <option value="" disabled selected>Select Subject</option>
                                     <?php
                                     foreach ($subjects as $item) {
                                         $sub_id = $item['sub_code'] . ' - ' . $item['sub_name'];
-                                        echo "<option value='" . htmlspecialchars($item['sub_code']) . "' 
+                                        echo "<option value='" . htmlspecialchars($item['curr_id']) . "' 
                                                 data-subname='" . htmlspecialchars($item['sub_name']) . "' 
                                                 data-prereq='" . htmlspecialchars($item['sub_prerequisite']) . "' 
                                                 data-lec='" . htmlspecialchars($item['lec']) . "' 
@@ -179,7 +179,7 @@ include '../includes/admin_head.php';
                                 </div>
                                 <div class="mb-3">
                                     <label for="lec_room" class="form-label">Lecture Room</label>
-                                    <input type="text" class="form-control" id="lec_room" name="lec_room" >
+                                    <input type="text" class="form-control" id="lec_room" placeholder="eg. CLA 2" name="lec_room" >
                                 </div>
 
                                 <div class="mb-3">
@@ -228,7 +228,7 @@ include '../includes/admin_head.php';
                                 </div>
                                 <div class="mb-3">
                                     <label for="lab_room" class="form-label">Laboratory Room</label>
-                                    <input type="text" class="form-control" id="lab_room" name="lab_room" >
+                                    <input type="text" class="form-control" id="lab_room" placeholder="eg. CLA 21" name="lab_room" >
                                 </div>
                                 <div class="mb-3">
                                     <label for="lec_schedule" class="form-label">Laboratory Schedule</label>

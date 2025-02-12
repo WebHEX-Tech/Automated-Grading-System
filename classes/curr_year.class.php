@@ -110,7 +110,7 @@ class Curr_year {
   function is_year_exist($year_start) {
     $sql = "SELECT * FROM curr_year WHERE year_start = :year_start;";
     $query = $this->db->connect()->prepare($sql);
-    $query->bindParam(':year_start', $this->year_start);
+    $query->bindParam(':year_start', $year_start);
     if ($query->execute()) {
       if ($query->rowCount() > 0) {
         return true;
@@ -118,7 +118,15 @@ class Curr_year {
     }
     return false;
   }
-
+  function fetchByYearStart($year_start) {
+    $sql = "SELECT * FROM curr_year WHERE year_start = :year_start;";
+    $query = $this->db->connect()->prepare($sql);
+    $query->bindParam(':year_start', $year_start);
+    if ($query->execute()) {
+      $data = $query->fetch();
+    }
+    return $data;
+  }
   function getYearRangeById($curr_year_id) {
     $sql = "SELECT year_start, year_end FROM curr_year WHERE curr_year_id = :curr_year_id;";
     $query = $this->db->connect()->prepare($sql);

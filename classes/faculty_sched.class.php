@@ -109,8 +109,9 @@ class Faculty_Sched
 
     function fetch($sched_id)
     {
-        $sql = "SELECT fs.*, s.semester as semester_name FROM faculty_schedule fs
+        $sql = "SELECT fs.*, CONCAT(p.l_name, ', ', p.f_name, ' ', p.m_name) AS fullName, s.semester as semester_name FROM faculty_schedule fs
                 LEFT JOIN semester s ON fs.semester = s.semester_id
+                INNER JOIN profiling_table p ON fs.profiling_id = p.profiling_id
                 WHERE sched_id = :sched_id;";
 
         $query = $this->db->connect()->prepare($sql);

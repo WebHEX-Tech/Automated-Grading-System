@@ -26,6 +26,7 @@
 
 .brand-color {
   color: var(--primary-color) !important;
+  padding: 0.5em 0 !important;
 }
 
 .brand-border-color {

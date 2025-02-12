@@ -23,7 +23,7 @@ if (isset($_POST['add_sched'])) {
     $profiling_id = htmlentities($_POST['profiling_id']);
     $release_time = htmlentities($_POST['release_time']);
     $hrs_per_week = htmlentities($_POST['hrs_per_week']);
-    $school_yr = htmlentities($_POST['school_yr']. ' - ' .$_POST['school_yr2']);
+    $school_yr = htmlentities($_POST['school_yr'] . ' - ' . $_POST['school_yr2']);
     $semester = htmlentities($_POST['semester']);
 
     // Set the values for the sched object
@@ -182,9 +182,11 @@ include '../includes/admin_head.php';
                             <div class="mb-3">
                                 <label for="school_yr" class="form-label">School Year</label>
                                 <div class="input-group mb-3">
-                                    <input type="text" class="form-control" id="school_yr" name="school_yr" placeholder="YYYY" required>
+                                    <input type="text" class="form-control" id="school_yr" name="school_yr"
+                                        placeholder="YYYY" required>
                                     <span class="input-group-text">-</span>
-                                    <input type="text" class="form-control" id="school_yr2" name="school_yr2" placeholder="YYYY" required>
+                                    <input type="text" class="form-control" id="school_yr2" name="school_yr2"
+                                        placeholder="YYYY" required>
                                 </div>
                             </div>
                             <div class="mb-3">
@@ -221,6 +223,15 @@ include '../includes/admin_head.php';
                 placeholder: "Type to search for an employee",
                 allowClear: true,
                 width: '100%',
+            });
+        });
+
+        $(document).ready(function () {
+            $('#school_yr').on('input', function () {
+                var startYear = parseInt($(this).val());
+                if (!isNaN(startYear)) {
+                    $('#school_yr2').attr('value', startYear + 1);
+                }
             });
         });
 

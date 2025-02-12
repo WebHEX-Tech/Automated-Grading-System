@@ -342,16 +342,16 @@ include '../includes/admin_head.php';
                   } else if (isset($profiling->designation) && $profiling->designation == 'Professor') {
                     echo 'selected';
                   } ?>>Professor</option>
-                  <option value="Assistant professor" <?php if (isset($_POST['designation']) && $_POST['designation'] == 'Assistant professor') {
+                  <option value="Assistant Professor" <?php if (isset($_POST['designation']) && $_POST['designation'] == 'Assistant Professor') {
                     echo 'selected';
-                  } else if (isset($profiling->designation) && $profiling->designation == 'Assistant professor') {
+                  } else if (isset($profiling->designation) && $profiling->designation == 'Assistant Professor') {
                     echo 'selected';
-                  } ?>>Assistant professor</option>
-                  <option value="Academic staff" <?php if (isset($_POST['designation']) && $_POST['designation'] == 'Academic staff') {
+                  } ?>>Assistant Professor</option>
+                  <option value="Academic Staff" <?php if (isset($_POST['designation']) && $_POST['designation'] == 'Academic Staff') {
                     echo 'selected';
-                  } else if (isset($profiling->designation) && $profiling->designation == 'Academic staff') {
+                  } else if (isset($profiling->designation) && $profiling->designation == 'Academic Staff') {
                     echo 'selected';
-                  } ?>>Academic staff</option>
+                  } ?>>Academic Staff</option>
                   <option value="Associate Professor" <?php if (isset($_POST['designation']) && $_POST['designation'] == 'Associate Professor') {
                     echo 'selected';
                   } else if (isset($profiling->designation) && $profiling->designation == 'Associate Professor') {
