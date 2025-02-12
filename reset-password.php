@@ -32,7 +32,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['reset'])) {
         $email = $userInfo['email'];
         $emp_id = $userInfo['emp_id'];
 
-        $message = `The account <span style="color:blue;">$email($emp_id)</span> has successfully changed its password.`;
+        $message = "The account <span style='color:blue;'>$email($emp_id)</span> has successfully changed its password.";
 
         $notification = new Notification();
         $notification->user_role = 2;

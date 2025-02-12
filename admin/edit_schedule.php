@@ -181,8 +181,7 @@ include '../includes/admin_head.php';
                                 ?>
                                 <div class="input-group mb-3">
                                     <input type="text" class="form-control" id="school_yr" name="school_yr"
-                                        placeholder="YYYY"
-                                        value="<?= htmlspecialchars($school_yr1) ?>" required>
+                                        placeholder="YYYY" value="<?= htmlspecialchars($school_yr1) ?>" required>
                                     <span class="input-group-text">-</span>
                                     <input type="text" class="form-control" id="school_yr2" name="school_yr2"
                                         placeholder="YYYY" value="<?= htmlspecialchars($school_yr2) ?>" required>
@@ -217,6 +216,15 @@ include '../includes/admin_head.php';
 
     <script src="../js/employee.js"></script>
     <script>
+        $(document).ready(function () {
+            $('#school_yr').on('input', function () {
+                var startYear = parseInt($(this).val());
+                if (!isNaN(startYear)) {
+                    $('#school_yr2').attr('value', startYear + 1);
+                }
+            });
+        });
+        
         <?php if ($success): ?>
             setTimeout(function () {
                 window.location.href = './faculty.php?department_id=<?= $_GET['department_id'] ?>';

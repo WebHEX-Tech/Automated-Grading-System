@@ -21,7 +21,7 @@ document.addEventListener('DOMContentLoaded', function() {
   });
 
   // Event listener for input[type=number]
-  document.querySelector("input[type=number]").addEventListener('input', function(e) {
-    console.log(new Date(e.target.valueAsNumber, 0, 1));
-  });
+  // document.querySelector("input[type=number]").addEventListener('input', function(e) {
+  //   console.log(new Date(e.target.valueAsNumber, 0, 1));
+  // });
 });

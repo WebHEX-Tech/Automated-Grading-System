@@ -1,5 +1,9 @@
 <?php
 require_once '../classes/profiling.class.php';
+header('Content-Type: application/json');
+error_reporting(E_ALL);
+ini_set('display_errors', 1);
+
 
 if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     $raw_input = file_get_contents('php://input');

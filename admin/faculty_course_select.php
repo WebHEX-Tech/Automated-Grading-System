@@ -18,7 +18,7 @@ $departments = $is_search ? $college->searchByDeptName($keyword) : $college->sho
 <html lang="en">
 <?php
 $title = 'Admin | Faculty';
-$userfaculty_page = 'active';
+$faculty_page = 'active';
 include '../includes/admin_head.php';
 ?>
 

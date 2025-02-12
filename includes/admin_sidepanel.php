@@ -15,22 +15,36 @@
     </li>
 
     <li class="nav-item">
+      <a href="./faculty_course_select.php"
+        class="nav-link link-dark d-flex align-items-center mb-2 <?= $faculty_page ?>">
+        <i class='bx bx-calendar fs-4'></i>
+        <span class="fs-6 ms-2 text-start">Faculty & Scheduling</span>
+      </a>
+    </li>
+
+    <li class="nav-item">
+      <a href="./grade" class="nav-link link-dark d-flex align-items-center mb-2 <?= $grade_page ?>">
+        <i class='bx bxs-graduation fs-4'></i>
+        <span class="fs-6 ms-2">Grade</span>
+      </a>
+    </li>
+
+    <li class="nav-item">
       <button class="btn btn-toggle link-dark d-flex align-items-center mb-2 nav-link <?= $userfaculty_page ?>"
         data-bs-toggle="collapse" data-bs-target="#userfaculty_toggle"
-        aria-expanded="<?= (strpos($_SERVER['REQUEST_URI'], '/manage_acc.php') !== false || strpos($_SERVER['REQUEST_URI'], '/profiling.php') !== false || strpos($_SERVER['REQUEST_URI'], '/faculty') !== false || strpos($_SERVER['REQUEST_URI'], '/faculty_course_select.php') !== false) ? 'true' : 'false' ?>">
+        aria-expanded="<?= (strpos($_SERVER['REQUEST_URI'], '/manage_acc.php') !== false || strpos($_SERVER['REQUEST_URI'], '/profiling.php') !== false) ? 'true' : 'false' ?>">
         <i class='bx bxs-group fs-4'></i>
-        <span class="fs-6 ms-2 text-start">Profiling & Faculty</span>
+        <span class="fs-6 ms-2 text-start">Users & Profiling</span>
         <i class='bx bx-chevron-down'></i>
       </button>
 
       <?php
       // Determine if the dropdown should be open
-      $show_collapse = strpos($_SERVER['REQUEST_URI'], '/manage_acc.php') !== false || strpos($_SERVER['REQUEST_URI'], '/profiling.php') !== false || strpos($_SERVER['REQUEST_URI'], '/faculty') !== false || strpos($_SERVER['REQUEST_URI'], '/faculty_course_select.php') !== false;
+      $show_collapse = strpos($_SERVER['REQUEST_URI'], '/manage_acc.php') !== false || strpos($_SERVER['REQUEST_URI'], '/profiling.php') !== false;
 
       // Determine active states
       $active_acc = strpos($_SERVER['REQUEST_URI'], '/manage_acc.php') !== false;
       $active_profiling = strpos($_SERVER['REQUEST_URI'], '/profiling.php') !== false;
-      $active_faculty = strpos($_SERVER['REQUEST_URI'], '/faculty') !== false || strpos($_SERVER['REQUEST_URI'], '/faculty_course_select.php') !== false;
       ?>
 
       <div class="collapse <?= $show_collapse ? 'show' : '' ?>" id="userfaculty_toggle">
@@ -47,13 +61,6 @@
               class="link-dark nav-link d-flex align-items-center <?= $active_profiling ? 'active' : '' ?>">
               <i class='bx bx-chevron-right'></i>
               Profiling
-            </a>
-          </li>
-          <li>
-            <a href="./faculty_course_select.php"
-              class="link-dark nav-link d-flex align-items-center <?= $active_faculty ? 'active' : '' ?>">
-              <i class='bx bx-chevron-right'></i>
-              Faculty & Scheduling
             </a>
           </li>
         </ul>
@@ -207,13 +214,6 @@
         </div>
       </div>
     </li> -->
-
-    <li class="nav-item">
-      <a href="./grade" class="nav-link link-dark d-flex align-items-center mb-2  <?= $grade_page ?>">
-        <i class='bx bxs-graduation fs-4'></i>
-        <span class="fs-6 ms-2">Grade</span>
-      </a>
-    </li>
 
     <li class="nav-item">
       <button class="btn btn-toggle link-dark d-flex align-items-center mb-2 nav-link <?= $department_page ?>"

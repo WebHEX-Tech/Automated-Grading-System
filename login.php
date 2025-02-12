@@ -34,7 +34,7 @@ if (isset($_POST['login'])) {
       header('location: ./admin/index.php');
     }
   } else {
-    $error = 'Invalid email/password';
+    $error = 'Invalid ID/password';
   }
 }
 

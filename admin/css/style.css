@@ -241,13 +241,13 @@ table.dataTable tbody td {
   z-index: 0;
 }
 
-.curriculum .dropdown-container {
+.curriculum .dropdown-container, .course .dropdown-container{
   position: absolute;
   top: 10px;
   right: 35px;
 }
 
-.curriculum .dropdown-menu {
+.curriculum .dropdown-menu, .course .dropdown-menu{
   display: none;
   position: absolute;
   top: 100%;
@@ -258,19 +258,19 @@ table.dataTable tbody td {
   border-radius: 4px;
 }
 
-.curriculum .bx-dots-vertical-rounded:hover {
+.curriculum .bx-dots-vertical-rounded:hover, .course .bx-dots-vertical-rounded:hover {
   cursor: pointer;
   background-color: #fc7272;
   border-radius: 50%;
 }
 
-.curriculum .dropdown-menu .dropdown-item {
+.curriculum .dropdown-menu .dropdown-item, .course .dropdown-menu .dropdown-item {
   display: block;
   padding: 8px 16px;
   text-decoration: none;
 }
 
-.curriculum .dropdown-menu .dropdown-item:hover {
+.curriculum .dropdown-menu .dropdown-item:hover, .dropdown-menu .dropdown-item:hover {
   background-color: #ee7e7e;
   cursor: pointer;
 }
@@ -279,7 +279,7 @@ table.dataTable tbody td {
   display: block;
 } */
 
-.curriculum .stretched-link {
+.curriculum .stretched-link, .course .stretched-link {
   position: absolute;
   top: 0;
   left: 0;
@@ -288,6 +288,6 @@ table.dataTable tbody td {
   z-index: 1;
 }
 
-.curriculum .bx.bx-dots-vertical-rounded {
+.curriculum .bx.bx-dots-vertical-rounded, .course .bx.bx-dots-vertical-rounded {
   z-index: 2;
 }

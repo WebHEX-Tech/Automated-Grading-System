@@ -31,13 +31,21 @@ if (isset($_GET['sched_id'])) {
 $semesterarray = $semester->show();
 $profile = $profiling->fetchForSched($existingSched['profiling_id']);
 $subs = $fac_subs->showByFaculty($_GET['sched_id']);
+
+$current_year = date('Y');
+
+list($start_year, $end_year) = explode('-', $existingSched['school_yr']);
+$start_year = trim($start_year);
+$end_year = trim($end_year);
+
+$is_current_year = $current_year <= $end_year;
 ?>
 
 <!DOCTYPE html>
 <html lang="en">
 <?php
 $title = 'Admin | Subject Assigned';
-$home_page = 'active';
+$faculty_page = 'active';
 include '../includes/admin_head.php';
 ?>
 
@@ -89,9 +97,11 @@ include '../includes/admin_head.php';
                         <div class="btn-group gap-3">
                         </div>
 
-                        <a href="./add_sub_sched?sched_id=<?= $_GET['sched_id'] ?>&department_id=<?= $_GET['department_id'] ?>"
-                            class="btn btn-outline-secondary btn-add ms-3 brand-bg-color" type="button"><i
-                                class='bx bx-plus-circle'></i> Add Subject</a>
+                        <?php if ($is_current_year): ?>
+                            <a href="./add_sub_sched?sched_id=<?= $_GET['sched_id'] ?>&department_id=<?= $_GET['department_id'] ?>"
+                                class="btn btn-outline-secondary btn-add ms-3 brand-bg-color" type="button"><i
+                                    class='bx bx-plus-circle'></i> Add Subject</a>
+                        <?php endif; ?>
                     </div>
 
                     <hr>
@@ -108,12 +118,14 @@ include '../includes/admin_head.php';
                                 <th rowspan="2" class="align-middle">Subject Code</th>
                                 <th rowspan="2" class="align-middle">Name</th>
                                 <th rowspan="2" class="align-middle">Prerequisite</th>
-                                <th rowspan="2" class="align-middle">Year/ Section</th>
+                                <th rowspan="2" class="align-middle">Year/Section</th>
                                 <th rowspan="2" class="align-middle"># of Students</th>
                                 <th colspan="2" class="text-center">Room</th>
                                 <th colspan="2" class="text-center">Schedules</th>
                                 <th colspan="3" class="text-center">Units</th>
-                                <th rowspan="2" class="text-center" width="5%">Action</th>
+                                <?php if ($is_current_year): ?>
+                                    <th rowspan="2" class="text-center" width="5%">Action</th>
+                                <?php endif; ?>
                             </tr>
                             <tr>
                                 <th>Lecture</th>
@@ -147,7 +159,9 @@ include '../includes/admin_head.php';
                                 ?>
                                 <tr>
                                     <td><?= $counter ?></td>
-                                    <td><?= $sub['sub_code'] ?></td>
+                                    <td><a
+                                            href="./sub_students?sched_id=<?= $_GET['sched_id'] ?>&department_id=<?= $_GET['department_id'] ?>&faculty_sub_id=<?= $sub['faculty_sub_id'] ?>"><?= $sub['sub_code'] ?></a>
+                                    </td>
                                     <td><?= $sub['sub_name'] ?></td>
                                     <td><?= $sub_pre ?></td>
                                     <td><?= $sub['yr_sec'] ?></td>
@@ -159,15 +173,17 @@ include '../includes/admin_head.php';
                                     <td><?= $lec_units ?></td>
                                     <td><?= $lab_units ?></td>
                                     <td><?= $total_units ?></td>
-                                    <td>
-                                        <a
-                                            href="./edit_schedule?sched_id=<?= $_GET['sched_id'] ?>&department_id=<?= $_GET['department_id'] ?>">
-                                            <i class='bx bx-edit text-success fs-4'></i>
-                                        </a>
-                                        <button class="delete-btn bg-none" data-subject-id="<?= $sub['faculty_sub_id'] ?>">
-                                            <i class='bx bx-trash-alt text-danger fs-4'></i>
-                                        </button>
-                                    </td>
+                                    <?php if ($is_current_year): ?>
+                                        <td>
+                                            <a
+                                                href="./edit_schedule?sched_id=<?= $_GET['sched_id'] ?>&department_id=<?= $_GET['department_id'] ?>">
+                                                <i class='bx bx-edit text-success fs-4'></i>
+                                            </a>
+                                            <button class="delete-btn bg-none" data-subject-id="<?= $sub['faculty_sub_id'] ?>">
+                                                <i class='bx bx-trash-alt text-danger fs-4'></i>
+                                            </button>
+                                        </td>
+                                    <?php endif; ?>
                                 </tr>
                                 <?php
                                 $counter++;

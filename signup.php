@@ -26,6 +26,8 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
 
   if ($user->is_emp_id_exist()) {
     $message = 'Employee ID already exists.';
+  } else if (!preg_match('/^[a-zA-Z0-9._%+-]+@wmsu\.edu\.ph$/', $_POST['email'])) {
+    $message = 'Only @wmsu.edu.ph emails are allowed.';
   } else if ($user->is_email_exist()) {
     $message = 'Email already exists.';
   } else if (strlen($_POST['password']) < 8) {
@@ -69,8 +71,8 @@ include_once './includes/head.php'
         <form action="#" method="post" onSubmit="return validate()">
           <div class="field-box">
             <div class="field">
-              <label for="id">Employee ID</label>
-              <input type="text" id="emp_id" name="emp_id" value="<?php if (isset($_POST['emp_id'])) {
+              <label for="id">Employee ID</label> 
+              <input type="text" id="emp_id" name="emp_id" placeholder="eg. 2019-1111" value="<?php if (isset($_POST['emp_id'])) {
                 echo $_POST['emp_id'];
               } ?>">
               <?php
@@ -95,7 +97,7 @@ include_once './includes/head.php'
 
             <div class="field">
               <label for="email">Email</label>
-              <input type="email" id="email" name="email" value="<?php if (isset($_POST['email'])) {
+              <input type="email" id="email" name="email" placeholder="eg. delacruz@wmsu.edu.ph" value="<?php if (isset($_POST['email'])) {
                 echo $_POST['email'];
               } ?>">
               <?php

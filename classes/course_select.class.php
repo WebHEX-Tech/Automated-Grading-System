@@ -68,7 +68,7 @@ class Course_curr
 
     $query = $this->db->connect()->prepare($sql);
     $keyword = "%$keyword%";
-    $query->bindParam(':degree_level', $degree_lvl,);
+    $query->bindParam(':degree_level', $degree_lvl, );
     $query->bindParam(':keyword', $keyword);
 
     if ($query->execute()) {
@@ -80,19 +80,14 @@ class Course_curr
 
   function getCourseNameById($college_course_id)
   {
-    $sql = "SELECT name, degree_level FROM course_curr WHERE college_course_id = :college_course_id;";
+    $sql = "SELECT * FROM course_curr WHERE college_course_id = :college_course_id;";
     $query = $this->db->connect()->prepare($sql);
     $query->bindParam(':college_course_id', $college_course_id);
-    $courseName = null;
 
     if ($query->execute()) {
-      $result = $query->fetch(PDO::FETCH_ASSOC);
-      if ($result) {
-        $courseName['name'] = $result['name'];
-        $courseName['degree_level'] = $result['degree_level'];
-      }
+      $data = $query->fetch();
     }
-    return $courseName;
+    return $data;
   }
 
   function searchByCourseName($keyword)
@@ -108,6 +103,29 @@ class Course_curr
     }
     return $data;
   }
+
+  public function update()
+  {
+    $sql = "UPDATE course_curr SET name = :name, degree_level = :degree_level WHERE college_course_id = :college_course_id";
+    $query = $this->db->connect()->prepare($sql);
+    $query->bindParam(':name', $this->name);
+    $query->bindParam(':degree_level', $this->degree_level);
+    $query->bindParam(':college_course_id', $this->college_course_id, PDO::PARAM_INT);
+    if ($query->execute()) {
+      return true;
+    } else {
+      return false;
+    }
+  }
+
+  public function delete($college_course_id)
+    {
+        $query = "DELETE FROM course_curr WHERE college_course_id = :college_course_id";
+        $stmt = $this->db->connect()->prepare($query);
+        $stmt->bindParam(':college_course_id', $college_course_id, PDO::PARAM_INT);
+
+        return $stmt->execute();
+    }
 
   // function add() {
   //   $sql = "INSERT INTO curr_year (curr_year_id, year_start, year_end) VALUES
