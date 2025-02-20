@@ -118,7 +118,8 @@ include '../includes/admin_head.php';
           </div>
 
           <button type="button" class="btn btn-secondary" onclick="history.back()">Cancel</button>
-          <button type="submit" class="btn brand-bg-color" name="edit_curr_year">Save</button>
+          <button type="submit" class="btn brand-bg-color" name="edit_curr_year"><i
+          class='bx bxs-save me-2'></i>Save Changes</button>
         </form>
 
       </div>

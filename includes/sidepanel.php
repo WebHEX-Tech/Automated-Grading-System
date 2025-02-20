@@ -12,19 +12,19 @@
       </a>
     </li>
     <li class="nav-item">
-      <a href="#" class="nav-link link-dark d-flex align-items-center mb-2 <?= $student_page ?>">
+      <a href="./students" class="nav-link link-dark d-flex align-items-center mb-2 <?= $student_page ?>">
         <i class='bx bx-user fs-3'></i>
         <span class="fs-6 ms-2">Students</span>
       </a>
     </li>
     <li class="nav-item">
-      <a href="#" class="nav-link link-dark d-flex align-items-center mb-2  <?= $grade_page ?>">
+      <a href="./grade_posted-list" class="nav-link link-dark d-flex align-items-center mb-2  <?= $grade_page ?>">
         <i class='bx bx-clipboard fs-3'></i>
         <span class="fs-6 ms-2">Grade Posted</span>          
       </a>
     </li>
     <li class="nav-item">
-      <a href="#" class="nav-link link-dark d-flex align-items-center mb-2  <?= $sub_setting_page ?>">
+      <a href="./subject_setting" class="nav-link link-dark d-flex align-items-center mb-2  <?= $sub_setting_page ?>">
         <i class='bx bx-cog fs-3'></i>
         <span class="fs-6 ms-2">Subject Settings</span>          
       </a>

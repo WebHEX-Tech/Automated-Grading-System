@@ -281,6 +281,32 @@ include '../includes/admin_head.php';
   <script src="./js/faculty_table.js"></script>
   <script>
     document.addEventListener('DOMContentLoaded', function () {
+      // Function to save the active tab to localStorage
+      function saveActiveTab(tabId) {
+        localStorage.setItem('activeTab', tabId);
+      }
+
+      // Function to restore the active tab from localStorage
+      function restoreActiveTab() {
+        const activeTabId = localStorage.getItem('activeTab');
+        if (activeTabId) {
+          const tabTrigger = new bootstrap.Tab(document.querySelector(`#${activeTabId}`));
+          tabTrigger.show();
+        }
+      }
+
+      // Attach event listeners to tabs
+      const tabButtons = document.querySelectorAll('[data-bs-toggle="tab"]');
+      tabButtons.forEach(button => {
+        button.addEventListener('click', function () {
+          const tabId = this.getAttribute('id'); // Get the ID of the clicked tab
+          saveActiveTab(tabId); // Save the active tab ID
+        });
+      });
+
+      // Restore the active tab on page load
+      restoreActiveTab();
+
       const deleteButtons = document.querySelectorAll('.delete-btn');
       const deleteModal = new bootstrap.Modal(document.getElementById('deleteConfirmationModal'));
       let currentSchedId = null;

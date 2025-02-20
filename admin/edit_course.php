@@ -114,7 +114,8 @@ include '../includes/admin_head.php';
                     </div>
 
                     <button type="button" onclick="history.back()" class="btn btn-secondary">Cancel</button>
-                    <button type="submit" class="btn brand-bg-color" name="edit_program">Update</button>
+                    <button type="submit" class="btn brand-bg-color" name="edit_program"><i
+                    class='bx bxs-save me-2'></i>Save Changes</button>
                 </form>
             </div>
         </main>

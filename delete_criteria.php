@@ -1,49 +1,31 @@
 <?php
-session_start();
+require_once './classes/component.class.php';
 
-// Check if the user is logged in and has the appropriate role
-if (!isset($_SESSION['user_role']) || $_SESSION['user_role'] != 1) {
-    header('location: ./login.php');
-    exit();
-}
+if ($_SERVER['REQUEST_METHOD'] === 'POST') {
+    $raw_input = file_get_contents('php://input');
+    $input = json_decode($raw_input, true);
 
-// Check if criteria_id is provided in the URL
-if (!isset($_GET['criteria_id'])) {
-    header('location: ./subject_setting.php'); // Redirect if criteria_id is not provided
-    exit();
-}
+    $component_id = $input['component_id'] ?? null;
 
-// Retrieve the criteria_id from the URL
-$criteria_id = $_GET['criteria_id'];
+    if ($component_id === null) {
+        error_log("Component ID is null in backend.");
+        echo json_encode(['success' => false, 'message' => 'Invalid request. Component ID missing.']);
+        exit;
+    }
+    if ($component_id) {
+        $component = new SubjectComponents();
+        $result = $component->delete($component_id);
 
-// Include database connection
-include_once("./classes/database.php");
-
-// Create an instance of the Database class
-$database = new Database();
-// Establish the database connection
-$connection = $database->connect();
-
-// Check if the connection is successful
-if ($connection) {
-    try {
-        // Prepare the SQL statement to delete the criteria
-        $stmt = $connection->prepare("DELETE FROM subject_setting WHERE criteria_id = :criteria_id");
-
-        // Bind parameter
-        $stmt->bindParam(':criteria_id', $criteria_id);
-
-        // Execute the statement
-        $stmt->execute();
-
-        // Redirect to subject_setting.php after successful deletion
-        header('location: ./subject_setting.php');
-        exit();
-    } catch (PDOException $e) {
-        // Handle database error
-        echo "<p>Error: " . $e->getMessage() . "</p>";
+        if ($result) {
+            echo json_encode(['success' => true, 'message' => '']);
+        } else {
+            echo json_encode(['success' => false, 'message' => 'Failed to delete component.']);
+        }
+    } else {
+        echo json_encode(['success' => false, 'message' => "Invalid request. Component ID: $component_id"]);
     }
 } else {
-    echo "<p>Failed to connect to the database.</p>";
+    echo json_encode(['success' => false, 'message' => 'Invalid HTTP method.']);
 }
+
 ?>

@@ -8,13 +8,16 @@ if (!isset($_SESSION['user_role']) || $_SESSION['user_role'] != 2) {
 }
 
 require_once '../tools/functions.php';
-require_once '../classes/sub_students.class.php';
+require_once '../classes/students.class.php';
+require_once '../classes/grades.class.php';
 require_once '../classes/faculty_subs.class.php';
 
 $fac_subs = new Faculty_Subjects();
-$student = new Sub_Students();
+$student = new Students();
+$grades = new Grades();
 
 $subject = $fac_subs->getProf($_GET['faculty_sub_id']);
+$existingStudents = $student->show();
 
 $success = false;
 $errors = '';
@@ -28,32 +31,74 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['add_student'])) {
     $lastname = trim($_POST['lastname']);
     $email = trim($_POST['email']);
     $year_section = trim($_POST['year_section']);
+    $selectedStudentId = trim($_POST['existing_student_id'] ?? '');
 
     // Validate inputs
-    if (empty($student_id)) {
+    if (empty($selectedStudentId) && empty($student_id)) {
         $errors = 'Student ID is required.';
-    } elseif (empty($firstname)) {
+    } elseif (empty($firstname) && empty($selectedStudentId)) {
         $errors = 'First name is required.';
-    } elseif (empty($lastname)) {
+    } elseif (empty($lastname) && empty($selectedStudentId)) {
         $errors = 'Last name is required.';
-    } else if (!preg_match('/^[a-zA-Z0-9._%+-]+@wmsu\.edu\.ph$/', $email)) {
+    } elseif (!empty($email) && !preg_match('/^[a-zA-Z0-9._%+-]+@wmsu\.edu\.ph$/', $email)) {
         $errors = 'Only @wmsu.edu.ph emails are allowed.';
-    } elseif (empty($year_section)) {
+    } elseif (empty($year_section) && empty($selectedStudentId)) {
         $errors = 'Year and section are required.';
     } else {
-        $student->faculty_sub_id = htmlentities($_GET['faculty_sub_id']);
-        $student->student_id = htmlentities($student_id);
-        $student->student_firstname = ucwords(strtolower(htmlentities($firstname)));
-        $student->student_middlename = !empty($middlename) ? ucwords(strtolower(htmlentities($middlename))) : '';
-        $student->student_lastname = ucwords(strtolower(htmlentities($lastname)));
-        $student->email = htmlentities($email);
-        $student->year_section = htmlentities($year_section);
+        if (!empty($selectedStudentId)) {
+            // Use selected student from dropdown
+            $existingStudentBySub = $grades->getStudentByIdAndSub($selectedStudentId, $_GET['faculty_sub_id']);
 
-        if ($student->add()) {
-            $success = true;
-            $message = 'Student successfully added.';
+            if ($existingStudentBySub) {
+                $errors = 'Selected student already exists in ' . $subject['sub_code'] . '.';
+            } else {
+                // Add to grades table
+                $grades->student_data_id = $selectedStudentId;
+                $grades->faculty_sub_id = htmlentities($_GET['faculty_sub_id']);
+
+                if ($grades->add()) {
+                    $success = true;
+                    $message = 'Student successfully added.';
+                } else {
+                    $errors = 'Failed to add the student.';
+                }
+            }
         } else {
-            $errors = 'Failed to add the student. Please try again.';
+            $existingStudent = $student->getStudentById($student_id);
+
+            if ($existingStudent) {
+                $errors = 'Student ID already exists.';
+            } else {
+                // Add new student
+                $student->faculty_sub_id = htmlentities($_GET['faculty_sub_id']);
+                $student->student_id = htmlentities($student_id);
+                $student->student_firstname = ucwords(strtolower(htmlentities($firstname)));
+                $student->student_middlename = !empty($middlename) ? ucwords(strtolower(htmlentities($middlename))) : '';
+                $student->student_lastname = ucwords(strtolower(htmlentities($lastname)));
+                $student->email = htmlentities($email);
+                $student->year_section = htmlentities($year_section);
+                $student->suffix = htmlentities($_POST['suffix'] ?? null);
+
+                if ($student->add()) {
+                    $newStudent = $student->getStudentById($student_id);
+
+                    if ($newStudent) {
+                        $grades->student_data_id = $newStudent['student_data_id'];
+                        $grades->faculty_sub_id = htmlentities($_GET['faculty_sub_id']);
+
+                        if ($grades->add()) {
+                            $success = true;
+                            $message = 'New student successfully added.';
+                        } else {
+                            $errors = 'Failed to add the new student to grades.';
+                        }
+                    } else {
+                        $errors = 'Failed to retrieve the new student data.';
+                    }
+                } else {
+                    $errors = 'Failed to add the new student.';
+                }
+            }
         }
     }
 }
@@ -63,7 +108,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['add_student'])) {
 <html lang="en">
 <?php
 $title = 'Admin | Add Student';
-$curriculum_page = 'active';
+$faculty_page = 'active';
 include '../includes/admin_head.php';
 ?>
 
@@ -101,21 +146,42 @@ include '../includes/admin_head.php';
                             <i class='bx bx-check-circle'></i> <?= htmlspecialchars($message) ?>
                         </div>
                     <?php endif; ?>
-
                     <div class="row row-cols-1 row-cols-md-2">
                         <div class="col">
                             <div class="mb-3">
+                                <label for="existing_student_id" class="form-label">Select Existing Student</label>
+                                <select class="form-select" id="existing_student_id" name="existing_student_id"
+                                    onchange="populateEmployeeDetails(this)">
+                                    <option value="" disabled selected>Select an existing student</option>
+                                    <?php foreach ($existingStudents as $existingStudent): ?>
+                                        <option value="<?= htmlspecialchars($existingStudent['student_data_id']) ?>"
+                                            data-student_id="<?= htmlspecialchars($existingStudent['student_id']) ?>"
+                                            data-firstname="<?= htmlspecialchars($existingStudent['student_firstname']) ?>"
+                                            data-middlename="<?= htmlspecialchars($existingStudent['student_middlename']) ?>"
+                                            data-lastname="<?= htmlspecialchars($existingStudent['student_lastname']) ?>"
+                                            data-suffix="<?= htmlspecialchars($existingStudent['suffix']) ?>"
+                                            data-email="<?= htmlspecialchars($existingStudent['email']) ?>"
+                                            data-year_section="<?= htmlspecialchars($existingStudent['year_section']) ?>">
+                                            <?= htmlspecialchars(ucwords(strtolower($existingStudent['student_lastname'] . $existingStudent['suffix']))) ?>,
+                                            <?= htmlspecialchars(ucwords(strtolower($existingStudent['student_firstname']))) ?>
+                                            (<?= htmlspecialchars($existingStudent['student_id']) ?>)
+                                        </option>
+                                    <?php endforeach; ?>
+                                </select>
+                            </div>
+
+                            <hr>
+
+                            <div class="mb-3">
                                 <label for="student_id" class="form-label">Student ID</label>
                                 <input type="text" class="form-control" id="student_id" placeholder="eg. 202105376"
-                                    name="student_id" value="<?= htmlspecialchars($_POST['student_id'] ?? '') ?>"
-                                    required>
+                                    name="student_id" value="<?= htmlspecialchars($_POST['student_id'] ?? '') ?>">
                             </div>
 
                             <div class="mb-3">
                                 <label for="firstname" class="form-label">First Name</label>
                                 <input type="text" class="form-control" id="firstname" placeholder="eg. Juan Robert"
-                                    name="firstname" value="<?= htmlspecialchars($_POST['firstname'] ?? '') ?>"
-                                    required>
+                                    name="firstname" value="<?= htmlspecialchars($_POST['firstname'] ?? '') ?>">
                             </div>
 
                             <div class="mb-3">
@@ -127,7 +193,20 @@ include '../includes/admin_head.php';
                             <div class="mb-3">
                                 <label for="lastname" class="form-label">Last Name</label>
                                 <input type="text" class="form-control" id="lastname" placeholder="eg. Cruz"
-                                    name="lastname" value="<?= htmlspecialchars($_POST['lastname'] ?? '') ?>" required>
+                                    name="lastname" value="<?= htmlspecialchars($_POST['lastname'] ?? '') ?>">
+                            </div>
+
+                            <div class="mb-3">
+                                <label for="suffix" class="form-label">* Suffix</label>
+                                <select class="form-select" id="suffix" name="suffix">
+                                    <option value="">Select suffix</option>
+                                    <option value="Jr.">Jr.</option>
+                                    <option value="Sr.">Sr.</option>
+                                    <option value="II">II</option>
+                                    <option value="III">III</option>
+                                    <option value="IV">IV</option>
+                                    <option value="V">V</option>
+                                </select>
                             </div>
                         </div>
 
@@ -136,16 +215,14 @@ include '../includes/admin_head.php';
                                 <label for="email" class="form-label">Email</label>
                                 <input type="email" class="form-control" id="email" name="email"
                                     placeholder="eg. xt202511235@wmsu.edu.ph"
-                                    value="<?= htmlspecialchars($_POST['email'] ?? '') ?>" required>
+                                    value="<?= htmlspecialchars($_POST['email'] ?? '') ?>">
                             </div>
 
                             <div class="mb-3">
                                 <label for="year_section" class="form-label">Year and Section</label>
                                 <input type="text" class="form-control" id="year_section" placeholder="eg. BEED 2A"
                                     name="year_section"
-                                    value="<?= htmlspecialchars($subject['yr_sec'] ?? $_POST['year_section'] ?? '') ?>"
-                                    required>
-
+                                    value="<?= htmlspecialchars($subject['yr_sec'] ?? $_POST['year_section'] ?? '') ?>">
                             </div>
                         </div>
                     </div>
@@ -160,13 +237,41 @@ include '../includes/admin_head.php';
     </div>
 
     <script src="./js/main.js"></script>
-    <?php if ($success): ?>
-        <script>
+    <script>
+        $(document).ready(function () {
+            $('#existing_student_id').select2({
+                placeholder: "Select existing student",
+                allowClear: true,
+                width: '100%',
+            });
+        });
+
+        function populateEmployeeDetails(select) {
+            const selectedOption = select.options[select.selectedIndex];
+            const student_id = selectedOption.getAttribute('data-student_id');
+            const firstname = selectedOption.getAttribute('data-firstname');
+            const middlename = selectedOption.getAttribute('data-middlename');
+            const lastname = selectedOption.getAttribute('data-lastname');
+            const email = selectedOption.getAttribute('data-email');
+            const suffix = selectedOption.getAttribute('data-suffix');
+            const year_section = selectedOption.getAttribute('data-year_section');
+
+            document.getElementById('student_id').value = student_id || '';
+            document.getElementById('firstname').value = firstname || '';
+            document.getElementById('middlename').value = middlename || '';
+            document.getElementById('lastname').value = lastname || '';
+            document.getElementById('email').value = email || '';
+            document.getElementById('suffix').value = suffix || '';
+            document.getElementById('year_section').value = year_section || '';
+        }
+
+        <?php if ($success): ?>
             setTimeout(function () {
                 window.location.href = "./sub_students?sched_id=<?= $_GET['sched_id'] ?>&department_id=<?= $_GET['department_id'] ?>&faculty_sub_id=<?= $_GET['faculty_sub_id'] ?>"
             }, 1500);
-        </script>
-    <?php endif; ?>
+        <?php endif; ?>
+    </script>
+
 </body>
 
 </html>

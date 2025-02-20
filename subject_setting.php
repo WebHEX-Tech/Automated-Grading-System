@@ -1,108 +1,122 @@
-<?php 
+<?php
 
 session_start();
 
 if (!isset($_SESSION['user_role']) || (isset($_SESSION['user_role']) && $_SESSION['user_role'] != 1)) {
-    header('location: ./login.php');
-    exit(); // Make sure to exit after redirection
+  header('location: ./login.php');
+  exit(); // Make sure to exit after redirection
 }
+require_once './classes/faculty_subs.class.php';
+require_once './classes/period.class.php';
+require_once './classes/component.class.php';
 
-// Include database connection
-include_once("./classes/database.php");
+$selected_faculty_sub_id = isset($_GET['faculty_sub_id']) ? $_GET['faculty_sub_id'] : null;
 
-// Create an instance of the Database class
-$database = new Database();
-// Establish the database connection
-$connection = $database->connect();
+$fac_subs = new Faculty_Subjects();
+$period = new Periods();
+$components = new SubjectComponents();
 
-// Initialize an empty array to store subject settings data
-$subject_settings_array = array();
+$all_subs = $fac_subs->getByUser($_SESSION['emp_id']);
+$subject = $fac_subs->getProf($selected_faculty_sub_id);
 
-// Check if the connection is successful
-if ($connection) {
-    try {
-        // Fetch subject settings data from the database
-        $stmt = $connection->query("SELECT * FROM subject_setting");
-
-        // Check if data is fetched successfully
-        if ($stmt) {
-            // Fetch all rows as an associative array
-            $subject_settings_array = $stmt->fetchAll(PDO::FETCH_ASSOC);
-        } else {
-            // Handle query execution error
-            throw new Exception("Error fetching subject settings data.");
-        }
-    } catch (Exception $e) {
-        // Handle exception
-        echo "<p>Error: " . $e->getMessage() . "</p>";
-    }
-} else {
-    // Handle connection error
-    echo "<p>Failed to connect to the database.</p>";
-}
-
+$all_periods = $period->showPeriodBySub($selected_faculty_sub_id);
+$midtermPeriod = $period->getIdMidterm($selected_faculty_sub_id);
+$finaltermPeriod = $period->getIdFinalterm($selected_faculty_sub_id);
+$midtermComp = $period->showMidterm($selected_faculty_sub_id);
+$finaltermComp = $period->showFinalterm($selected_faculty_sub_id);
 ?>
 <!DOCTYPE html>
 <html lang="en">
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Subject Setting</title>
-    <?php include './includes/head.php'; ?>
-</head>
+<?php
+$title = 'Subject Settings';
+$sub_setting_page = 'active';
+include './includes/head.php';
+?>
+
 <body>
   <div class="home">
     <div class="side">
-      <?php require_once('./includes/sidepanel.php'); ?> 
+      <?php require_once('./includes/sidepanel.php'); ?>
     </div>
     <main>
       <div class="header">
-      <?php require_once('./includes/header.php'); ?>
+        <?php require_once('./includes/header.php'); ?>
       </div>
-      
+
       <div class="flex-md-nowrap p-1 title_page shadow" style="background-color: whitesmoke;">
         <div class="d-flex align-items-center">
           <div class="container-fluid d-flex justify-content-center">
-            <span class="fs-2 h1 m-0">Subject Setting</span>
+            <span class="fs-2 fw-bold h1 m-0 brand-color">Subject Settings</span>
           </div>
         </div>
       </div>
 
       <div class="m-4">
         <div class="row row-cols-1 row-cols-sm-1 row-cols-md-4">
-          <div class="col">
-            <select type="button" class="btn border dropdown-toggle form-select border-danger mb-4" data-bs-toggle="dropdown">
-              <option>Apply to all</option>
-              <option>CS140</option>
-              <option>CS137</option>
+          <div class="col dropdown">
+            <select type="button" class="btn border dropdown-toggle form-select border-danger mb-4"
+              data-bs-toggle="dropdown" onchange="location = this.value;" aria-expanded="false">
+              <option value="?">Select Subject</option>
+              <?php
+              $counter = 1;
+              foreach ($all_subs as $sub):
+                $selected = ($sub['faculty_sub_id'] == $selected_faculty_sub_id) ? 'selected' : '';
+                ?>
+                <option class="dropdown-item" value="?faculty_sub_id=<?= $sub['faculty_sub_id'] ?>" <?= $selected ?>>
+                  <?= $sub['sub_code'] ?>
+                </option>
+                <?php
+                $counter++;
+              endforeach;
+              ?>
             </select>
           </div>
         </div>
-        
+
         <div class="content brand-border-color mw-100 rounded shadow py-3">
           <nav>
             <div class="nav nav-tabs" id="nav-tab" role="tablist">
-              <button class="nav-link text-dark active" id="nav-midterm-tab" data-bs-toggle="tab" data-bs-target="#nav-midterm" type="button" role="tab" aria-controls="nav-midterm" aria-selected="true">Midterm</button>
-              <button class="nav-link text-dark" id="nav-finalterm-tab" data-bs-toggle="tab" data-bs-target="#nav-finalterm" type="button" role="tab" aria-controls="nav-finalterm" aria-selected="false">Final Term</button>
+              <?php
+              // Loop through all periods and generate tabs
+              foreach ($all_periods as $index => $period):
+                $period_name = str_replace(' ', '', $period['period_type']);
+                $tab_id = "nav-{$period_name}-tab";
+                $content_id = "nav-{$period_name}";
+                $active_class = ($index === 0) ? 'active' : ''; // Set the first tab as active
+                ?>
+                <button class="nav-link text-dark <?= $active_class ?>" id="<?= $tab_id ?>" data-bs-toggle="tab"
+                  data-bs-target="#<?= $content_id ?>" type="button" role="tab" aria-controls="<?= $content_id ?>"
+                  aria-selected="<?= ($index === 0) ? 'true' : 'false' ?>">
+                  <?= $period['period_type'] ?>
+                </button>
+                <?php
+              endforeach;
+              ?>
             </div>
           </nav>
           <div class="tab-content" id="nav-tabContent">
-            <div class="tab-pane fade show active" id="nav-midterm" role="tabpanel" aria-labelledby="nav-midterm-tab">
+            <div class="tab-pane fade show active" id="nav-Midterm" role="tabpanel" aria-labelledby="nav-Midterm-tab">
+              <div class="d-flex flex-column align-items-center">
+                <h3 class="brand-color"><?= $subject ? ucwords($subject['sub_name']) : '' ?></h3>
+                <h4><?= $subject ? $subject['sub_code'] : '' ?> <?= $subject ? '(' . $subject['yr_sec'] . ')' : '' ?></h4>
+              </div>
+
               <div class="row m-2 row-cols-1 row-cols-md-2 d-flex justify-content-between">
                 <form class="d-flex justify-content-start align-items-center">
                   <label class="me-2">Number of absences:</label>
                   <input class="border-bottom px-2" id="disabledTextInput" type="number" title="3" value="7" disabled>
                   <i class='bx bx-edit ms-2' id="edit_att_req"></i>
                 </form>
-                <div class="col-3 d-flex justify-content-end">
-                  <a href="./add_standard-setting.php" class="btn btn-outline-secondary btn-add ms-3 brand-bg-color" type="button"><i class='bx bx-plus-circle'></i></a>
-                </div>
+                <?php if (!empty($midtermPeriod)): ?>
+                  <div class="col-3 d-flex justify-content-end">
+                    <a href="./add_criteria?faculty_sub_id=<?= $selected_faculty_sub_id ?>&period_id=<?= $midtermPeriod ?>"
+                      class="btn btn-outline-secondary btn-add ms-3 brand-bg-color" type="button"><i
+                        class='bx bx-plus-circle'></i></a>
+                  </div>
+                <?php endif; ?>
               </div>
 
-              <div class="d-flex justify-content-end">
-              </div>
-
-              <table id="subject_setting" class="table table-striped cell-border" style="width:100%">
+              <table id="subject_setting1" class="table table-striped cell-border" style="width:100%">
                 <thead>
                   <tr>
                     <th scope="col">#</th>
@@ -112,65 +126,187 @@ if ($connection) {
                   </tr>
                 </thead>
                 <tbody>
-                <?php $counter = 1; // Initialize counter variable ?>
-                <?php foreach ($subject_settings_array as $item): ?>
+                  <?php
+                  $counter = 1;
+                  foreach ($midtermComp as $item):
+                    ?>
                     <tr>
                       <td><?= $counter ?></td>
-                      <td><?= $item['criteria_name'] ?></td>
-                      <td><?= $item['criteria_weight'] ?></td>
+                      <td><?= $item['component_type'] ?></td>
+                      <td><?= $item['weight'] ?>%</td>
                       <td class="text-center">
-                        <a href="./edit_criteria.php?criteria_id=<?= $item['criteria_id'] ?>"><i class='bx bx-edit text-success'></i></a>
-                        <a href="delete_criteria.php?criteria_id=<?= $item['criteria_id'] ?>" data-toggle="modal" data-target="#deleteModal<?= $item['criteria_id'] ?>"><i class='bx bx-trash-alt text-danger'></i></a>
+                        <a
+                          href="./edit_criteria.php?faculty_sub_id=<?= $selected_faculty_sub_id ?>&component_id=<?= $item['component_id'] ?>"><i
+                            class='bx bx-edit text-success fs-4'></i></a>
+                        <button class="delete-btn bg-none" data-subject-id="<?= $item['component_id'] ?>">
+                          <i class='bx bx-trash-alt text-danger fs-4'></i>
+                        </button>
                       </td>
                     </tr>
-                <?php $counter++; // Increment counter variable ?>
-                <?php endforeach; ?>
-                <?php foreach ($subject_settings_array as $item): ?>
-    
-    
-                
-                 <!-- Delete Modal -->
-              <div class="modal fade" id="deleteModal<?= $item['criteria_id'] ?>" tabindex="-1" role="dialog" aria-labelledby="deleteModalLabel" aria-hidden="true">
-                  <div class="modal-dialog" role="document">
-                      <div class="modal-content">
-                          <div class="modal-header">
-                              <h5 class="modal-title" id="deleteModalLabel">Confirm Deletion</h5>
-                              <button type="button" class="close" data-dismiss="modal" aria-label="Close">
-                                  <span aria-hidden="true">&times;</span>
-                              </button>
-                          </div>
-                          <div class="modal-body">
-                              Are you sure you want to delete this criteria?
-                          </div>
-                          <div class="modal-footer">
-                              <!-- Close button with data-dismiss attribute to close the modal -->
-                              <button type="button" class="btn btn-secondary" data-dismiss="modal">Cancel</button>
-                              <!-- Delete button to perform the delete action -->
-                              <a href="./delete_criteria.php?criteria_id=<?= $item['criteria_id'] ?>" class="btn btn-danger">Delete</a>
-                          </div>
-                      </div>
-                  </div>
-                </div>
-
-</div>
-
-<?php endforeach; ?>
-                  
+                    <?php
+                    $counter++;
+                  endforeach;
+                  ?>
                 </tbody>
               </table>
             </div>
-            <div class="tab-pane fade" id="nav-finalterm" role="tabpanel" aria-labelledby="nav-finalterm-tab">
-              <!-- Content for Final Term -->
+            <div class="tab-pane fade" id="nav-FinalTerm" role="tabpanel" aria-labelledby="nav-FinalTerm-tab">
+              <div class="tab-pane fade show active" id="nav-Midterm" role="tabpanel" aria-labelledby="nav-Midterm-tab">
+                <div class="d-flex flex-column align-items-center">
+                  <h3 class="brand-color"><?= $subject ? ucwords($subject['sub_name']) : '' ?></h3>
+                  <h4><?= $subject ? $subject['sub_code'] : '' ?> <?= $subject ? '(' . $subject['yr_sec'] . ')' : '' ?>
+                  </h4>
+                </div>
+
+                <div class="row m-2 row-cols-1 row-cols-md-2 d-flex justify-content-between">
+                  <form class="d-flex justify-content-start align-items-center">
+                    <label class="me-2">Number of absences:</label>
+                    <input class="border-bottom px-2" id="disabledTextInput" type="number" title="3" value="7" disabled>
+                    <i class='bx bx-edit ms-2' id="edit_att_req"></i>
+                  </form>
+                  <div class="col-3 d-flex justify-content-end">
+                    <a href="./add_criteria?faculty_sub_id=<?= $selected_faculty_sub_id ?>&period_id=<?= $finaltermPeriod ?>"
+                      class="btn btn-outline-secondary btn-add ms-3 brand-bg-color" type="button"><i
+                        class='bx bx-plus-circle'></i></a>
+                  </div>
+                </div>
+
+                <table id="subject_setting2" class="table table-striped cell-border" style="width:100%">
+                  <thead>
+                    <tr>
+                      <th scope="col">#</th>
+                      <th scope="col">Criteria</th>
+                      <th scope="col">Weight</th>
+                      <th scope="col" width="5%">Action</th>
+                    </tr>
+                  </thead>
+                  <tbody>
+                    <?php
+                    $counter = 1;
+                    foreach ($finaltermComp as $item):
+                      ?>
+                      <tr>
+                        <td><?= $counter ?></td>
+                        <td><?= $item['component_type'] ?></td>
+                        <td><?= $item['weight'] ?>%</td>
+                        <td class="text-center">
+                          <a href="./edit_criteria.php?component_id=<?= $item['component_id'] ?>"><i
+                              class='bx bx-edit text-success fs-4'></i></a>
+                          <button class="delete-btn bg-none" data-subject-id="<?= $item['component_id'] ?>">
+                            <i class='bx bx-trash-alt text-danger fs-4'></i>
+                          </button>
+                        </td>
+                      </tr>
+                      <?php
+                      $counter++;
+                    endforeach;
+                    ?>
+                  </tbody>
+                </table>
+              </div>
             </div>
           </div>
         </div>
-      </div>
-
     </main>
   </div>
 
-  <?php require_once('./includes/js.php'); ?>
-  <script src="./js/subject_setting-table.js"></script>
-  
+  <!-- Confirmation Modal -->
+  <<div class="modal fade" id="deleteConfirmationModal" tabindex="-1" aria-labelledby="deleteConfirmationModalLabel"
+    aria-hidden="true">
+    <div id="alertContainer"></div>
+    <div class="modal-dialog modal-dialog-centered">
+      <div class="modal-content">
+        <div class="modal-header">
+          <h5 class="modal-title" id="deleteConfirmationModalLabel">Confirm Deletion</h5>
+          <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+        </div>
+        <div class="modal-body">
+          Are you sure you want to delete this criteria?
+        </div>
+        <div class="modal-footer">
+          <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancel</button>
+          <button type="button" class="btn btn-danger" id="confirmDeleteBtn">Delete</button>
+        </div>
+      </div>
+    </div>
+    </div>
+
+    <?php require_once('./includes/js.php'); ?>
+    <script src="./js/subject_setting-table.js"></script>
+    <script>
+      document.addEventListener('DOMContentLoaded', function () {
+        function saveActiveTab(tabId) {
+          localStorage.setItem('activeTab', tabId);
+        }
+
+        // Function to restore the active tab from localStorage
+        function restoreActiveTab() {
+          const activeTabId = localStorage.getItem('activeTab');
+          if (activeTabId) {
+            const tabTrigger = new bootstrap.Tab(document.querySelector(`#${activeTabId}`));
+            tabTrigger.show();
+          }
+        }
+
+        // Attach event listeners to tabs
+        const tabButtons = document.querySelectorAll('[data-bs-toggle="tab"]');
+        tabButtons.forEach(button => {
+          button.addEventListener('click', function () {
+            const tabId = this.getAttribute('id'); // Get the ID of the clicked tab
+            saveActiveTab(tabId); // Save the active tab ID
+          });
+        });
+
+        // Restore the active tab on page load
+        restoreActiveTab();
+
+        const deleteButtons = document.querySelectorAll('.delete-btn');
+        const deleteModal = new bootstrap.Modal(document.getElementById('deleteConfirmationModal'));
+        let currentComponentId = null;
+
+        deleteButtons.forEach(button => {
+          button.addEventListener('click', function () {
+            currentComponentId = this.getAttribute('data-subject-id');
+            deleteModal.show();
+          });
+        });
+
+        document.getElementById('confirmDeleteBtn').addEventListener('click', function () {
+          if (currentComponentId) {
+            fetch('./delete_criteria.php', {
+              method: 'POST',
+              headers: {
+                'Content-Type': 'application/json',
+              },
+              body: JSON.stringify({ component_id: currentComponentId }),
+            })
+              .then(response => response.json())
+              .then(data => {
+                if (data.success) {
+                  showAlert(data.message, 'success');
+                  setTimeout(() => location.reload(), 1000);
+                } else {
+                  alert(data.message);
+                }
+              })
+              .catch(error => {
+                console.error('Error:', error);
+                alert('An error occurred. Please try again.');
+              });
+          }
+        });
+
+        function showAlert(message, type) {
+          const alertContainer = document.getElementById('alertContainer');
+          const alertHTML = `
+          <div class="alert alert-${type} d-flex flex-row align-items-center gap-2 position-fixed top-0 start-50 translate-middle-x w-auto mt-4 z-index-1050" role="alert">
+            <strong>${type === 'success' ? `Successfully Deleted! <i class='bx bx-check-circle' ></i>` : 'Error!'}</strong> ${message}
+          </div>
+        `;
+          alertContainer.innerHTML = alertHTML;
+        }
+      });
+    </script>
 </body>
+
 </html>

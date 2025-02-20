@@ -9,16 +9,18 @@ require_once '../tools/functions.php';
 require_once '../classes/profiling.class.php';
 require_once '../classes/faculty_sched.class.php';
 require_once '../classes/faculty_subs.class.php';
-require_once '../classes/sub_students.class.php';
+require_once '../classes/students.class.php';
+require_once '../classes/grades.class.php';
 
 $profiling = new Profiling();
 $sched = new Faculty_Sched();
 $fac_subs = new Faculty_Subjects();
-$students = new Sub_Students();
+$students = new Students();
+$studentsBySub = new Grades();
 
 $prof = $sched->fetch($_GET['sched_id']);
 $subject = $fac_subs->getProf($_GET['faculty_sub_id']);
-$studentList = $students->showBySubject($_GET['faculty_sub_id']);
+$studentList = $studentsBySub->showBySubject($_GET['faculty_sub_id']);
 
 $current_year = date('Y');
 
@@ -109,7 +111,7 @@ include '../includes/admin_head.php';
                                 <tr>
                                     <td><?= $counter ?></td>
                                     <td><?= $student['student_id'] ?></td>
-                                    <td><?= ucwords($student['fullName']) ?></td>
+                                    <td><?= $student['fullName'] ?></td>
                                     <td><?= $student['email'] ?></td>
                                     <td><?= $student['year_section'] ?></td>
                                     <?php if ($is_current_year): ?>
@@ -118,7 +120,7 @@ include '../includes/admin_head.php';
                                                 href="./edit_student?sched_id=<?= $_GET['sched_id'] ?>&department_id=<?= $_GET['department_id'] ?>&faculty_sub_id=<?= $_GET['faculty_sub_id'] ?>&student_data_id=<?= $student['student_data_id'] ?>">
                                                 <i class='bx bx-edit text-success fs-4'></i>
                                             </a>
-                                            <button class="delete-btn bg-none" data-subject-id="<?= $student['student_data_id'] ?>">
+                                            <button class="delete-btn bg-none" data-subject-id="<?= $student['grades_id'] ?>">
                                                 <i class='bx bx-trash-alt text-danger fs-4'></i>
                                             </button>
                                         </td>
@@ -143,7 +145,7 @@ include '../includes/admin_head.php';
                             <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
                         </div>
                         <div class="modal-body">
-                            Are you sure you want to delete this student?
+                            Are you sure you want to delete this student in the subject?
                         </div>
                         <div class="modal-footer">
                             <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancel</button>
@@ -176,23 +178,23 @@ include '../includes/admin_head.php';
         document.addEventListener('DOMContentLoaded', function () {
             const deleteButtons = document.querySelectorAll('.delete-btn');
             const deleteModal = new bootstrap.Modal(document.getElementById('deleteConfirmationModal'));
-            let studentId = null;
+            let gradesId = null;
 
             deleteButtons.forEach(button => {
                 button.addEventListener('click', function () {
-                    studentId = this.getAttribute('data-subject-id');
+                    gradesId = this.getAttribute('data-subject-id');
                     deleteModal.show();
                 });
             });
 
             document.getElementById('confirmDeleteBtn').addEventListener('click', function () {
-                if (studentId) {
-                    fetch('./delete_student.php', {
+                if (gradesId) {
+                    fetch('./delete_grades.php', {
                         method: 'POST',
                         headers: {
                             'Content-Type': 'application/json',
                         },
-                        body: JSON.stringify({ student_data_id: studentId }),
+                        body: JSON.stringify({ grades_id: gradesId }),
                     })
                         .then(response => response.json())
                         .then(data => {

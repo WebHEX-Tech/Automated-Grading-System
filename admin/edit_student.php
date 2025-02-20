@@ -145,7 +145,8 @@ include '../includes/admin_head.php';
 
                     <div class="d-flex justify-content-end gap-2">
                         <button type="button" onclick="history.back()" class="btn btn-secondary">Cancel</button>
-                        <button type="submit" class="btn brand-bg-color" name="edit_student">Save</button>
+                        <button type="submit" class="btn brand-bg-color" name="edit_student"><i
+                        class='bx bxs-save me-2'></i>Save Changes</button>
                     </div>
                 </form>
             </div>

@@ -1,5 +1,5 @@
 <?php
-require_once '../classes/sub_students.class.php';
+require_once '../classes/students.class.php';
 
 if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     $raw_input = file_get_contents('php://input');
@@ -13,7 +13,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
         exit;
     }
     if ($student_data_id) {
-        $student = new Sub_Students();
+        $student = new Students();
         $result = $student->delete($student_data_id);
 
         if ($result) {
