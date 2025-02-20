@@ -31,7 +31,7 @@ if (!$college_data) {
 }
 
 if (isset($_POST['confirm_edit'])) {
-    $college_name = "College of " . trim($_POST['college_name']);
+    $college_name = ucwords($_POST['college_name']);
     $selected_departments = isset($_POST['departments']) ? $_POST['departments'] : [];
 
     if (empty($college_name)) {
@@ -128,7 +128,8 @@ include '../includes/admin_head.php';
 
                         <!-- Submit Button -->
                         <div class="d-flex justify-content-start gap-2">
-                            <button type="submit" name="confirm_edit" class="btn brand-bg-color" id="confirm_edit">Update</button>
+                            <button type="submit" name="confirm_edit" class="btn brand-bg-color" id="confirm_edit"><i
+                            class='bx bxs-save me-2'></i>Save Changes</button>
                         </div>
                     </div>
                 </form>

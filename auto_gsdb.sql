@@ -3,7 +3,7 @@
 -- https://www.phpmyadmin.net/
 --
 -- Host: 127.0.0.1:3306
--- Generation Time: Feb 12, 2025 at 11:26 PM
+-- Generation Time: Feb 20, 2025 at 06:28 AM
 -- Server version: 10.4.27-MariaDB
 -- PHP Version: 8.1.12
 
@@ -40,7 +40,7 @@ CREATE TABLE `colleges_table` (
 INSERT INTO `colleges_table` (`college_id`, `college_name`, `departments`) VALUES
 (7, 'Engineering', '19,20'),
 (8, 'Computing Studies', '17,18'),
-(12, 'Nursing', '21');
+(12, 'Nursing', '22');
 
 -- --------------------------------------------------------
 
@@ -61,8 +61,70 @@ INSERT INTO `college_department_table` (`department_id`, `department_name`) VALU
 (17, 'Information Technology'),
 (18, 'Computer Science'),
 (19, 'Civil Engineering'),
-(20, 'Mechanical Engineering'),
-(21, 'Nursing');
+(20, 'Mechanical Engineering');
+
+-- --------------------------------------------------------
+
+--
+-- Table structure for table `component_items`
+--
+
+CREATE TABLE `component_items` (
+  `items_id` int(11) NOT NULL,
+  `component_id` int(11) NOT NULL,
+  `component_date` date NOT NULL,
+  `component_no` int(11) NOT NULL,
+  `component_quantity` int(3) NOT NULL
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
+
+--
+-- Dumping data for table `component_items`
+--
+
+INSERT INTO `component_items` (`items_id`, `component_id`, `component_date`, `component_no`, `component_quantity`) VALUES
+(1, 1, '2025-02-18', 1, 25),
+(2, 1, '2025-02-18', 2, 26),
+(3, 2, '2025-02-18', 1, 50),
+(5, 7, '2025-02-18', 1, 15),
+(6, 5, '2025-02-18', 1, 10),
+(7, 6, '2025-02-18', 1, 40),
+(8, 6, '2025-02-18', 2, 50),
+(9, 2, '2025-02-18', 2, 60),
+(10, 12, '2025-02-20', 1, 100);
+
+-- --------------------------------------------------------
+
+--
+-- Table structure for table `component_scores`
+--
+
+CREATE TABLE `component_scores` (
+  `score_id` int(11) NOT NULL,
+  `items_id` int(11) NOT NULL,
+  `grades_id` int(11) NOT NULL,
+  `score` int(3) NOT NULL
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
+
+--
+-- Dumping data for table `component_scores`
+--
+
+INSERT INTO `component_scores` (`score_id`, `items_id`, `grades_id`, `score`) VALUES
+(1, 1, 22, 20),
+(2, 2, 22, 21),
+(3, 3, 22, 50),
+(4, 9, 22, 60),
+(5, 6, 22, 8),
+(6, 7, 22, 0),
+(7, 8, 22, 0),
+(8, 1, 24, 25),
+(9, 2, 24, 0),
+(10, 3, 24, 0),
+(11, 9, 24, 0),
+(12, 6, 24, 0),
+(13, 7, 24, 0),
+(14, 8, 24, 0),
+(15, 10, 22, 76);
 
 -- --------------------------------------------------------
 
@@ -229,33 +291,10 @@ CREATE TABLE `faculty_subjects` (
 --
 
 INSERT INTO `faculty_subjects` (`faculty_sub_id`, `sched_id`, `curr_id`, `yr_sec`, `no_students`, `lec_days`, `lab_days`, `lec_time`, `lab_time`, `lec_room`, `lab_room`, `lec_units`, `lab_units`) VALUES
-(15, 15, 50, 'BSIT 3A', 32, 'MTH', 'TF', '10:55 AM - 10:55 AM', '10:56 AM - 10:56 AM', 'LR 2', 'LAB 2', 1, 2),
-(16, 15, 48, 'BSIT 1A', 30, 'M', 'MT', '10:57 AM - 10:57 AM', '10:57 AM - 10:57 AM', 'LR 2', 'LAB 2', 1, 2),
-(17, 7, 49, 'BSIT 3A', 32, 'M', NULL, '10:58 AM - 10:58 AM', NULL, 'LR 2', NULL, 3, NULL),
-(18, 16, 50, 'BSIT 3A', 32, 'M', 'M', '3:51 AM - 3:51 AM', '3:51 AM - 3:51 AM', 'LR 2', 'LAB 2', 1, 2);
-
--- --------------------------------------------------------
-
---
--- Table structure for table `grades`
---
-
-CREATE TABLE `grades` (
-  `gradeid` varchar(8) NOT NULL,
-  `studentid` int(8) DEFAULT NULL,
-  `attendance` int(3) DEFAULT NULL,
-  `quiz` int(3) DEFAULT NULL,
-  `exam` int(3) DEFAULT NULL,
-  `grade` float DEFAULT NULL,
-  `pointequivalent` float DEFAULT NULL
-) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
-
---
--- Dumping data for table `grades`
---
-
-INSERT INTO `grades` (`gradeid`, `studentid`, `attendance`, `quiz`, `exam`, `grade`, `pointequivalent`) VALUES
-('1', 222, 85, 90, 88, 87, 3.5);
+(18, 16, 50, 'BSIT 3A', 32, 'M', 'M', '3:51 AM - 3:51 AM', '3:51 AM - 3:51 AM', 'LR 2', 'LAB 2', 1, 2),
+(50, 7, 49, 'BSIT 3A', 34, 'M', '', '9:29 AM - 9:29 AM', '', 'LR 2', '', 3, 0),
+(51, 15, 50, 'BSIT 3A', 23, 'M', '', '7:52 AM - 7:52 AM', '', 'Gymnasium', '', 1, 2),
+(52, 15, 48, 'BSIT 1A', 23, '', 'M', '', '7:53 AM - 7:53 AM', '', 'LAB2', 1, 2);
 
 -- --------------------------------------------------------
 
@@ -282,6 +321,31 @@ INSERT INTO `notifications` (`notif_id`, `user_role`, `user_id`, `message`, `cre
 -- --------------------------------------------------------
 
 --
+-- Table structure for table `periods`
+--
+
+CREATE TABLE `periods` (
+  `period_id` int(11) NOT NULL,
+  `faculty_sub_id` int(11) NOT NULL,
+  `period_type` varchar(255) NOT NULL,
+  `weight` int(2) NOT NULL
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
+
+--
+-- Dumping data for table `periods`
+--
+
+INSERT INTO `periods` (`period_id`, `faculty_sub_id`, `period_type`, `weight`) VALUES
+(4, 50, 'Midterm', 40),
+(5, 50, 'Final Term', 60),
+(6, 51, 'Midterm', 40),
+(7, 51, 'Final Term', 60),
+(8, 52, 'Midterm', 40),
+(9, 52, 'Final Term', 60);
+
+-- --------------------------------------------------------
+
+--
 -- Table structure for table `profiling_table`
 --
 
@@ -297,7 +361,7 @@ CREATE TABLE `profiling_table` (
   `acad_type` varchar(100) NOT NULL,
   `faculty_type` varchar(100) NOT NULL,
   `designation` varchar(100) NOT NULL,
-  `department_id` int(100) NOT NULL,
+  `department_id` int(11) NOT NULL,
   `is_created` timestamp NOT NULL DEFAULT current_timestamp(),
   `is_updated` timestamp NOT NULL DEFAULT current_timestamp() ON UPDATE current_timestamp()
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
@@ -311,21 +375,6 @@ INSERT INTO `profiling_table` (`profiling_id`, `emp_id`, `f_name`, `l_name`, `m_
 (30, '2021-000009', 'Alco', 'Plus', 'Iso', 'email@email.com', '2025-01-04', '2025-03-19', 'Professor II', 'Regular Lecturer', 'Professor', 20, '2025-01-26 13:54:43', '2025-01-28 11:21:01'),
 (31, '2021-000023', 'Raf', 'Saludo', '', 'saludoraf@gmail.com', '2025-01-03', '2025-01-30', 'Instructor', 'Visiting Lecturer', 'Assistant Professor', 17, '2025-01-26 14:32:56', '2025-01-26 14:32:56'),
 (35, '2021-00150', 'Franklin', 'Oliveros', 'Ituralde', 'ofranklinjames@gmail.com', '2025-02-01', '2025-02-25', 'Adjunct Faculty', 'Visiting Lecturer', 'Professor', 18, '2025-02-10 21:21:38', '2025-02-10 21:21:38');
-
--- --------------------------------------------------------
-
---
--- Table structure for table `quiz`
---
-
-CREATE TABLE `quiz` (
-  `quiz_id` int(11) NOT NULL,
-  `gradeid` varchar(8) DEFAULT NULL,
-  `quiz_date` date DEFAULT NULL,
-  `quiz_no` int(3) DEFAULT NULL,
-  `quiz_quantity` int(3) DEFAULT NULL,
-  `quiz_score` int(3) DEFAULT NULL
-) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
 
 -- --------------------------------------------------------
 
@@ -350,36 +399,82 @@ INSERT INTO `semester` (`semester_id`, `semester`) VALUES
 -- --------------------------------------------------------
 
 --
--- Table structure for table `student`
+-- Table structure for table `students`
 --
 
-CREATE TABLE `student` (
-  `studentid` int(8) NOT NULL,
-  `lname` varchar(250) NOT NULL,
-  `fname` varchar(250) NOT NULL,
-  `mname` varchar(250) NOT NULL,
-  `extension` varchar(250) NOT NULL,
-  `studentemail` varchar(100) NOT NULL
+CREATE TABLE `students` (
+  `student_data_id` int(11) NOT NULL,
+  `student_id` varchar(255) NOT NULL,
+  `student_firstname` varchar(255) NOT NULL,
+  `student_middlename` varchar(255) DEFAULT NULL,
+  `student_lastname` varchar(255) NOT NULL,
+  `suffix` varchar(255) DEFAULT NULL,
+  `email` varchar(255) NOT NULL,
+  `year_section` varchar(255) NOT NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
 
 --
--- Dumping data for table `student`
+-- Dumping data for table `students`
 --
 
-INSERT INTO `student` (`studentid`, `lname`, `fname`, `mname`, `extension`, `studentemail`) VALUES
-(222, 'qqqqqqqqqqqq', 'xx', 'xx', 'Jr', 'sss'),
-(1223, 'shalalal', 'cc', 'cc', 'Junior', 'fff'),
-(2021, 'edhhd', 'sjssj', 'ddj', '', '23@gmail.com'),
-(2022, 'q', 'q', 'q', 'Jr', '123'),
-(2023, 'pink', 'xx', 'xx', 'Jr', 'sss'),
-(2344, 'so tonight', 'xx', 'df', 'Jr', 'dd'),
-(20102, 'cc', '   ccc', 'ccc', 'Jr', 'dcdm'),
-(22243, 'xx', 'xx', 'xx', '', 'sss'),
-(345546, 'lubguuban', 'sairyl', 'gsflf', 'Jr', 'gvbvgfh@gmail'),
-(2002123, 'living', 'all', 'alone', 'Jr', 'shhss'),
-(20212203, 'sala', 'rhea', 'salazar', 'Jr', 'dhsklhf@gmail.com'),
-(20213456, 'quque', 'queque', 'quque', 'Jr', 'xnxjshs'),
-(22222222, 'cc', 'vv', 'vv', 'Jr', 'wwwwwwwww');
+INSERT INTO `students` (`student_data_id`, `student_id`, `student_firstname`, `student_middlename`, `student_lastname`, `suffix`, `email`, `year_section`) VALUES
+(31, '2021334234', 'Rylee Rhodes', 'Dela', 'Floyd', '', 'bbrightwin12xx@wmsu.edu.ph', 'BSIT 3A'),
+(32, '7456756', 'Patrick', 'Nicholas', 'Floyd', 'Jr.', 'bbrightwin12xx@wmsu.edu.ph', 'BSIT 3A'),
+(33, '645645', 'Calista', 'Dela', 'P', '', 'bbrightwin12xx@wmsu.edu.ph', 'BSIT 3A'),
+(34, '42365646', 'Calistax', 'Tre', 'Free', 'Jr.', 'bbrightwin12xx@wmsu.edu.ph', 'BSIT 3A');
+
+-- --------------------------------------------------------
+
+--
+-- Table structure for table `student_grades`
+--
+
+CREATE TABLE `student_grades` (
+  `grades_id` int(8) NOT NULL,
+  `student_data_id` int(11) NOT NULL,
+  `faculty_sub_id` int(11) NOT NULL
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
+
+--
+-- Dumping data for table `student_grades`
+--
+
+INSERT INTO `student_grades` (`grades_id`, `student_data_id`, `faculty_sub_id`) VALUES
+(22, 34, 50),
+(23, 33, 50),
+(24, 32, 50),
+(25, 31, 51),
+(26, 32, 51),
+(27, 34, 51);
+
+-- --------------------------------------------------------
+
+--
+-- Table structure for table `sub_components`
+--
+
+CREATE TABLE `sub_components` (
+  `component_id` int(11) NOT NULL,
+  `period_id` int(11) NOT NULL,
+  `component_type` varchar(255) NOT NULL,
+  `weight` int(11) NOT NULL
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
+
+--
+-- Dumping data for table `sub_components`
+--
+
+INSERT INTO `sub_components` (`component_id`, `period_id`, `component_type`, `weight`) VALUES
+(1, 4, 'Quiz', 10),
+(2, 4, 'Performance Task', 30),
+(5, 4, 'Recitation', 30),
+(6, 4, 'Project', 20),
+(7, 5, 'Quiz', 15),
+(8, 5, 'Recitations', 10),
+(9, 5, 'Project', 20),
+(10, 8, 'Activities', 20),
+(11, 9, 'Projects', 20),
+(12, 4, 'Midterm Exam', 40);
 
 -- --------------------------------------------------------
 
@@ -452,6 +547,21 @@ ALTER TABLE `college_department_table`
   ADD PRIMARY KEY (`department_id`);
 
 --
+-- Indexes for table `component_items`
+--
+ALTER TABLE `component_items`
+  ADD PRIMARY KEY (`items_id`),
+  ADD KEY `component_id` (`component_id`);
+
+--
+-- Indexes for table `component_scores`
+--
+ALTER TABLE `component_scores`
+  ADD PRIMARY KEY (`score_id`),
+  ADD KEY `component_id` (`items_id`),
+  ADD KEY `grades_id` (`grades_id`);
+
+--
 -- Indexes for table `course_curr`
 --
 ALTER TABLE `course_curr`
@@ -497,13 +607,6 @@ ALTER TABLE `faculty_subjects`
   ADD KEY `curr_id` (`curr_id`);
 
 --
--- Indexes for table `grades`
---
-ALTER TABLE `grades`
-  ADD PRIMARY KEY (`gradeid`),
-  ADD KEY `studentid` (`studentid`);
-
---
 -- Indexes for table `notifications`
 --
 ALTER TABLE `notifications`
@@ -512,17 +615,18 @@ ALTER TABLE `notifications`
   ADD KEY `user_role` (`user_role`);
 
 --
+-- Indexes for table `periods`
+--
+ALTER TABLE `periods`
+  ADD PRIMARY KEY (`period_id`),
+  ADD KEY `periods_ibfk_1` (`faculty_sub_id`);
+
+--
 -- Indexes for table `profiling_table`
 --
 ALTER TABLE `profiling_table`
-  ADD PRIMARY KEY (`profiling_id`);
-
---
--- Indexes for table `quiz`
---
-ALTER TABLE `quiz`
-  ADD PRIMARY KEY (`quiz_id`),
-  ADD KEY `gradeid` (`gradeid`);
+  ADD PRIMARY KEY (`profiling_id`),
+  ADD KEY `department_id` (`department_id`);
 
 --
 -- Indexes for table `semester`
@@ -531,10 +635,25 @@ ALTER TABLE `semester`
   ADD PRIMARY KEY (`semester_id`);
 
 --
--- Indexes for table `student`
+-- Indexes for table `students`
 --
-ALTER TABLE `student`
-  ADD PRIMARY KEY (`studentid`);
+ALTER TABLE `students`
+  ADD PRIMARY KEY (`student_data_id`);
+
+--
+-- Indexes for table `student_grades`
+--
+ALTER TABLE `student_grades`
+  ADD PRIMARY KEY (`grades_id`),
+  ADD KEY `student_grades_ibfk_2` (`student_data_id`),
+  ADD KEY `student_grades_ibfk_1` (`faculty_sub_id`);
+
+--
+-- Indexes for table `sub_components`
+--
+ALTER TABLE `sub_components`
+  ADD PRIMARY KEY (`component_id`),
+  ADD KEY `period_id` (`period_id`);
 
 --
 -- Indexes for table `user`
@@ -562,7 +681,19 @@ ALTER TABLE `colleges_table`
 -- AUTO_INCREMENT for table `college_department_table`
 --
 ALTER TABLE `college_department_table`
-  MODIFY `department_id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=22;
+  MODIFY `department_id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=23;
+
+--
+-- AUTO_INCREMENT for table `component_items`
+--
+ALTER TABLE `component_items`
+  MODIFY `items_id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=11;
+
+--
+-- AUTO_INCREMENT for table `component_scores`
+--
+ALTER TABLE `component_scores`
+  MODIFY `score_id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=16;
 
 --
 -- AUTO_INCREMENT for table `course_curr`
@@ -574,7 +705,7 @@ ALTER TABLE `course_curr`
 -- AUTO_INCREMENT for table `curr_table`
 --
 ALTER TABLE `curr_table`
-  MODIFY `curr_id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=126;
+  MODIFY `curr_id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=127;
 
 --
 -- AUTO_INCREMENT for table `curr_time`
@@ -592,13 +723,13 @@ ALTER TABLE `curr_year`
 -- AUTO_INCREMENT for table `faculty_schedule`
 --
 ALTER TABLE `faculty_schedule`
-  MODIFY `sched_id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=17;
+  MODIFY `sched_id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=18;
 
 --
 -- AUTO_INCREMENT for table `faculty_subjects`
 --
 ALTER TABLE `faculty_subjects`
-  MODIFY `faculty_sub_id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=19;
+  MODIFY `faculty_sub_id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=53;
 
 --
 -- AUTO_INCREMENT for table `notifications`
@@ -607,22 +738,40 @@ ALTER TABLE `notifications`
   MODIFY `notif_id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=19;
 
 --
+-- AUTO_INCREMENT for table `periods`
+--
+ALTER TABLE `periods`
+  MODIFY `period_id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=10;
+
+--
 -- AUTO_INCREMENT for table `profiling_table`
 --
 ALTER TABLE `profiling_table`
   MODIFY `profiling_id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=38;
 
 --
--- AUTO_INCREMENT for table `quiz`
---
-ALTER TABLE `quiz`
-  MODIFY `quiz_id` int(11) NOT NULL AUTO_INCREMENT;
-
---
 -- AUTO_INCREMENT for table `semester`
 --
 ALTER TABLE `semester`
-  MODIFY `semester_id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=7;
+  MODIFY `semester_id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=8;
+
+--
+-- AUTO_INCREMENT for table `students`
+--
+ALTER TABLE `students`
+  MODIFY `student_data_id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=35;
+
+--
+-- AUTO_INCREMENT for table `student_grades`
+--
+ALTER TABLE `student_grades`
+  MODIFY `grades_id` int(8) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=28;
+
+--
+-- AUTO_INCREMENT for table `sub_components`
+--
+ALTER TABLE `sub_components`
+  MODIFY `component_id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=13;
 
 --
 -- AUTO_INCREMENT for table `user`
@@ -639,6 +788,19 @@ ALTER TABLE `year_lvl`
 --
 -- Constraints for dumped tables
 --
+
+--
+-- Constraints for table `component_items`
+--
+ALTER TABLE `component_items`
+  ADD CONSTRAINT `component_items_ibfk_1` FOREIGN KEY (`component_id`) REFERENCES `sub_components` (`component_id`);
+
+--
+-- Constraints for table `component_scores`
+--
+ALTER TABLE `component_scores`
+  ADD CONSTRAINT `component_scores_ibfk_1` FOREIGN KEY (`items_id`) REFERENCES `component_items` (`items_id`),
+  ADD CONSTRAINT `component_scores_ibfk_2` FOREIGN KEY (`grades_id`) REFERENCES `student_grades` (`grades_id`);
 
 --
 -- Constraints for table `curr_table`
@@ -665,12 +827,6 @@ ALTER TABLE `faculty_subjects`
   ADD CONSTRAINT `faculty_subjects_ibfk_3` FOREIGN KEY (`curr_id`) REFERENCES `curr_table` (`curr_id`) ON DELETE CASCADE;
 
 --
--- Constraints for table `grades`
---
-ALTER TABLE `grades`
-  ADD CONSTRAINT `grades_ibfk_1` FOREIGN KEY (`studentid`) REFERENCES `student` (`studentid`);
-
---
 -- Constraints for table `notifications`
 --
 ALTER TABLE `notifications`
@@ -678,10 +834,23 @@ ALTER TABLE `notifications`
   ADD CONSTRAINT `user_role` FOREIGN KEY (`user_role`) REFERENCES `user` (`user_role`);
 
 --
--- Constraints for table `profiling_table`
+-- Constraints for table `periods`
 --
-ALTER TABLE `profiling_table`
-  ADD CONSTRAINT `department_id` FOREIGN KEY (`department_id`) REFERENCES `college_department_table` (`department_id`);
+ALTER TABLE `periods`
+  ADD CONSTRAINT `periods_ibfk_1` FOREIGN KEY (`faculty_sub_id`) REFERENCES `faculty_subjects` (`faculty_sub_id`) ON DELETE CASCADE;
+
+--
+-- Constraints for table `student_grades`
+--
+ALTER TABLE `student_grades`
+  ADD CONSTRAINT `student_grades_ibfk_1` FOREIGN KEY (`faculty_sub_id`) REFERENCES `faculty_subjects` (`faculty_sub_id`) ON DELETE CASCADE,
+  ADD CONSTRAINT `student_grades_ibfk_2` FOREIGN KEY (`student_data_id`) REFERENCES `students` (`student_data_id`) ON DELETE CASCADE;
+
+--
+-- Constraints for table `sub_components`
+--
+ALTER TABLE `sub_components`
+  ADD CONSTRAINT `sub_components_ibfk_1` FOREIGN KEY (`period_id`) REFERENCES `periods` (`period_id`);
 COMMIT;
 
 /*!40101 SET CHARACTER_SET_CLIENT=@OLD_CHARACTER_SET_CLIENT */;

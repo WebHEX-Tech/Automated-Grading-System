@@ -17,7 +17,7 @@ $college = new College();
 $existing_departments = $department->show(); // Fetch all existing departments
 
 if (isset($_POST['confirm_add'])) {
-    $college_name = $_POST['college_name'];
+    $college_name = ucwords($_POST['college_name']);
     $selected_departments = isset($_POST['departments']) ? $_POST['departments'] : [];
 
     if (empty($college_name)) {

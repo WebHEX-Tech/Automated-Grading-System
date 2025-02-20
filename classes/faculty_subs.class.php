@@ -29,28 +29,16 @@ class Faculty_Subjects
     function add()
     {
         $sql = "INSERT INTO faculty_subjects (sched_id, curr_id, yr_sec, no_students, lec_days, lab_days, lec_time, lab_time, lec_room, lab_room, lec_units, lab_units) 
-              VALUES (:sched_id, :curr_id, :yr_sec, :no_students, :lec_days, :lab_days, :lec_time, :lab_time, :lec_room, :lab_room, :lec_units, :lab_units)";
+            VALUES ('$this->sched_id', '$this->curr_id', '$this->yr_sec', '$this->no_students', '$this->lec_days', '$this->lab_days', '$this->lec_time', '$this->lab_time', '$this->lec_room', '$this->lab_room', '$this->lec_units', '$this->lab_units')";
 
-        $query = $this->db->connect()->prepare($sql);
-        $query->bindParam(':sched_id', $this->sched_id);
-        $query->bindParam(':curr_id', $this->curr_id);
-        $query->bindParam(':yr_sec', $this->yr_sec);
-        $query->bindParam(':no_students', $this->no_students);
-        $query->bindParam(':lec_days', $this->lec_days);
-        $query->bindParam(':lab_days', $this->lab_days);
-        $query->bindParam(':lec_time', $this->lec_time);
-        $query->bindParam(':lab_time', $this->lab_time);
-        $query->bindParam(':lec_room', $this->lec_room);
-        $query->bindParam(':lab_room', $this->lab_room);
-        $query->bindParam(':lec_units', $this->lec_units);
-        $query->bindParam(':lab_units', $this->lab_units);
-
-        if ($query->execute()) {
-            return true;
+        $db = $this->db->connect();
+        if ($db->exec($sql)) {
+            return $db->lastInsertId(); // Return last inserted ID
         } else {
             return false;
         }
     }
+
 
     function show()
     {
@@ -117,7 +105,6 @@ class Faculty_Subjects
         }
         return $data;
     }
-
     function getByUser($emp_id)
     {
         $sql = "SELECT fs.*, ct.sub_code, ct.sub_name, ct.sub_prerequisite, sch.school_yr, s.semester
@@ -138,7 +125,6 @@ class Faculty_Subjects
 
         return $data;
     }
-
     public function delete($faculty_sub_id)
     {
         $query = "DELETE FROM faculty_subjects WHERE faculty_sub_id = :faculty_sub_id";

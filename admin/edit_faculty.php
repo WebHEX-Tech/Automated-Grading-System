@@ -149,50 +149,45 @@ include '../includes/admin_head.php';
             <div class="col">
               <div class="mb-3">
                 <label for="emp_id" class="form-label">Employee ID</label>
-                <input type="text" class="form-control" id="emp_id" aria-describedby="emp_id" name="emp_id"
-                  value="<?php if (isset($_POST['emp_id'])) {
-                    echo $_POST['emp_id'];
-                  } else if (isset($profiling->emp_id)) {
-                    echo $profiling->emp_id;
-                  } ?>" readonly>
+                <input type="text" class="form-control" id="emp_id" aria-describedby="emp_id" name="emp_id" value="<?php if (isset($_POST['emp_id'])) {
+                  echo $_POST['emp_id'];
+                } else if (isset($profiling->emp_id)) {
+                  echo $profiling->emp_id;
+                } ?>" readonly>
               </div>
               <div class="mb-3">
                 <label for="f_name" class="form-label">First Name</label>
-                <input type="text" class="form-control" id="f_name" name="f_name" aria-describedby="f_name"
-                  value="<?php if (isset($_POST['f_name'])) {
-                    echo $_POST['f_name'];
-                  } else if (isset($profiling->f_name)) {
-                    echo $profiling->f_name;
-                  } ?>" oninput="capitalizeFirstLetter(this)">
+                <input type="text" class="form-control" id="f_name" name="f_name" aria-describedby="f_name" value="<?php if (isset($_POST['f_name'])) {
+                  echo $_POST['f_name'];
+                } else if (isset($profiling->f_name)) {
+                  echo $profiling->f_name;
+                } ?>" oninput="capitalizeFirstLetter(this)">
               </div>
 
               <div class="mb-3">
                 <label for="l_name" class="form-label">Last Name</label>
-                <input type="text" class="form-control" id="l_name" name="l_name" aria-describedby="l_name"
-                  value="<?php if (isset($_POST['l_name'])) {
-                    echo $_POST['l_name'];
-                  } else if (isset($profiling->l_name)) {
-                    echo $profiling->l_name;
-                  } ?>" oninput="capitalizeFirstLetter(this)">
+                <input type="text" class="form-control" id="l_name" name="l_name" aria-describedby="l_name" value="<?php if (isset($_POST['l_name'])) {
+                  echo $_POST['l_name'];
+                } else if (isset($profiling->l_name)) {
+                  echo $profiling->l_name;
+                } ?>" oninput="capitalizeFirstLetter(this)">
               </div>
 
               <div class="mb-3">
                 <label for="m_name" class="form-label">Middle Name</label>
-                <input type="text" class="form-control" id="m_name" name="m_name" aria-describedby="m_name"
-                  value="<?php if (isset($_POST['m_name'])) {
-                    echo $_POST['m_name'];
-                  } else if (isset($profiling->m_name)) {
-                    echo $profiling->m_name;
-                  } ?>" oninput="capitalizeFirstLetter(this)">
+                <input type="text" class="form-control" id="m_name" name="m_name" aria-describedby="m_name" value="<?php if (isset($_POST['m_name'])) {
+                  echo $_POST['m_name'];
+                } else if (isset($profiling->m_name)) {
+                  echo $profiling->m_name;
+                } ?>" oninput="capitalizeFirstLetter(this)">
               </div>
               <div class="mb-3">
                 <label for="email" class="form-label">Email</label>
-                <input type="email" class="form-control" id="email" name="email" aria-describedby="email"
-                  value="<?php if (isset($_POST['email'])) {
-                    echo $_POST['email'];
-                  } else if (isset($profiling->email)) {
-                    echo $profiling->email;
-                  } ?>">
+                <input type="email" class="form-control" id="email" name="email" aria-describedby="email" value="<?php if (isset($_POST['email'])) {
+                  echo $_POST['email'];
+                } else if (isset($profiling->email)) {
+                  echo $profiling->email;
+                } ?>">
               </div>
             </div>
 
@@ -203,8 +198,7 @@ include '../includes/admin_head.php';
                   <div class="mb-3">
                     <label for="start_service" class="form-label">Start Service</label>
                     <input type="date" class="form-control" id="start_service" name="start_service"
-                      aria-describedby="start_service"
-                      value="<?php if (isset($_POST['start_service'])) {
+                      aria-describedby="start_service" value="<?php if (isset($_POST['start_service'])) {
                         echo $_POST['start_service'];
                       } else if (isset($profiling->start_service)) {
                         echo $profiling->start_service;
@@ -216,8 +210,7 @@ include '../includes/admin_head.php';
                   <div class="mb-3">
                     <label for="end_service" class="form-label">End Service</label>
                     <input type="date" class="form-control" id="end_service" name="end_service"
-                      aria-describedby="end_service"
-                      value="<?php if (isset($_POST['end_service'])) {
+                      aria-describedby="end_service" value="<?php if (isset($_POST['end_service'])) {
                         echo $_POST['end_service'];
                       } else if (isset($profiling->end_service)) {
                         echo $profiling->end_service;
@@ -370,7 +363,8 @@ include '../includes/admin_head.php';
           </div>
           <div class="d-flex justify-content-end gap-2">
             <button type="button" class="btn btn-secondary" onclick="cancel()">Cancel</button>
-            <button type="submit" name="edit_faculty" class="btn brand-bg-color">Submit</button>
+            <button type="submit" name="edit_faculty" class="btn brand-bg-color"><i class='bx bxs-save me-2'></i>Save
+              Changes</button>
           </div>
         </form>
       </div>

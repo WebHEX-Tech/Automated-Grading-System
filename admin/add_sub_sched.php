@@ -5,23 +5,26 @@ require_once '../tools/functions.php';
 require_once '../classes/department.class.php';
 require_once '../classes/curri_page.class.php';
 require_once '../classes/faculty_subs.class.php';
+require_once '../classes/period.class.php';
 
 $dept = new Department();
 $subs = new Curr_table();
 $fac_sub = new Faculty_Subjects();
+$period = new Periods();
 $department_arr = $dept->showName($_GET['department_id']);
 $dept_name = $department_arr['department_name'];
 $subjects = $subs->showAll($dept_name);
 $error_message = '';
 $success = false;
 
-function convertTo12hrFormat($time24hr) {
+function convertTo12hrFormat($time24hr)
+{
     $time = DateTime::createFromFormat('H:i', $time24hr);
-    
+
     if ($time) {
         return $time->format('g:i A');
     }
-    
+
     return false;
 }
 
@@ -66,9 +69,24 @@ if (isset($_POST['add_fac_sub'])) {
     $fac_sub->lec_units = $lec_units;
     $fac_sub->lab_units = $lab_units;
 
-    if ($fac_sub->add()) {
-        $message = 'Subject added';
-        $success = true;
+    $newId = $fac_sub->add();
+    if ($newId) {
+        $period->faculty_sub_id = $newId;
+        $period->period_type = 'Midterm';
+        $period->weight = 40;
+        if ($period->add()) {
+            $period->faculty_sub_id = $newId;
+            $period->period_type = 'Final Term';
+            $period->weight = 60;
+            if ($period->add()) {
+                $message = 'Subject added';
+                $success = true;
+            } else {
+                $error_message = 'Something went wrong adding the Final Term period.';
+            }
+        } else {
+            $error_message = 'Something went wrong adding the Midterm period.';
+        }
     } else {
         $error_message = 'Something went wrong adding subject.';
     }
@@ -124,6 +142,7 @@ include '../includes/admin_head.php';
                     <?php endif; ?>
                     <div class="row row-cols-1 row-cols-md-2">
                         <div class="col">
+                            <input type="hidden" id="faculty_sub_id" name="faculty_sub_id">
                             <div class="mb-3">
                                 <label for="curr_id" class="form-label">Select Subject</label>
                                 <input type="hidden" id="curr_id" name="curr_id" value="">
@@ -147,7 +166,8 @@ include '../includes/admin_head.php';
 
                             <div class="mb-3">
                                 <label for="yr_section" class="form-label">Year/Section</label>
-                                <input type="text" class="form-control" id="yr_section" name="yr_section" placeholder="eg. BSCE 2A" required>
+                                <input type="text" class="form-control" id="yr_section" name="yr_section"
+                                    placeholder="eg. BSCE 2A" required>
                             </div>
 
                             <div class="mb-3">
@@ -179,7 +199,8 @@ include '../includes/admin_head.php';
                                 </div>
                                 <div class="mb-3">
                                     <label for="lec_room" class="form-label">Lecture Room</label>
-                                    <input type="text" class="form-control" id="lec_room" placeholder="eg. CLA 2" name="lec_room" >
+                                    <input type="text" class="form-control" id="lec_room" placeholder="eg. CLA 2"
+                                        name="lec_room">
                                 </div>
 
                                 <div class="mb-3">
@@ -189,7 +210,7 @@ include '../includes/admin_head.php';
                                         <div class="col">
                                             <div class="input-group">
                                                 <label for="lec_days" class="form-text">Days</label>
-                                                <select class="form-select" id="lec_days" name="lec_days[]" multiple >
+                                                <select class="form-select" id="lec_days" name="lec_days[]" multiple>
                                                     <option value="M">Monday</option>
                                                     <option value="T">Tuesday</option>
                                                     <option value="W">Wednesday</option>
@@ -204,10 +225,10 @@ include '../includes/admin_head.php';
                                             <label for="lec_time" class="form-text"> Time </label>
                                             <div class="input-group">
                                                 <input type="time" class="form-control" id="lec_time_start"
-                                                    name="lec_time_start" >
+                                                    name="lec_time_start">
                                                 <span class="input-group-text">-</span>
                                                 <input type="time" class="form-control" id="lec_time_end"
-                                                    name="lec_time_end" >
+                                                    name="lec_time_end">
                                             </div>
                                         </div>
                                     </div>
@@ -228,7 +249,8 @@ include '../includes/admin_head.php';
                                 </div>
                                 <div class="mb-3">
                                     <label for="lab_room" class="form-label">Laboratory Room</label>
-                                    <input type="text" class="form-control" id="lab_room" placeholder="eg. CLA 21" name="lab_room" >
+                                    <input type="text" class="form-control" id="lab_room" placeholder="eg. CLA 21"
+                                        name="lab_room">
                                 </div>
                                 <div class="mb-3">
                                     <label for="lec_schedule" class="form-label">Laboratory Schedule</label>
@@ -237,7 +259,7 @@ include '../includes/admin_head.php';
                                         <div class="col">
                                             <div class="input-group">
                                                 <label for="lab_days" class="form-text">Days</label>
-                                                <select class="form-select" id="lab_days" name="lab_days[]" multiple >
+                                                <select class="form-select" id="lab_days" name="lab_days[]" multiple>
                                                     <option value="M">Monday</option>
                                                     <option value="T">Tuesday</option>
                                                     <option value="W">Wednesday</option>
@@ -252,10 +274,10 @@ include '../includes/admin_head.php';
                                             <label for="lab_time" class="form-text"> Time </label>
                                             <div class="input-group">
                                                 <input type="time" class="form-control" id="lab_time_start"
-                                                    name="lab_time_start" >
+                                                    name="lab_time_start">
                                                 <span class="input-group-text">-</span>
                                                 <input type="time" class="form-control" id="lab_time_end"
-                                                    name="lab_time_end" >
+                                                    name="lab_time_end">
                                             </div>
                                         </div>
                                     </div>

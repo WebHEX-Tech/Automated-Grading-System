@@ -97,7 +97,6 @@ include '../includes/admin_head.php';
                                 // Assuming you already have this from the previous code
                                 $department_id_from_get = $_GET['department_id'];
                                 ?>
-                                <input type="hidden" id="profiling_id" name="profiling_id" value="">
                                 <select class="form-select" id="profiling_id" name="profiling_id"
                                     onchange="populateEmployeeDetails(this)">
                                     <option value="" disabled selected>Select Employee</option>
@@ -219,7 +218,7 @@ include '../includes/admin_head.php';
     <script src="./js/main.js"></script>
     <script>
         $(document).ready(function () {
-            $('#emp_id').select2({
+            $('#profiling_id').select2({
                 placeholder: "Type to search for an employee",
                 allowClear: true,
                 width: '100%',

@@ -91,7 +91,15 @@ html {
   scroll-padding-top: 9rem;
   scroll-behavior: smooth;
 }
+th.component-type-column,
+td.component-type-column {
+  border-left: 1px solid #a1a1a1; /* Adds left border */
+}
 
+th.component-type-column:first-child,
+td.component-type-column:first-child {
+  border-left: none; /* Removes the first column's left border */
+}
 .login main,
 .signup main {
   min-height: 100vh;

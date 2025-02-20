@@ -68,8 +68,8 @@ include '../includes/admin_head.php';
 
       <div class="flex-md-nowrap p-1 title_page shadow" style="background-color: whitesmoke;">
         <div class="d-flex align-items-center">
-          <button onclick="history.back()" class="bg-none d-flex align-items-center"><i
-              class='bx bx-chevron-left fs-2 brand-color'></i></button>
+          <a href="./course_time_select?curr_year_id=<?= $_GET['year_id'] ?>&course_id=<?= $_GET['course_id'] ?>" class="bg-none d-flex align-items-center"><i
+              class='bx bx-chevron-left fs-2 brand-color'></i></a>
           <div class="container-fluid d-flex justify-content-center">
             <span class="fs-2 fw-bold h1 m-0 brand-color">
               <?php
