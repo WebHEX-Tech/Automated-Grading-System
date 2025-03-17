@@ -92,19 +92,44 @@ class Faculty_Subjects
         return $data;
     }
 
-    function searchByDeptName($keyword)
+    function searchByDeptName($emp_id, $keyword, $school_year = null, $semester = null)
     {
-        $sql = "SELECT * FROM college_department_table WHERE department_name LIKE :keyword;";
+        $sql = "SELECT fs.*, ct.sub_code, ct.sub_name, ct.sub_prerequisite, sch.school_yr, s.semester
+            FROM faculty_subjects fs
+            INNER JOIN curr_table ct ON fs.curr_id = ct.curr_id
+            INNER JOIN faculty_schedule sch ON fs.sched_id = sch.sched_id
+            INNER JOIN profiling_table p ON sch.profiling_id = p.profiling_id
+            INNER JOIN semester s ON sch.semester = s.semester_id
+            WHERE p.emp_id = :emp_id
+            AND (ct.sub_code LIKE :keyword OR ct.sub_name LIKE :keyword)";
+
+        if (!empty($school_year)) {
+            $sql .= " AND sch.school_yr = :school_year";
+        }
+        if (!empty($semester)) {
+            $sql .= " AND s.semester_id = :semester";
+        }
+
         $query = $this->db->connect()->prepare($sql);
         $keyword = "%$keyword%";
+
+        $query->bindParam(':emp_id', $emp_id);
         $query->bindParam(':keyword', $keyword);
+
+        if (!empty($school_year)) {
+            $query->bindParam(':school_year', $school_year);
+        }
+        if (!empty($semester)) {
+            $query->bindParam(':semester', $semester);
+        }
 
         $data = null;
         if ($query->execute()) {
-            $data = $query->fetchAll();
+            $data = $query->fetchAll(PDO::FETCH_ASSOC);
         }
         return $data;
     }
+
     function getByUser($emp_id)
     {
         $sql = "SELECT fs.*, ct.sub_code, ct.sub_name, ct.sub_prerequisite, sch.school_yr, s.semester

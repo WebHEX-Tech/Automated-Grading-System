@@ -3,7 +3,19 @@
   --primary-color: #952323;
   --dark-color: rgb(6, 6, 6);
 }
-
+.sticky-btn {
+  position: fixed;
+  bottom: 0;
+  left: 0;
+  width: 100%;
+  background: white; /* Adjust as needed */
+  padding: 15px;
+  box-shadow: 0 -2px 10px rgba(0, 0, 0, 0.1);
+  display: flex;
+  justify-content: flex-start;
+  gap: 10px;
+  z-index: 1000;
+}
 .sticky-top {
   top: 0 !important;
   z-index: 100 !important;
@@ -333,6 +345,59 @@ main .title_page {
   width: 100%;
   overflow-x: auto;
   overflow-y: auto;
+}
+
+.column .dropdown-container{
+  position: absolute;
+  top: 10px;
+  right: 25px;
+}
+
+.column .dropdown-menu{
+  display: none;
+  position: absolute;
+  top: 100%;
+  right: 0;
+  background-color: #ffffff;
+  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+  z-index: 1000;
+  border-radius: 4px;
+}
+
+.column .bx-dots-vertical-rounded:hover{
+  cursor: pointer;
+  background-color: #fc7272;
+  border-radius: 50%;
+}
+
+.column .dropdown-menu .dropdown-item,
+.course .dropdown-menu .dropdown-item {
+  display: block;
+  padding: 8px 16px;
+  text-decoration: none;
+}
+
+.column .dropdown-menu .dropdown-item:hover,
+.dropdown-menu .dropdown-item:hover {
+  background-color: #ee7e7e;
+  cursor: pointer;
+}
+
+/* .curriculum .dropdown-container:hover .dropdown-menu {
+  display: block;
+} */
+
+.column .stretched-link{
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  z-index: 1;
+}
+
+.column .bx.bx-dots-vertical-rounded{
+  z-index: 2;
 }
 
 #edit_att_req:hover,

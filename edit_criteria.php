@@ -17,6 +17,7 @@ $success = false;
 
 // Fetch existing criteria data if in edit mode
 $criteria_id = isset($_GET['component_id']) ? $_GET['component_id'] : null;
+$selected_faculty_sub_id = isset($_GET['faculty_sub_id']) ? $_GET['faculty_sub_id'] : null;
 $criteria_data = $components->getComponentById($criteria_id);
 
 if (isset($_POST['edit_criteria'])) {
@@ -114,7 +115,18 @@ include './includes/head.php';
   <script>
     <?php if ($success): ?>
       setTimeout(function () {
-        window.location.href = './subject_setting.php?faculty_sub_id=<?= $_GET['faculty_sub_id'] ?? '' ?>';
+        const form = document.createElement('form');
+        form.method = 'POST';
+        form.action = './subject_setting.php';
+
+        const facultyInput = document.createElement('input');
+        facultyInput.type = 'hidden';
+        facultyInput.name = 'faculty_sub_id';
+        facultyInput.value = "<?= htmlspecialchars($selected_faculty_sub_id) ?>";
+        form.appendChild(facultyInput);
+
+        document.body.appendChild(form);
+        form.submit();
       }, 1500);
     <?php endif; ?>
   </script>

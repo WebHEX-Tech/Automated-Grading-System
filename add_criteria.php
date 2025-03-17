@@ -12,6 +12,7 @@ require_once './classes/component.class.php';
 $period = new Periods();
 $components = new SubjectComponents();
 
+$selected_faculty_sub_id = isset($_GET['faculty_sub_id']) ? $_GET['faculty_sub_id'] : null;
 $error_message = '';
 $success = false;
 
@@ -86,8 +87,8 @@ include './includes/head.php';
             <div class="col">
               <div class="mb-3">
                 <label for="component_type" class="form-label">Criteria Name</label>
-                <input type="text" class="form-control" name="component_type" id="component_type" aria-describedby="component_type"
-                  placeholder="eg. Activities">
+                <input type="text" class="form-control" name="component_type" id="component_type"
+                  aria-describedby="component_type" placeholder="eg. Activities">
               </div>
               <div class="mb-3">
                 <label for="weight" class="form-label">Weight</label>
@@ -111,10 +112,20 @@ include './includes/head.php';
 
   <script src="./js/main.js"></script>
   <script>
-
     <?php if ($success): ?>
       setTimeout(function () {
-        window.location.href = './subject_setting.php?faculty_sub_id=<?= $_GET['faculty_sub_id'] ?>';
+        const form = document.createElement('form');
+        form.method = 'POST';
+        form.action = './subject_setting.php';
+
+        const facultyInput = document.createElement('input');
+        facultyInput.type = 'hidden';
+        facultyInput.name = 'faculty_sub_id';
+        facultyInput.value = "<?= htmlspecialchars($selected_faculty_sub_id) ?>";
+        form.appendChild(facultyInput);
+
+        document.body.appendChild(form);
+        form.submit();
       }, 1500);
     <?php endif; ?>
   </script>

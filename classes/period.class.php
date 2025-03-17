@@ -129,7 +129,6 @@ class Periods
         }
         return $data;
     }
-
     public function delete($period_id)
     {
         $query = "DELETE FROM periods WHERE period_id = :period_id";

@@ -265,7 +265,9 @@ include '../includes/admin_head.php';
               <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
             </div>
             <div class="modal-body">
-              Are you sure you want to delete this faculty schedule?
+              <p>Are you sure you want to delete this schedule?</p>
+              <p class="text-danger"><strong>Warning:</strong> This will also delete all existing data, including
+                subjects, students, and grades associated with this schedule.</p>
             </div>
             <div class="modal-footer">
               <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancel</button>
