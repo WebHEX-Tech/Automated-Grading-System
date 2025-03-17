@@ -55,6 +55,28 @@ class ComponentItems
         }
         return $data;
     }
+    function getItemId($items_id)
+    {
+        $sql = "SELECT * FROM component_items WHERE items_id = :items_id ORDER BY component_no ASC";
+
+        $query = $this->db->connect()->prepare($sql);
+        $query->bindParam(':items_id', $items_id);
+        $data = null;
+        if ($query->execute()) {
+            $data = $query->fetch();
+        }
+        return $data;
+    }
+    public function update()
+    {
+        $sql = "UPDATE component_items SET component_no = :component_no, component_quantity = :component_quantity, component_date = :component_date WHERE items_id = :items_id";
+        $query = $this->db->connect()->prepare($sql);
+        $query->bindParam(':items_id', $this->items_id);
+        $query->bindParam(':component_no', $this->component_no);
+        $query->bindParam(':component_quantity', $this->component_quantity);
+        $query->bindParam(':component_date', $this->component_date);
+        return $query->execute();
+    }
     public function delete($items_id)
     {
         $query = "DELETE FROM component_items WHERE items_id = :items_id";

@@ -9,17 +9,15 @@ $(document).ready(function() {
             split: ['pdf', 'csv'],
         }],
         'columnDefs': [{
-            'targets': [3, 4, 5, 6, 7],
-            /* column index */
+            'targets': [3],
             'orderable': false,
-            /* true or false */
         }]
     });
 
     dataTable.buttons().container().appendTo($('#MyButtons'));
 
     var table = dataTable;
-    var filter = createFilter(table, [1, 2, 3, 5, 6]);
+    var filter = createFilter(table, [1, 2]);
 
     function createFilter(table, columns) {
         var input = $('input#keyword').on("keyup", function() {

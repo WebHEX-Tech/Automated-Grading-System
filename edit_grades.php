@@ -23,6 +23,13 @@ $grades = new Grades();
 $faculty_sub_id = $_GET['faculty_sub_id'] ?? null;
 $grades_id = $_GET['grades_id'] ?? null;
 $active_period = $_GET['active_period'] ?? null;
+$grade_period = '';
+
+if ($active_period === 'midterm') {
+    $grade_period = 'Midterm';
+} else {
+    $grade_period = 'Final Term';
+}
 
 $student = $grades->showById($grades_id);
 $gradingComponents = ($active_period === 'finalterm') ? $period->showFinalterm($faculty_sub_id) : $period->showMidterm($faculty_sub_id);
@@ -76,9 +83,8 @@ include './includes/head.php';
                 </div>
             </div>
 
-            <div class="m-5">
+            <div class="m-5 position-relative">
                 <form action="#" method="post">
-
                     <?php if (!empty($error_message)): ?>
                         <div class="alert alert-danger"><?= htmlspecialchars($error_message) ?></div>
                     <?php endif; ?>
@@ -117,7 +123,7 @@ include './includes/head.php';
 
                     <?php foreach ($gradingComponents as $index => $component): ?>
                         <div class="component-container">
-                            <h4 class="my-4"><?= htmlspecialchars($component['component_type']) ?>
+                            <h4 class="my-4 text-primary"><?= htmlspecialchars($component['component_type']) ?>
                                 (<?= htmlspecialchars($component['weight']) ?>%)</h4>
 
                             <?php
@@ -127,7 +133,9 @@ include './includes/head.php';
                                 ?>
                                 <div class="row mb-4">
                                     <div class="col-md-1">
-                                        <p> <?= $component['component_type'] . ' No.' . $item['component_no'] ?></p>
+                                        <p class="title_page">
+                                            <?= $component['component_type'] . ' No.' . $item['component_no'] ?>
+                                        </p>
                                         <p>(<?= date('M d, Y', strtotime($item['component_date'])) ?>)</p>
                                     </div>
                                     <div class="col-md-1">
@@ -150,7 +158,7 @@ include './includes/head.php';
                                 <div class="col-md-1">
                                     <label class="form-label">Average</label>
                                     <input type="text" style="width: 120px;" class="form-control average-score"
-                                        value="<?= round($scores->calculateAverageByComponent($grades_id, $component['component_id']) ?: 0, 2) ?>"
+                                        value="<?= round($scores->calculateAverageByComponent($grades_id, $component['component_id']) ?: 0, 2) ?>%"
                                         readonly>
                                 </div>
                                 <div class="col-md-1">
@@ -165,10 +173,82 @@ include './includes/head.php';
                         <hr class="mb-5">
                     <?php endforeach; ?>
 
-                    <div class="d-flex justify-content-start mt-4 gap-2">
-                        <a href="subject_students.php?faculty_sub_id=<?= $faculty_sub_id ?>" type="button" class="btn btn-secondary">Cancel</a>
-                        <button type="submit" name="edit_grades" class="btn brand-bg-color"><i
-                                class='bx bxs-save me-2'></i>Save Changes</button>
+                    <div class="d-flex justify-content-between align-items-center mt-4 gap-2 sticky-btn">
+                            <div class="d-flex flex-row gap-3 ms-5">
+                            <div>
+                                <label class="form-label" style="color: #952323;"><?= $grade_period ?> Grade</label>
+                                <?php
+                                $midtermGrade = 0;
+                                foreach ($gradingComponents as $component) {
+                                    $midtermGrade += $scores->calculateWeightByComponent($grades_id, $component['component_id']) ?: 0;
+                                }
+                                $midtermGrade = round($midtermGrade, 2);
+
+                                function getNumericalRating($grade)
+                                {
+                                    if ($grade >= 97)
+                                        return 1.0;
+                                    elseif ($grade >= 94)
+                                        return 1.25;
+                                    elseif ($grade >= 91)
+                                        return 1.5;
+                                    elseif ($grade >= 88)
+                                        return 1.75;
+                                    elseif ($grade >= 85)
+                                        return 2.0;
+                                    elseif ($grade >= 82)
+                                        return 2.25;
+                                    elseif ($grade >= 79)
+                                        return 2.5;
+                                    elseif ($grade >= 76)
+                                        return 2.75;
+                                    elseif ($grade >= 75)
+                                        return 3.0;
+                                    else
+                                        return 5.0;
+                                }
+
+                                $numericalRating = getNumericalRating($midtermGrade);
+                                ?>
+                                <input type="text" style="width: 120px;" class="form-control average-score"
+                                    value="<?= $midtermGrade ?>%" readonly>
+                            </div>
+                            <div>
+                                <label class="form-label" style="color: #952323;">Point Eqv.(Expected)</label>
+                                <input type="text" style="width: 120px;" class="form-control weighted-score"
+                                    value="<?= number_format((float) $numericalRating, 2, '.', '') ?>" readonly>
+                            </div>
+                        </div>
+
+                        <div>
+                            <a href="subject_students.php?faculty_sub_id=<?= $faculty_sub_id ?>" type="button"
+                                class="btn btn-secondary">Cancel</a>
+                            <button type="button" class="btn brand-bg-color" id="saveChangesBtn"><i
+                                    class='bx bxs-save me-2'></i>Save
+                                Changes</button>
+                        </div>
+                    </div>
+
+                    <div class="modal fade" id="saveConfirmationModal" tabindex="-1"
+                        aria-labelledby="saveConfirmationModalLabel" aria-hidden="true">
+                        <div class="modal-dialog modal-dialog-centered">
+                            <div class="modal-content">
+                                <div class="modal-header">
+                                    <h5 class="modal-title" id="saveConfirmationModalLabel">Confirm Save</h5>
+                                    <button type="button" class="btn-close" data-bs-dismiss="modal"
+                                        aria-label="Close"></button>
+                                </div>
+                                <div class="modal-body">
+                                    Are you sure you want to save these changes?
+                                </div>
+                                <div class="modal-footer">
+                                    <button type="button" class="btn btn-secondary"
+                                        data-bs-dismiss="modal">Cancel</button>
+                                    <button type="submit" name="edit_grades" id="edit_grades"
+                                        class="btn btn-primary">Confirm</button>
+                                </div>
+                            </div>
+                        </div>
                     </div>
                 </form>
             </div>
@@ -180,14 +260,14 @@ include './includes/head.php';
         document.addEventListener("DOMContentLoaded", function () {
             document.querySelectorAll(".score-input").forEach(input => {
                 input.addEventListener("input", function () {
-                    let maxScore = parseFloat(this.dataset.total) || 0; // Total score from database
+                    let maxScore = parseFloat(this.dataset.total) || 0; 
                     let enteredScore = parseFloat(this.value) || 0;
 
                     if (enteredScore > maxScore) {
-                        this.value = maxScore; // Set to max if exceeded
+                        this.value = maxScore; 
                         alert(`Score cannot exceed ${maxScore}`);
                     } else if (enteredScore < 0) {
-                        this.value = 0; // Set to 0 if negative
+                        this.value = 0; 
                         alert("Score cannot be less than 0");
                     }
 
@@ -197,13 +277,17 @@ include './includes/head.php';
             });
         });
 
+        document.getElementById('saveChangesBtn').addEventListener('click', function () {
+            let saveModal = new bootstrap.Modal(document.getElementById('saveConfirmationModal'));
+            saveModal.show();
+        });
 
         function updateComponentCalculations(componentContainer) {
             let totalScore = 0, totalMaxScore = 0, count = 0;
 
             componentContainer.querySelectorAll("#score").forEach(input => {
                 let score = parseFloat(input.value) || 0;
-                let maxScore = parseFloat(input.closest(".row").querySelector("#total").value) || 1; // Get total from corresponding input
+                let maxScore = parseFloat(input.closest(".row").querySelector("#total").value) || 1;
 
                 if (score > maxScore) {
                     input.value = maxScore;

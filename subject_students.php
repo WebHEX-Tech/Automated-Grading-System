@@ -82,18 +82,25 @@ include './includes/head.php';
                     <div class="tab-pane fade show active" id="nav-midterm" role="tabpanel"
                         aria-labelledby="nav-midterm-tab">
                         <div class="content container-fluid mw-100 border rounded shadow p-3 position-relative">
-                            <a href="./subject_setting?faculty_sub_id=<?= $selected_faculty_sub_id ?>"
-                                name="edit_criteria"
-                                class="btn-primary p-2 rounded position-absolute top-0 end-0 m-2"><i
-                                    class='bx bxs-cog'></i>
-                                Settings</a>
+                            <form id="settingsForm" method="POST" action="./subject_setting"
+                                class="position-absolute top-0 end-0 m-2">
+                                <input type="hidden" name="faculty_sub_id" value="<?= $selected_faculty_sub_id ?>">
+                                <button type="submit" name="edit_criteria" class="btn btn-primary p-2 rounded">
+                                    <i class='bx bxs-cog'></i> Settings
+                                </button>
+                            </form>
+
 
                             <div class="d-flex flex-column align-items-center">
                                 <h3 class="brand-color"><?= ucwords($subject['sub_name']) ?></h3>
                                 <h4><?= $subject['sub_code'] ?> (<?= $subject['yr_sec'] ?>)</h4>
                             </div>
 
-                            <div class="d-flex flex-column align-items-end my-2">
+                            <div class="d-flex flex-row justify-content-end my-4">
+                                <a class="btn btn-outline-secondary btn-add ms-3 brand-bg-color add-btn"
+                                    href="./column_select?active_period=midterm&faculty_sub_id=<?= $selected_faculty_sub_id ?>">
+                                    Edit Columns
+                                </a>
                                 <button class="btn btn-outline-secondary btn-add ms-3 brand-bg-color add-btn"
                                     type="button" data-bs-toggle="modal" data-bs-target="#addComponentModal"
                                     data-period="midterm">
@@ -149,7 +156,7 @@ include './includes/head.php';
                                                     </th>
                                                 <?php endforeach;
                                             } else { ?>
-                                                <th class="text-center component-type-column">N/A</th>
+                                                <th class="text-center component-type-column">-</th>
                                             <?php } ?>
                                         <?php endforeach; ?>
                                     </tr>
@@ -181,7 +188,9 @@ include './includes/head.php';
                                                         if (!empty($scoreData)) {
                                                             foreach ($scoreData as $score): ?>
                                                                 <td class="text-center">
-                                                                    <?= htmlspecialchars($score['score']) . '/' . $item['component_quantity'] ?>
+                                                                    <span
+                                                                        style="color:#952323;"><?= htmlspecialchars($score['score']) ?></span><span
+                                                                        class="text-secondary"><?= '/' . $item['component_quantity'] ?></span>
                                                                 </td>
                                                             <?php endforeach;
                                                         } else { ?>
@@ -205,18 +214,24 @@ include './includes/head.php';
 
                     <div class="tab-pane fade" id="nav-finalterm" role="tabpanel" aria-labelledby="nav-finalterm-tab">
                         <div class="content container-fluid mw-100 border rounded shadow p-3 position-relative">
-                            <a href="./subject_setting?faculty_sub_id=<?= $selected_faculty_sub_id ?>"
-                                name="edit_criteria"
-                                class="btn-primary p-2 rounded position-absolute top-0 end-0 m-2"><i
-                                    class='bx bxs-cog'></i>
-                                Settings</a>
+                            <form id="settingsForm" method="POST" action="./subject_setting"
+                                class="position-absolute top-0 end-0 m-2">
+                                <input type="hidden" name="faculty_sub_id" value="<?= $selected_faculty_sub_id ?>">
+                                <button type="submit" name="edit_criteria" class="btn btn-primary p-2 rounded">
+                                    <i class='bx bxs-cog'></i> Settings
+                                </button>
+                            </form>
 
                             <div class="d-flex flex-column align-items-center">
                                 <h3 class="brand-color"><?= ucwords($subject['sub_name']) ?></h3>
                                 <h4><?= $subject['sub_code'] ?> (<?= $subject['yr_sec'] ?>)</h4>
                             </div>
 
-                            <div class="d-flex flex-column align-items-end my-2">
+                            <div class="d-flex flex-row justify-content-end my-4">
+                                <a class="btn btn-outline-secondary btn-add ms-3 brand-bg-color add-btn"
+                                    href="./column_select?active_period=finalterm&faculty_sub_id=<?= $selected_faculty_sub_id ?>">
+                                    Edit Columns
+                                </a>
                                 <button class="btn btn-outline-secondary btn-add ms-3 brand-bg-color add-btn"
                                     type="button" data-bs-toggle="modal" data-bs-target="#addComponentModal"
                                     data-period="finalterm">
@@ -272,7 +287,7 @@ include './includes/head.php';
                                                     </th>
                                                 <?php endforeach;
                                             } else { ?>
-                                                <th class="text-center component-type-column">N/A</th>
+                                                <th class="text-center component-type-column">-</th>
                                             <?php } ?>
                                         <?php endforeach; ?>
                                     </tr>
@@ -304,7 +319,9 @@ include './includes/head.php';
                                                         if (!empty($scoreData)) {
                                                             foreach ($scoreData as $score): ?>
                                                                 <td class="text-center">
-                                                                    <?= htmlspecialchars($score['score']) . '/' . $item['component_quantity'] ?>
+                                                                    <span
+                                                                        style="color:#952323;"><?= htmlspecialchars($score['score']) ?></span><span
+                                                                        class="text-secondary"><?= '/' . $item['component_quantity'] ?></span>
                                                                 </td>
                                                             <?php endforeach;
                                                         } else { ?>
@@ -363,10 +380,13 @@ include './includes/head.php';
                                     ?>
                                     <div class="col-12 text-center">
                                         <p>No criteria available</p>
-                                        <a href="./subject_setting?faculty_sub_id=<?= $facultySubId ?>" name="edit_criteria"
-                                            class="btn btn-primary p-2 rounded">
-                                            Add Criteria
-                                        </a>
+                                        <form method="POST" action="./subject_setting" style="display:inline;">
+                                            <input type="hidden" name="faculty_sub_id"
+                                                value="<?= htmlspecialchars($facultySubId) ?>">
+                                            <button type="submit" name="edit_criteria" class="btn btn-primary p-2 rounded">
+                                                Add Criteria
+                                            </button>
+                                        </form>
                                     </div>
                                 <?php endif; ?>
                             </div>
