@@ -3,7 +3,7 @@ session_start();
 
 if (!isset($_SESSION['user_role']) || (isset($_SESSION['user_role']) && $_SESSION['user_role'] != 1)) {
   header('location: ./login.php');
-  exit(); // Ensure script stops execution after redirection
+  exit();
 }
 
 require_once './classes/period.class.php';
@@ -14,28 +14,39 @@ $components = new SubjectComponents();
 
 $error_message = '';
 $success = false;
+$totalWeight = 0;
 
-// Fetch existing criteria data if in edit mode
 $criteria_id = isset($_GET['component_id']) ? $_GET['component_id'] : null;
+$active_period = isset($_GET['period']) ? $_GET['period'] : null;
 $selected_faculty_sub_id = isset($_GET['faculty_sub_id']) ? $_GET['faculty_sub_id'] : null;
 $criteria_data = $components->getComponentById($criteria_id);
+$gradingComponents = ($active_period === 'finalterm') ? $period->showFinalterm($selected_faculty_sub_id) : $period->showMidterm($selected_faculty_sub_id);
+
+foreach($gradingComponents as $item) {
+  $totalWeight += $item['weight'];
+}
+
+$totalWeight -= $criteria_data['weight'];
 
 if (isset($_POST['edit_criteria'])) {
-  // Collecting data from the form
   $component_type = ucwords($_POST['component_type']);
-  $weight = htmlentities($_POST['weight']);
+  $weight = floatval(htmlentities($_POST['weight']));
 
-  // Set the values for the components object
-  $components->component_id = $criteria_id;
-  $components->component_type = $component_type;
-  $components->weight = $weight;
+  $newTotalWeight = $totalWeight + $weight;
 
-  // Call the edit function
-  if ($components->edit()) {
-    $message = 'Criteria updated successfully!';
-    $success = true;
+  if ($newTotalWeight > 100) {
+    $error_message = 'Total weight exceeds 100%. Please adjust the criteria weight.';
   } else {
-    $error_message = 'Something went wrong while updating criteria.';
+    $components->component_id = $criteria_id;
+    $components->component_type = $component_type;
+    $components->weight = $weight;
+
+    if ($components->edit()) {
+      $message = 'Criteria updated successfully!';
+      $success = true;
+    } else {
+      $error_message = 'Something went wrong while updating criteria.';
+    }
   }
 }
 ?>
@@ -87,14 +98,13 @@ include './includes/head.php';
               <div class="mb-3">
                 <label for="component_type" class="form-label">Criteria Name</label>
                 <input type="text" class="form-control" name="component_type" id="component_type"
-                  aria-describedby="component_type" placeholder="eg. Activities"
+                  placeholder="eg. Activities"
                   value="<?= htmlspecialchars($_POST['component_type'] ?? $criteria_data['component_type']) ?>">
               </div>
               <div class="mb-3">
                 <label for="weight" class="form-label">Weight</label>
                 <div class="input-group" style="width: 150px;">
-                  <input type="number" class="form-control" name="weight" id="weight" aria-describedby="weight"
-                    value="<?= htmlspecialchars($_POST['weight'] ?? $criteria_data['weight']) ?>">
+                  <input type="number" class="form-control" name="weight" id="weight" value="<?= htmlspecialchars($_POST['weight'] ?? $criteria_data['weight']) ?>">
                   <span class="input-group-text">%</span>
                 </div>
               </div>
@@ -131,5 +141,4 @@ include './includes/head.php';
     <?php endif; ?>
   </script>
 </body>
-
 </html>

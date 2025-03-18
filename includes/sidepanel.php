@@ -17,12 +17,12 @@
         <span class="fs-6 ms-2">Students</span>
       </a>
     </li>
-    <li class="nav-item">
+    <!-- <li class="nav-item">
       <a href="./grade_posted-list" class="nav-link link-dark d-flex align-items-center mb-2  <?= $grade_page ?>">
         <i class='bx bx-clipboard fs-3'></i>
         <span class="fs-6 ms-2">Grade Posted</span>          
       </a>
-    </li>
+    </li> -->
     <li class="nav-item">
       <a href="./select_subject_setting" class="nav-link link-dark d-flex align-items-center mb-2  <?= $sub_setting_page ?>">
         <i class='bx bx-cog fs-3'></i>

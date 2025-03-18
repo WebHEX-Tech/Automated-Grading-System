@@ -109,15 +109,15 @@ include './includes/head.php';
                   </h4>
                 </div>
 
-                <div class="row m-2 row-cols-1 row-cols-md-2 d-flex justify-content-between">
-                  <form class="d-flex justify-content-start align-items-center">
+                <div class="row m-2 row-cols-1 row-cols-md-2 d-flex justify-content-end">
+                  <!-- <form class="d-flex justify-content-start align-items-center">
                     <label class="me-2">Number of absences:</label>
                     <input class="border-bottom px-2" id="disabledTextInput" type="number" title="3" value="7" disabled>
                     <i class='bx bx-edit ms-2' id="edit_att_req"></i>
-                  </form>
+                  </form> -->
                   <?php if (!empty($midtermPeriod)): ?>
                     <div class="col-3 d-flex justify-content-end">
-                      <a href="./add_criteria?faculty_sub_id=<?= $selected_faculty_sub_id ?>&period_id=<?= $midtermPeriod ?>"
+                      <a href="./add_criteria?faculty_sub_id=<?= $selected_faculty_sub_id ?>&period=midterm&period_id=<?= $midtermPeriod ?>"
                         class="btn btn-outline-secondary btn-add ms-3 brand-bg-color" type="button"><i
                           class='bx bx-plus-circle'></i></a>
                     </div>
@@ -145,7 +145,7 @@ include './includes/head.php';
                         <td class="midterm-weight"><?= $item['weight'] ?>%</td>
                         <td class="text-center">
                           <a
-                            href="./edit_criteria.php?faculty_sub_id=<?= $selected_faculty_sub_id ?>&component_id=<?= $item['component_id'] ?>">
+                            href="./edit_criteria.php?faculty_sub_id=<?= $selected_faculty_sub_id ?>&component_id=<?= $item['component_id'] ?>&period=midterm">
                             <i class='bx bx-edit text-success fs-4'></i>
                           </a>
                           <button class="delete-btn bg-none" data-subject-id="<?= $item['component_id'] ?>">
@@ -178,14 +178,14 @@ include './includes/head.php';
                     </h4>
                   </div>
 
-                  <div class="row m-2 row-cols-1 row-cols-md-2 d-flex justify-content-between">
-                    <form class="d-flex justify-content-start align-items-center">
+                  <div class="row m-2 row-cols-1 row-cols-md-2 d-flex justify-content-end">
+                    <!-- <form class="d-flex justify-content-start align-items-center">
                       <label class="me-2">Number of absences:</label>
                       <input class="border-bottom px-2" id="disabledTextInput" type="number" title="3" value="7" disabled>
                       <i class='bx bx-edit ms-2' id="edit_att_req"></i>
-                    </form>
+                    </form> -->
                     <div class="col-3 d-flex justify-content-end">
-                      <a href="./add_criteria?faculty_sub_id=<?= $selected_faculty_sub_id ?>&period_id=<?= $finaltermPeriod ?>"
+                      <a href="./add_criteria?faculty_sub_id=<?= $selected_faculty_sub_id ?>&period=finalterm&period_id=<?= $finaltermPeriod ?>"
                         class="btn btn-outline-secondary btn-add ms-3 brand-bg-color" type="button"><i
                           class='bx bx-plus-circle'></i></a>
                     </div>
@@ -212,7 +212,7 @@ include './includes/head.php';
                           <td class="finalterm-weight"><?= $item['weight'] ?>%</td>
                           <td class="text-center">
                             <a
-                              href="./edit_criteria.php?faculty_sub_id=<?= $selected_faculty_sub_id ?>&component_id=<?= $item['component_id'] ?>">
+                              href="./edit_criteria.php?faculty_sub_id=<?= $selected_faculty_sub_id ?>&component_id=<?= $item['component_id'] ?>&period=finalterm">
                               <i class='bx bx-edit text-success fs-4'></i>
                             </a>
                             <button class="delete-btn bg-none" data-subject-id="<?= $item['component_id'] ?>">
@@ -296,51 +296,49 @@ include './includes/head.php';
       // Restore the active tab on page load
       restoreActiveTab();
 
-      const deleteButtons = document.querySelectorAll('.delete-btn');
-      const deleteModal = new bootstrap.Modal(document.getElementById('deleteConfirmationModal'));
-      let currentComponentId = null;
-
-      deleteButtons.forEach(button => {
-        button.addEventListener('click', function () {
-          currentComponentId = this.getAttribute('data-subject-id');
-          deleteModal.show();
+      $(document).ready(function () {
+        $('.delete-btn').on('click', function () {
+          var component_id = $(this).data('subject-id');
+          $('#confirmDeleteBtn').data('component-id', component_id);
+          $('#deleteConfirmationModal').modal('show');
         });
-      });
 
-      document.getElementById('confirmDeleteBtn').addEventListener('click', function () {
-        if (currentComponentId) {
-          fetch('./delete_criteria.php', {
+        $('#confirmDeleteBtn').on('click', function () {
+          var component_id = $(this).data('component-id');
+
+          $.ajax({
+            url: './delete_criteria.php',
             method: 'POST',
-            headers: {
-              'Content-Type': 'application/json',
+            data: {
+              component_id: component_id
             },
-            body: JSON.stringify({ component_id: currentComponentId }),
-          })
-            .then(response => response.json())
-            .then(data => {
-              if (data.success) {
-                showAlert(data.message, 'success');
+            success:
+              function (response) {
+                showAlert('Criteria deleted successfully!', 'success');
                 setTimeout(() => location.reload(), 1000);
-              } else {
-                alert(data.message);
+              },
+            error:
+              function (xhr, status, error) {
+                console.error(xhr.responseText);
+                alert('Error occurred: ' + error);
               }
-            })
-            .catch(error => {
-              console.error('Error:', error);
-              alert('An error occurred. Please try again.');
-            });
+          });
+        });
+
+        function showAlert(message, type) {
+          const alertContainer = document.getElementById('alertContainer');
+          const alertHTML = `
+            <div class="alert alert-${type} d-flex flex-row align-items-center gap-2 position-fixed top-0 start-50 translate-middle-x w-auto mt-4 z-index-1050" role="alert">
+               <i class='bx bx-check-circle'></i> ${message}
+            </div>
+        `;
+          alertContainer.innerHTML = alertHTML;
+
+          // setTimeout(() => {
+          //     alertContainer.innerHTML = '';
+          // }, 1000);
         }
       });
-
-      function showAlert(message, type) {
-        const alertContainer = document.getElementById('alertContainer');
-        const alertHTML = `
-          <div class="alert alert-${type} d-flex flex-row align-items-center gap-2 position-fixed top-0 start-50 translate-middle-x w-auto mt-4 z-index-1050" role="alert">
-            <strong>${type === 'success' ? `Successfully Deleted! <i class='bx bx-check-circle' ></i>` : 'Error!'}</strong> ${message}
-          </div>
-        `;
-        alertContainer.innerHTML = alertHTML;
-      }
 
       function updateTotalWeightColor(id) {
         const totalWeightElement = document.getElementById(id);

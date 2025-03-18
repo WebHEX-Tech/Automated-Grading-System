@@ -25,19 +25,16 @@ if ($component_id) {
 }
 
 if (isset($_POST['add_component_item'])) {
-    // Collecting data from the form
     $component_id = $_GET['component_id'];
     $component_no = htmlentities($_POST['component_no']);
     $component_quantity = htmlentities($_POST['component_quantity']);
-    $component_date = date('Y-m-d'); // Assign today's date
+    $component_date = htmlentities($_POST['component_date']); 
 
-    // Set the values for the ComponentItems object
     $comp_items->component_id = $component_id;
     $comp_items->component_no = $component_no;
     $comp_items->component_quantity = $component_quantity;
     $comp_items->component_date = $component_date;
 
-    // Call the add function
     if ($comp_items->add()) {
         $message = 'Component Item added';
         $success = true;

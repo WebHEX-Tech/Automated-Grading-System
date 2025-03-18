@@ -5,7 +5,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     $raw_input = file_get_contents('php://input');
     $input = json_decode($raw_input, true);
 
-    $component_id = $input['component_id'] ?? null;
+    $component_id = $_POST['component_id'] ?? null;
 
     if ($component_id === null) {
         error_log("Component ID is null in backend.");

@@ -13,26 +13,35 @@ $period = new Periods();
 $components = new SubjectComponents();
 
 $selected_faculty_sub_id = isset($_GET['faculty_sub_id']) ? $_GET['faculty_sub_id'] : null;
+$active_period = isset($_GET['period']) ? $_GET['period'] : null;
+$period_id = $_GET['period_id'];
+$gradingComponents = ($active_period === 'finalterm') ? $period->showFinalterm($selected_faculty_sub_id) : $period->showMidterm($selected_faculty_sub_id);
 $error_message = '';
+$totalWeight = 0;
 $success = false;
 
+foreach ($gradingComponents as $item) {
+  $totalWeight += $item['weight'];
+}
+
 if (isset($_POST['add_criteria'])) {
-  // Collecting data from the form
-  $period_id = $_GET['period_id'];
   $component_type = ucwords($_POST['component_type']);
-  $weight = htmlentities($_POST['weight']);
+  $weight = floatval($_POST['weight']);
+  $newTotalWeight = $totalWeight + $weight;
 
-  // Set the values for the sched object
-  $components->period_id = $period_id;
-  $components->component_type = $component_type;
-  $components->weight = $weight;
-
-  // Call the add function with the profiling_id
-  if ($components->add()) {
-    $message = 'Criteria added';
-    $success = true;
+  if ($newTotalWeight > 100) {
+    $error_message = 'Total weight exceeds 100%. Please adjust the criteria weight.';
   } else {
-    $error_message = 'Something went wrong adding criteria.';
+    $components->period_id = $period_id;
+    $components->component_type = $component_type;
+    $components->weight = $weight;
+
+    if ($components->add()) {
+      $message = 'Criteria added';
+      $success = true;
+    } else {
+      $error_message = 'Something went wrong adding criteria.';
+    }
   }
 }
 ?>
@@ -71,7 +80,7 @@ include './includes/head.php';
       <div class="m-5 py-3">
         <form action="#" method="post">
 
-          <?php if (!empty($errors)): ?>
+          <?php if (!empty($error_message)): ?>
             <div class="alert alert-danger">
               <?= htmlspecialchars($error_message) ?>
             </div>

@@ -125,7 +125,7 @@ include './includes/head.php';
                                                                 data-bs-toggle="dropdown"></i>
                                                             <ul class="dropdown-menu">
                                                                 <li>
-                                                                    <a href="./edit_component_items?items_id=<?= $item['items_id'] ?>&component_id=<?= $component['component_id'] ?>"
+                                                                    <a href="./edit_component_items?faculty_sub_id=<?= $selected_faculty_sub_id ?>&period=<?= $activePeriod ?>&items_id=<?= $item['items_id'] ?>&component_id=<?= $component['component_id'] ?>"
                                                                         class="dropdown-item">
                                                                         <i class='bx bx-edit text-success fs-6'></i> Edit
                                                                     </a>
@@ -228,7 +228,6 @@ include './includes/head.php';
                 var items_id = $(this).data('subject-id');
                 $('#confirmDeleteBtn').data('items-id', items_id);
                 $('#deleteConfirmationModal').modal('show');
-                console.log(items_id)
             });
 
             $('#confirmDeleteBtn').on('click', function () {
