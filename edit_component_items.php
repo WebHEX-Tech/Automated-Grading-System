@@ -17,6 +17,8 @@ $error_message = '';
 $success = false;
 
 // Get IDs from GET parameters
+$faculty_id = isset($_GET['faculty_sub_id']) ? $_GET['faculty_sub_id'] : null;
+$activePeriod = isset($_GET['period']) ? $_GET['period'] : null;
 $component_id = isset($_GET['component_id']) ? $_GET['component_id'] : null;
 $items_id = isset($_GET['items_id']) ? $_GET['items_id'] : null;
 
@@ -136,7 +138,7 @@ include './includes/head.php';
     <script>
         <?php if ($success): ?>
             setTimeout(function () {
-                window.location.href = './subject_students.php?faculty_sub_id=<?= $_GET['faculty_sub_id'] ?>';
+                window.location.href = './column_select.php?active_period=<?= $activePeriod ?>&faculty_sub_id=<?= $faculty_id ?>?>';
             }, 1500);
         <?php endif; ?>
     </script>

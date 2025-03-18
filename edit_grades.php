@@ -33,6 +33,7 @@ if ($active_period === 'midterm') {
 
 $student = $grades->showById($grades_id);
 $gradingComponents = ($active_period === 'finalterm') ? $period->showFinalterm($faculty_sub_id) : $period->showMidterm($faculty_sub_id);
+$midtermGrade = $period->showMidterm($faculty_sub_id);
 $error_message = '';
 $success = false;
 
@@ -154,7 +155,7 @@ include './includes/head.php';
 
                             <?php endforeach; ?>
 
-                            <div class="row my-5">
+                            <div class="row mt-5">
                                 <div class="col-md-1">
                                     <label class="form-label">Average</label>
                                     <input type="text" style="width: 120px;" class="form-control average-score"
@@ -172,52 +173,66 @@ include './includes/head.php';
                         </div>
                         <hr class="mb-5">
                     <?php endforeach; ?>
-
+                    <div style="margin-bottom: 10rem;"></div>
                     <div class="d-flex justify-content-between align-items-center mt-4 gap-2 sticky-btn">
-                            <div class="d-flex flex-row gap-3 ms-5">
+                        <div class="d-flex flex-row gap-3 ms-5">
+                            <?php
+                            $avgGrade = 0;
+                            $midtermAvg = 0;
+                            foreach ($gradingComponents as $component) {
+                                $avgGrade += $scores->calculateWeightByComponent($grades_id, $component['component_id']) ?: 0;
+                            }
+                            foreach ($midtermGrade as $component) {
+                                $midtermAvg += $scores->calculateWeightByComponent($grades_id, $component['component_id']) ?: 0;
+                            }
+                            $avgGrade = round($avgGrade, 2);
+                            $midtermAvg = round($midtermAvg, 2);
+
+                            function getNumericalRating($grade)
+                            {
+                                if ($grade >= 97)
+                                    return 1.0;
+                                elseif ($grade >= 94)
+                                    return 1.25;
+                                elseif ($grade >= 91)
+                                    return 1.5;
+                                elseif ($grade >= 88)
+                                    return 1.75;
+                                elseif ($grade >= 85)
+                                    return 2.0;
+                                elseif ($grade >= 82)
+                                    return 2.25;
+                                elseif ($grade >= 79)
+                                    return 2.5;
+                                elseif ($grade >= 76)
+                                    return 2.75;
+                                elseif ($grade >= 75)
+                                    return 3.0;
+                                else
+                                    return 5.0;
+                            }
+
+                            $numericalRating = getNumericalRating(($midtermAvg + $avgGrade)/2);
+                            ?>
+                            <?php if ($active_period !== 'midterm'): ?>
+                                <div>
+                                    <label class="form-label" style="color: #952323;">Midterm Grade</label>
+                                    <input type="text" style="width: 120px;" class="form-control average-score"
+                                        value="<?= $midtermAvg ?>%" readonly>
+                                </div>
+                            <?php endif; ?>
                             <div>
                                 <label class="form-label" style="color: #952323;"><?= $grade_period ?> Grade</label>
-                                <?php
-                                $midtermGrade = 0;
-                                foreach ($gradingComponents as $component) {
-                                    $midtermGrade += $scores->calculateWeightByComponent($grades_id, $component['component_id']) ?: 0;
-                                }
-                                $midtermGrade = round($midtermGrade, 2);
-
-                                function getNumericalRating($grade)
-                                {
-                                    if ($grade >= 97)
-                                        return 1.0;
-                                    elseif ($grade >= 94)
-                                        return 1.25;
-                                    elseif ($grade >= 91)
-                                        return 1.5;
-                                    elseif ($grade >= 88)
-                                        return 1.75;
-                                    elseif ($grade >= 85)
-                                        return 2.0;
-                                    elseif ($grade >= 82)
-                                        return 2.25;
-                                    elseif ($grade >= 79)
-                                        return 2.5;
-                                    elseif ($grade >= 76)
-                                        return 2.75;
-                                    elseif ($grade >= 75)
-                                        return 3.0;
-                                    else
-                                        return 5.0;
-                                }
-
-                                $numericalRating = getNumericalRating($midtermGrade);
-                                ?>
                                 <input type="text" style="width: 120px;" class="form-control average-score"
-                                    value="<?= $midtermGrade ?>%" readonly>
+                                    value="<?= $avgGrade ?>%" readonly>
                             </div>
-                            <div>
-                                <label class="form-label" style="color: #952323;">Point Eqv.(Expected)</label>
-                                <input type="text" style="width: 120px;" class="form-control weighted-score"
-                                    value="<?= number_format((float) $numericalRating, 2, '.', '') ?>" readonly>
-                            </div>
+                            <?php if ($active_period !== 'midterm'): ?>
+                                <div style="margin-left: 3em;">
+                                    <label class="form-label" style="color: #952323;">Point Eqv.(Expected)</label>
+                                    <input type="text" style="width: 120px;" class="form-control weighted-score"
+                                        value="<?= number_format((float) $numericalRating, 2, '.', '') ?>" readonly>
+                                </div>
+                            <?php endif; ?>
                         </div>
 
                         <div>
@@ -260,14 +275,14 @@ include './includes/head.php';
         document.addEventListener("DOMContentLoaded", function () {
             document.querySelectorAll(".score-input").forEach(input => {
                 input.addEventListener("input", function () {
-                    let maxScore = parseFloat(this.dataset.total) || 0; 
+                    let maxScore = parseFloat(this.dataset.total) || 0;
                     let enteredScore = parseFloat(this.value) || 0;
 
                     if (enteredScore > maxScore) {
-                        this.value = maxScore; 
+                        this.value = maxScore;
                         alert(`Score cannot exceed ${maxScore}`);
                     } else if (enteredScore < 0) {
-                        this.value = 0; 
+                        this.value = 0;
                         alert("Score cannot be less than 0");
                     }
 
