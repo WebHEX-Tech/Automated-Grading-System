@@ -3,7 +3,7 @@
 -- https://www.phpmyadmin.net/
 --
 -- Host: 127.0.0.1:3306
--- Generation Time: Feb 20, 2025 at 06:28 AM
+-- Generation Time: Apr 19, 2025 at 05:17 PM
 -- Server version: 10.4.27-MariaDB
 -- PHP Version: 8.1.12
 
@@ -82,15 +82,17 @@ CREATE TABLE `component_items` (
 --
 
 INSERT INTO `component_items` (`items_id`, `component_id`, `component_date`, `component_no`, `component_quantity`) VALUES
-(1, 1, '2025-02-18', 1, 25),
-(2, 1, '2025-02-18', 2, 26),
+(1, 1, '2025-02-01', 1, 25),
+(2, 1, '2025-03-15', 2, 26),
 (3, 2, '2025-02-18', 1, 50),
 (5, 7, '2025-02-18', 1, 15),
 (6, 5, '2025-02-18', 1, 10),
-(7, 6, '2025-02-18', 1, 40),
-(8, 6, '2025-02-18', 2, 50),
 (9, 2, '2025-02-18', 2, 60),
-(10, 12, '2025-02-20', 1, 100);
+(10, 12, '2025-02-20', 1, 100),
+(13, 16, '2025-02-28', 2, 50),
+(17, 8, '2025-03-14', 1, 10),
+(18, 9, '2025-03-16', 1, 50),
+(19, 13, '2025-03-19', 1, 80);
 
 -- --------------------------------------------------------
 
@@ -110,21 +112,22 @@ CREATE TABLE `component_scores` (
 --
 
 INSERT INTO `component_scores` (`score_id`, `items_id`, `grades_id`, `score`) VALUES
-(1, 1, 22, 20),
-(2, 2, 22, 21),
+(1, 1, 22, 25),
+(2, 2, 22, 26),
 (3, 3, 22, 50),
 (4, 9, 22, 60),
-(5, 6, 22, 8),
-(6, 7, 22, 0),
-(7, 8, 22, 0),
+(5, 6, 22, 10),
 (8, 1, 24, 25),
-(9, 2, 24, 0),
+(9, 2, 24, 26),
 (10, 3, 24, 0),
 (11, 9, 24, 0),
 (12, 6, 24, 0),
-(13, 7, 24, 0),
-(14, 8, 24, 0),
-(15, 10, 22, 76);
+(15, 10, 22, 95),
+(16, 5, 22, 15),
+(17, 10, 24, 0),
+(18, 17, 22, 8),
+(19, 18, 22, 50),
+(20, 19, 22, 70);
 
 -- --------------------------------------------------------
 
@@ -294,7 +297,8 @@ INSERT INTO `faculty_subjects` (`faculty_sub_id`, `sched_id`, `curr_id`, `yr_sec
 (18, 16, 50, 'BSIT 3A', 32, 'M', 'M', '3:51 AM - 3:51 AM', '3:51 AM - 3:51 AM', 'LR 2', 'LAB 2', 1, 2),
 (50, 7, 49, 'BSIT 3A', 34, 'M', '', '9:29 AM - 9:29 AM', '', 'LR 2', '', 3, 0),
 (51, 15, 50, 'BSIT 3A', 23, 'M', '', '7:52 AM - 7:52 AM', '', 'Gymnasium', '', 1, 2),
-(52, 15, 48, 'BSIT 1A', 23, '', 'M', '', '7:53 AM - 7:53 AM', '', 'LAB2', 1, 2);
+(52, 15, 48, 'BSIT 1A', 23, '', 'M', '', '7:53 AM - 7:53 AM', '', 'LAB2', 1, 2),
+(53, 15, 48, 'BSCS 2A', 32, '', 'MW', '', '9:21 AM - 12:56 PM', '', 'Reprehenderit sed ni', 1, 2);
 
 -- --------------------------------------------------------
 
@@ -341,7 +345,56 @@ INSERT INTO `periods` (`period_id`, `faculty_sub_id`, `period_type`, `weight`) V
 (6, 51, 'Midterm', 40),
 (7, 51, 'Final Term', 60),
 (8, 52, 'Midterm', 40),
-(9, 52, 'Final Term', 60);
+(9, 52, 'Final Term', 60),
+(10, 53, 'Midterm', 40),
+(11, 53, 'Final Term', 60);
+
+-- --------------------------------------------------------
+
+--
+-- Table structure for table `point_equivalent`
+--
+
+CREATE TABLE `point_equivalent` (
+  `point_eqv_id` int(11) NOT NULL,
+  `faculty_sub_id` int(11) NOT NULL,
+  `1_00` double NOT NULL,
+  `1_25` double NOT NULL,
+  `1_50` double NOT NULL,
+  `1_75` double NOT NULL,
+  `2_00` double NOT NULL,
+  `2_25` double NOT NULL,
+  `2_50` double NOT NULL,
+  `2_75` double NOT NULL,
+  `3_00` double NOT NULL,
+  `5_00` double NOT NULL
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
+
+--
+-- Dumping data for table `point_equivalent`
+--
+
+INSERT INTO `point_equivalent` (`point_eqv_id`, `faculty_sub_id`, `1_00`, `1_25`, `1_50`, `1_75`, `2_00`, `2_25`, `2_50`, `2_75`, `3_00`, `5_00`) VALUES
+(1, 53, 97, 94, 91, 88, 85, 79, 76, 75, 60, 40),
+(2, 52, 97, 94, 91, 88, 85, 79, 76, 75, 60, 40),
+(3, 51, 97, 94, 91, 88, 85, 79, 76, 75, 60, 40),
+(4, 50, 96, 94, 91, 88, 85, 79, 76, 73, 60, 40),
+(5, 18, 97, 94, 91, 88, 85, 79, 76, 75, 60, 40);
+
+-- --------------------------------------------------------
+
+--
+-- Table structure for table `posted_grades`
+--
+
+CREATE TABLE `posted_grades` (
+  `posted_grade_id` int(11) NOT NULL,
+  `student_data_id` int(11) NOT NULL,
+  `faculty_sub_id` int(11) NOT NULL,
+  `midterm_grade` double NOT NULL,
+  `finalterm_grade` double NOT NULL,
+  `remarks` varchar(255) NOT NULL
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
 
 -- --------------------------------------------------------
 
@@ -432,20 +485,22 @@ INSERT INTO `students` (`student_data_id`, `student_id`, `student_firstname`, `s
 CREATE TABLE `student_grades` (
   `grades_id` int(8) NOT NULL,
   `student_data_id` int(11) NOT NULL,
-  `faculty_sub_id` int(11) NOT NULL
+  `faculty_sub_id` int(11) NOT NULL,
+  `midterm_grade` varchar(255) NOT NULL,
+  `final_grade` varchar(255) NOT NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
 
 --
 -- Dumping data for table `student_grades`
 --
 
-INSERT INTO `student_grades` (`grades_id`, `student_data_id`, `faculty_sub_id`) VALUES
-(22, 34, 50),
-(23, 33, 50),
-(24, 32, 50),
-(25, 31, 51),
-(26, 32, 51),
-(27, 34, 51);
+INSERT INTO `student_grades` (`grades_id`, `student_data_id`, `faculty_sub_id`, `midterm_grade`, `final_grade`) VALUES
+(22, 34, 50, '93.5', '93'),
+(23, 33, 50, '0', '0'),
+(24, 32, 50, '0', '0'),
+(25, 31, 51, '0', '0'),
+(26, 32, 51, '0', '0'),
+(27, 34, 51, '0', '0');
 
 -- --------------------------------------------------------
 
@@ -465,16 +520,25 @@ CREATE TABLE `sub_components` (
 --
 
 INSERT INTO `sub_components` (`component_id`, `period_id`, `component_type`, `weight`) VALUES
-(1, 4, 'Quiz', 10),
+(1, 4, 'Quiz', 20),
 (2, 4, 'Performance Task', 30),
-(5, 4, 'Recitation', 30),
-(6, 4, 'Project', 20),
-(7, 5, 'Quiz', 15),
+(5, 4, 'Recitation', 15),
+(7, 5, 'Quiz', 20),
 (8, 5, 'Recitations', 10),
-(9, 5, 'Project', 20),
+(9, 5, 'Project', 30),
 (10, 8, 'Activities', 20),
 (11, 9, 'Projects', 20),
-(12, 4, 'Midterm Exam', 40);
+(12, 4, 'Major Exam', 30),
+(13, 5, 'Major Exam', 40),
+(16, 6, 'Recitation', 30),
+(20, 10, 'Recitations', 25),
+(21, 10, 'Quiz', 15),
+(22, 10, 'Major Exam', 40),
+(23, 10, 'Project', 20),
+(24, 11, 'Major Exam', 45),
+(25, 11, 'Quiz', 25),
+(26, 11, 'Recitation', 10),
+(27, 11, 'Project', 20);
 
 -- --------------------------------------------------------
 
@@ -507,7 +571,7 @@ INSERT INTO `user` (`user_id`, `emp_id`, `user_role`, `email`, `password`, `f_na
 (3, '2021-000009', 1, 'email@email.com', '$2y$10$g37cVIDEYRsCfYmIPMwybOLTd/JFqCR6Y48T2MQ4muzx/WCnpYI6u', 'Alco', 'Plus', 'Iso', 'Regular Lecturer', NULL, '2024-01-30 01:29:48', '2024-11-20 06:38:26'),
 (12, '2021-000023', 1, 'saludoraf@gmail.com', '$2y$10$x1CiJCUkNZ1WttyHuwSbH.2ZZmT1QHpFx60id3H5Lkuy8gRXlYEcm', 'Raf', 'Saludo', '', 'Visiting Lecturer', NULL, '2024-11-21 22:30:34', '2025-02-10 20:26:05'),
 (13, '2021-00089', 1, 'sonarshironji@gmail.com', '$2y$10$lReSRFWPxTJFHwrM1p3PWOXW5/izol3xtvzdsLBX0nlZ85lYiql4e', 'Sairyl', 'Manabat', '', 'Visiting Lecturer', NULL, '2024-11-24 19:49:16', '2024-11-24 19:49:16'),
-(15, '2021-1111', 1, 'bbrightwin12xx@wmsu.edu.ph', '$2y$10$kMl.i.Yy0A1NKfRyB771ve2fZ7.8Ii23F69f6gdy0L7xqf4/Nmui2', 'First', 'Last', 'Middle', 'Regular Lecturer', NULL, '2025-02-11 03:41:57', '2025-02-11 03:41:57');
+(15, '2021-1111', 1, 'bbrightwin12xx@wmsu.edu.ph', '$2y$10$DWOwmSYd8kPxYAzSR/6wxeJZVLZsWMJS.nDwtwej6MjYym/BDk3jS', 'First', 'Last', 'Middle', 'Regular Lecturer', NULL, '2025-02-11 03:41:57', '2025-02-23 02:45:39');
 
 -- --------------------------------------------------------
 
@@ -558,8 +622,8 @@ ALTER TABLE `component_items`
 --
 ALTER TABLE `component_scores`
   ADD PRIMARY KEY (`score_id`),
-  ADD KEY `component_id` (`items_id`),
-  ADD KEY `grades_id` (`grades_id`);
+  ADD KEY `component_scores_ibfk_1` (`items_id`),
+  ADD KEY `component_scores_ibfk_2` (`grades_id`);
 
 --
 -- Indexes for table `course_curr`
@@ -622,6 +686,21 @@ ALTER TABLE `periods`
   ADD KEY `periods_ibfk_1` (`faculty_sub_id`);
 
 --
+-- Indexes for table `point_equivalent`
+--
+ALTER TABLE `point_equivalent`
+  ADD PRIMARY KEY (`point_eqv_id`),
+  ADD KEY `faculty_sub_id` (`faculty_sub_id`);
+
+--
+-- Indexes for table `posted_grades`
+--
+ALTER TABLE `posted_grades`
+  ADD PRIMARY KEY (`posted_grade_id`),
+  ADD KEY `student_data_id` (`student_data_id`),
+  ADD KEY `faculty_sub_id` (`faculty_sub_id`);
+
+--
 -- Indexes for table `profiling_table`
 --
 ALTER TABLE `profiling_table`
@@ -653,7 +732,7 @@ ALTER TABLE `student_grades`
 --
 ALTER TABLE `sub_components`
   ADD PRIMARY KEY (`component_id`),
-  ADD KEY `period_id` (`period_id`);
+  ADD KEY `sub_components_ibfk_1` (`period_id`);
 
 --
 -- Indexes for table `user`
@@ -687,13 +766,13 @@ ALTER TABLE `college_department_table`
 -- AUTO_INCREMENT for table `component_items`
 --
 ALTER TABLE `component_items`
-  MODIFY `items_id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=11;
+  MODIFY `items_id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=20;
 
 --
 -- AUTO_INCREMENT for table `component_scores`
 --
 ALTER TABLE `component_scores`
-  MODIFY `score_id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=16;
+  MODIFY `score_id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=21;
 
 --
 -- AUTO_INCREMENT for table `course_curr`
@@ -729,7 +808,7 @@ ALTER TABLE `faculty_schedule`
 -- AUTO_INCREMENT for table `faculty_subjects`
 --
 ALTER TABLE `faculty_subjects`
-  MODIFY `faculty_sub_id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=53;
+  MODIFY `faculty_sub_id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=54;
 
 --
 -- AUTO_INCREMENT for table `notifications`
@@ -741,7 +820,19 @@ ALTER TABLE `notifications`
 -- AUTO_INCREMENT for table `periods`
 --
 ALTER TABLE `periods`
-  MODIFY `period_id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=10;
+  MODIFY `period_id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=12;
+
+--
+-- AUTO_INCREMENT for table `point_equivalent`
+--
+ALTER TABLE `point_equivalent`
+  MODIFY `point_eqv_id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=7;
+
+--
+-- AUTO_INCREMENT for table `posted_grades`
+--
+ALTER TABLE `posted_grades`
+  MODIFY `posted_grade_id` int(11) NOT NULL AUTO_INCREMENT;
 
 --
 -- AUTO_INCREMENT for table `profiling_table`
@@ -771,7 +862,7 @@ ALTER TABLE `student_grades`
 -- AUTO_INCREMENT for table `sub_components`
 --
 ALTER TABLE `sub_components`
-  MODIFY `component_id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=13;
+  MODIFY `component_id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=28;
 
 --
 -- AUTO_INCREMENT for table `user`
@@ -793,13 +884,13 @@ ALTER TABLE `year_lvl`
 -- Constraints for table `component_items`
 --
 ALTER TABLE `component_items`
-  ADD CONSTRAINT `component_items_ibfk_1` FOREIGN KEY (`component_id`) REFERENCES `sub_components` (`component_id`);
+  ADD CONSTRAINT `component_items_ibfk_1` FOREIGN KEY (`component_id`) REFERENCES `sub_components` (`component_id`) ON DELETE CASCADE;
 
 --
 -- Constraints for table `component_scores`
 --
 ALTER TABLE `component_scores`
-  ADD CONSTRAINT `component_scores_ibfk_1` FOREIGN KEY (`items_id`) REFERENCES `component_items` (`items_id`),
+  ADD CONSTRAINT `component_scores_ibfk_1` FOREIGN KEY (`items_id`) REFERENCES `component_items` (`items_id`) ON DELETE CASCADE,
   ADD CONSTRAINT `component_scores_ibfk_2` FOREIGN KEY (`grades_id`) REFERENCES `student_grades` (`grades_id`);
 
 --
@@ -840,6 +931,19 @@ ALTER TABLE `periods`
   ADD CONSTRAINT `periods_ibfk_1` FOREIGN KEY (`faculty_sub_id`) REFERENCES `faculty_subjects` (`faculty_sub_id`) ON DELETE CASCADE;
 
 --
+-- Constraints for table `point_equivalent`
+--
+ALTER TABLE `point_equivalent`
+  ADD CONSTRAINT `point_equivalent_ibfk_1` FOREIGN KEY (`faculty_sub_id`) REFERENCES `faculty_subjects` (`faculty_sub_id`) ON DELETE CASCADE;
+
+--
+-- Constraints for table `posted_grades`
+--
+ALTER TABLE `posted_grades`
+  ADD CONSTRAINT `posted_grades_ibfk_1` FOREIGN KEY (`student_data_id`) REFERENCES `students` (`student_data_id`),
+  ADD CONSTRAINT `posted_grades_ibfk_2` FOREIGN KEY (`faculty_sub_id`) REFERENCES `faculty_subjects` (`faculty_sub_id`);
+
+--
 -- Constraints for table `student_grades`
 --
 ALTER TABLE `student_grades`
@@ -850,7 +954,7 @@ ALTER TABLE `student_grades`
 -- Constraints for table `sub_components`
 --
 ALTER TABLE `sub_components`
-  ADD CONSTRAINT `sub_components_ibfk_1` FOREIGN KEY (`period_id`) REFERENCES `periods` (`period_id`);
+  ADD CONSTRAINT `sub_components_ibfk_1` FOREIGN KEY (`period_id`) REFERENCES `periods` (`period_id`) ON DELETE CASCADE;
 COMMIT;
 
 /*!40101 SET CHARACTER_SET_CLIENT=@OLD_CHARACTER_SET_CLIENT */;

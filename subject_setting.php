@@ -55,6 +55,13 @@ include './includes/head.php';
         </div>
       </div>
 
+
+
+      <div class="d-flex justify-content-end mt-4 me-4">
+        <a href="./edit_pointeqv?faculty_sub_id=<?= $selected_faculty_sub_id ?>&period=midterm&period_id=<?= $midtermPeriod ?>"
+          class="btn btn-outline-secondary btn-add ms-3 brand-bg-color" type="button"> Edit Grade Equivalent</a>
+      </div>
+
       <div class="m-4">
         <!-- <div class="row row-cols-1 row-cols-sm-1 row-cols-md-4">
           <div class="col dropdown">
