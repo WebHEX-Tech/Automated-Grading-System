@@ -10,15 +10,19 @@ require_once './classes/students.class.php';
 require_once './classes/component.class.php';
 require_once './classes/component_items.class.php';
 require_once './classes/component_scores.class.php';
+require_once './classes/faculty_subs.class.php';
 require_once './classes/grades.class.php';
 require_once './classes/period.class.php';
+require_once './classes/point_equivalent.class.php';
 
 $students = new Students();
 $components = new SubjectComponents();
 $comp_items = new ComponentItems();
 $scores = new ComponentScores();
+$fac_subs = new Faculty_Subjects();
 $period = new Periods();
 $grades = new Grades();
+$pointEqv = new PointEqv();
 
 $faculty_sub_id = $_GET['faculty_sub_id'] ?? null;
 $grades_id = $_GET['grades_id'] ?? null;
@@ -31,27 +35,62 @@ if ($active_period === 'midterm') {
     $grade_period = 'Final Term';
 }
 
+$subject = $fac_subs->getProf($faculty_sub_id);
+$gradeEquivalents = $pointEqv->getByFacultySubject($faculty_sub_id);
 $student = $grades->showById($grades_id);
 $gradingComponents = ($active_period === 'finalterm') ? $period->showFinalterm($faculty_sub_id) : $period->showMidterm($faculty_sub_id);
 $midtermGrade = $period->showMidterm($faculty_sub_id);
 $error_message = '';
 $success = false;
 
-if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['edit_grades'])) {
-    foreach ($_POST['grades'] as $component_id => $items) {
-        foreach ($items as $items_id => $score) {
-            $score = is_numeric($score) ? floatval($score) : 0; // Ensure score is a valid number
+if ($_SERVER['REQUEST_METHOD'] === 'POST') {
+    if (isset($_POST['edit_grades'])) {
+        foreach ($_POST['grades'] as $component_id => $items) {
+            foreach ($items as $items_id => $score) {
+                $score = is_numeric($score) ? floatval($score) : 0;
 
-            if ($scores->scoreExists($grades_id, $items_id)) {
-                $scores->updateScore($grades_id, $items_id, $score);
-            } else {
-                $scores->add($grades_id, $items_id, $score);
+                if ($scores->scoreExists($grades_id, $items_id)) {
+                    $scores->updateScore($grades_id, $items_id, $score);
+                } else {
+                    $scores->add($grades_id, $items_id, $score);
+                }
             }
-
         }
+        $message = 'Grades saved successfully!';
+        $success = true;
+    } elseif (isset($_POST['post_grades'])) {
+        $avgGrade = 0;
+        foreach ($gradingComponents as $component) {
+            $avgGrade += $scores->calculateWeightByComponent($grades_id, $component['component_id']) ?: 0;
+        }
+        $avgGrade = round($avgGrade, 2);
+
+        $midtermAvg = 0;
+        if ($active_period !== 'midterm') {
+            foreach ($midtermGrade as $component) {
+                $midtermAvg += $scores->calculateWeightByComponent($grades_id, $component['component_id']) ?: 0;
+            }
+            $midtermAvg = round($midtermAvg, 2);
+        }
+
+        if ($active_period === 'midterm') {
+            $grades->updateMidtermGrade($grades_id, $avgGrade);
+        } else {
+            $grades->updateFinalGrade($grades_id, $avgGrade, $midtermAvg);
+        }
+
+        $message = 'Grade posted successfully!';
+        $success = true;
+    } elseif (isset($_POST['mark_inc'])) {
+        if ($active_period === 'midterm') {
+            $grades->updateMidtermGrade($grades_id, 'INC');
+        } else {
+            $grades->updateFinalGrade($grades_id, 'INC', 'INC');
+        }
+
+        $message = 'Student marked as INC successfully!';
+        $success = true;
     }
-    $message = 'Grades updated successfully!';
-    $success = true;
 }
 
 ?>
@@ -84,7 +123,7 @@ include './includes/head.php';
                 </div>
             </div>
 
-            <div class="m-5 position-relative">
+            <div class="mx-5 my-3 position-relative">
                 <form action="#" method="post">
                     <?php if (!empty($error_message)): ?>
                         <div class="alert alert-danger"><?= htmlspecialchars($error_message) ?></div>
@@ -95,6 +134,11 @@ include './includes/head.php';
                             <i class='bx bx-check-circle'></i> <?= htmlspecialchars($message) ?>
                         </div>
                     <?php endif; ?>
+
+                    <div class="d-flex flex-column align-items-center">
+                        <h3 class="brand-color"><?= ucwords($subject['sub_name']) ?></h3>
+                        <h4><?= $subject['sub_code'] ?> (<?= $subject['yr_sec'] ?>)</h4>
+                    </div>
 
                     <h3>Student Information</h3>
                     <div class="row row-cols-1 row-cols-md-2">
@@ -188,31 +232,33 @@ include './includes/head.php';
                             $avgGrade = round($avgGrade, 2);
                             $midtermAvg = round($midtermAvg, 2);
 
-                            function getNumericalRating($grade)
+                            function getNumericalRating($grade, $gradeEquivalents)
                             {
-                                if ($grade >= 97)
-                                    return 1.0;
-                                elseif ($grade >= 94)
-                                    return 1.25;
-                                elseif ($grade >= 91)
-                                    return 1.5;
-                                elseif ($grade >= 88)
-                                    return 1.75;
-                                elseif ($grade >= 85)
-                                    return 2.0;
-                                elseif ($grade >= 82)
-                                    return 2.25;
-                                elseif ($grade >= 79)
-                                    return 2.5;
-                                elseif ($grade >= 76)
-                                    return 2.75;
-                                elseif ($grade >= 75)
-                                    return 3.0;
-                                else
-                                    return 5.0;
+                                if (!empty($gradeEquivalents)) {
+                                    if ($grade >= $gradeEquivalents['1_00'])
+                                        return 1.00;
+                                    elseif ($grade >= $gradeEquivalents['1_25'])
+                                        return 1.25;
+                                    elseif ($grade >= $gradeEquivalents['1_50'])
+                                        return 1.50;
+                                    elseif ($grade >= $gradeEquivalents['1_75'])
+                                        return 1.75;
+                                    elseif ($grade >= $gradeEquivalents['2_00'])
+                                        return 2.00;
+                                    elseif ($grade >= $gradeEquivalents['2_25'])
+                                        return 2.25;
+                                    elseif ($grade >= $gradeEquivalents['2_50'])
+                                        return 2.50;
+                                    elseif ($grade >= $gradeEquivalents['2_75'])
+                                        return 2.75;
+                                    elseif ($grade >= $gradeEquivalents['3_00'])
+                                        return 3.00;
+                                    else
+                                        return 5.00;
+                                }
                             }
 
-                            $numericalRating = getNumericalRating(($midtermAvg + $avgGrade)/2);
+                            $numericalRating = getNumericalRating(($midtermAvg + $avgGrade) / 2, $gradeEquivalents);
                             ?>
                             <?php if ($active_period !== 'midterm'): ?>
                                 <div>
@@ -220,17 +266,22 @@ include './includes/head.php';
                                     <input type="text" style="width: 120px;" class="form-control average-score"
                                         value="<?= $midtermAvg ?>%" readonly>
                                 </div>
-                            <?php endif; ?>
-                            <div>
-                                <label class="form-label" style="color: #952323;"><?= $grade_period ?> Grade</label>
-                                <input type="text" style="width: 120px;" class="form-control average-score"
-                                    value="<?= $avgGrade ?>%" readonly>
-                            </div>
-                            <?php if ($active_period !== 'midterm'): ?>
+                                <div>
+                                    <label class="form-label" style="color: #952323;"><?= $grade_period ?> Grade</label>
+                                    <input type="text" style="width: 120px;" class="form-control average-score"
+                                        value="<?= $avgGrade ?>%" readonly>
+                                </div>
                                 <div style="margin-left: 3em;">
                                     <label class="form-label" style="color: #952323;">Point Eqv.(Expected)</label>
                                     <input type="text" style="width: 120px;" class="form-control weighted-score"
                                         value="<?= number_format((float) $numericalRating, 2, '.', '') ?>" readonly>
+                                </div>
+
+
+                                <div class="d-flex align-items-center gap-1">
+                                    <button type="button" class="btn brand-bg-color" id="markBtn">Mark as INC</button>
+                                    <button type="button" class="btn brand-bg-color" id="postBtn"><i
+                                            class='bx bx-upload'></i> Post Grade</button>
                                 </div>
                             <?php endif; ?>
                         </div>
@@ -265,6 +316,52 @@ include './includes/head.php';
                             </div>
                         </div>
                     </div>
+
+                    <?php if ($active_period !== 'midterm'): ?>
+                        <div class="modal fade" id="markConfirmationModal" tabindex="-1"
+                            aria-labelledby="markConfirmationModalLabel" aria-hidden="true">
+                            <div class="modal-dialog modal-dialog-centered">
+                                <div class="modal-content">
+                                    <div class="modal-header">
+                                        <h5 class="modal-title" id="markConfirmationModalLabel">Confirm Save</h5>
+                                        <button type="button" class="btn-close" data-bs-dismiss="modal"
+                                            aria-label="Close"></button>
+                                    </div>
+                                    <div class="modal-body">
+                                        Are you sure you want to mark this student's grade as Incomplete (INC)? <span class="text-danger"> This action cannot be undone.</span>
+                                    </div>
+                                    <div class="modal-footer">
+                                        <button type="button" class="btn btn-secondary"
+                                            data-bs-dismiss="modal">Cancel</button>
+                                        <button type="submit" name="mark_inc" id="mark_inc"
+                                            class="btn btn-primary">Confirm</button>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="modal fade" id="postConfirmationModal" tabindex="-1"
+                            aria-labelledby="postConfirmationModalLabel" aria-hidden="true">
+                            <div class="modal-dialog modal-dialog-centered">
+                                <div class="modal-content">
+                                    <div class="modal-header">
+                                        <h5 class="modal-title" id="postConfirmationModalLabel">Confirm Save</h5>
+                                        <button type="button" class="btn-close" data-bs-dismiss="modal"
+                                            aria-label="Close"></button>
+                                    </div>
+                                    <div class="modal-body">
+                                        Are you sure you want to post this grade?<span class="text-danger"> This action cannot be undone.</span>
+                                    </div>
+                                    <div class="modal-footer">
+                                        <button type="button" class="btn btn-secondary"
+                                            data-bs-dismiss="modal">Cancel</button>
+                                        <button type="submit" name="post_grades" id="post_grades"
+                                            class="btn btn-primary">Confirm</button>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    <?php endif; ?>
                 </form>
             </div>
         </main>
@@ -294,6 +391,16 @@ include './includes/head.php';
 
         document.getElementById('saveChangesBtn').addEventListener('click', function () {
             let saveModal = new bootstrap.Modal(document.getElementById('saveConfirmationModal'));
+            saveModal.show();
+        });
+
+        document.getElementById('markBtn').addEventListener('click', function () {
+            let saveModal = new bootstrap.Modal(document.getElementById('markConfirmationModal'));
+            saveModal.show();
+        });
+
+        document.getElementById('postBtn').addEventListener('click', function () {
+            let saveModal = new bootstrap.Modal(document.getElementById('postConfirmationModal'));
             saveModal.show();
         });
 

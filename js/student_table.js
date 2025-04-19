@@ -5,8 +5,8 @@ $(document).ready(function() {
         fixedHeader: true,
         pageLength: 5,
         buttons: [{
-            extend: 'excel',
-            split: ['pdf', 'csv'],
+            extend: 'pdf',
+            split: ['excel', 'csv'],
         }],
         'columnDefs': [{
             'targets': [3],

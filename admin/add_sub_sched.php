@@ -6,9 +6,11 @@ require_once '../classes/department.class.php';
 require_once '../classes/curri_page.class.php';
 require_once '../classes/faculty_subs.class.php';
 require_once '../classes/period.class.php';
+require_once '../classes/point_equivalent.class.php';
 
 $dept = new Department();
 $subs = new Curr_table();
+$pointEqv = new PointEqv();
 $fac_sub = new Faculty_Subjects();
 $period = new Periods();
 $department_arr = $dept->showName($_GET['department_id']);
@@ -79,8 +81,24 @@ if (isset($_POST['add_fac_sub'])) {
             $period->period_type = 'Final Term';
             $period->weight = 60;
             if ($period->add()) {
-                $message = 'Subject added';
-                $success = true;
+                $pointEqv->faculty_sub_id = $newId;
+                $pointEqv->rating_1_00 = 97;
+                $pointEqv->rating_1_25 = 94;
+                $pointEqv->rating_1_50 = 91;
+                $pointEqv->rating_1_75 = 88;
+                $pointEqv->rating_2_00 = 85;
+                $pointEqv->rating_2_25 = 79;
+                $pointEqv->rating_2_50 = 76;
+                $pointEqv->rating_2_75 = 75;
+                $pointEqv->rating_3_00 = 60;
+                $pointEqv->rating_5_00 = 40;
+
+                if ($pointEqv->add()) {
+                    $message = 'Subject added';
+                    $success = true;
+                } else {
+                    $error_message = 'Something went wrong adding setting grade equivalents';
+                }
             } else {
                 $error_message = 'Something went wrong adding the Final Term period.';
             }

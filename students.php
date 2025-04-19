@@ -26,7 +26,7 @@ $studentList = $studentsBySub->showBySubject($selected_faculty_sub_id);
 <!DOCTYPE html>
 <html lang="en">
 <?php
-$title = 'Student List';
+$title = $subject['sub_code'] . " (" . $subject['yr_sec'] . ') - Student List';
 $student_page = 'active';
 include './includes/head.php';
 ?>
@@ -87,13 +87,15 @@ include './includes/head.php';
             </h4>
           </div>
           <div class="search-keyword col-12 flex-lg-grow-0 d-flex justify-content-between gap-3 my-4 px-2">
+            <div class="d-flex justify-content-between">
+              <div id="MyButtons" class="d-flex me-1 mb-md-2 mb-lg-0 col-12 col-md-auto"></div>
+              <a href="./students_ranking?faculty_sub_id=<?= $selected_faculty_sub_id ?>" class="btn brand-bg-color">Students Ranking</a>
+            </div>
             <div class="input-group" style="width: 40% !important;">
               <input type="text" name="keyword" id="keyword" placeholder="Search" class="form-control">
               <button class="btn btn-outline-secondary brand-bg-color" type="button"><i class='bx bx-search'
                   aria-hidden="true"></i></button>
             </div>
-
-            <div id="MyButtons" class="d-flex me-4 mb-md-2 mb-lg-0 col-12 col-md-auto"></div>
           </div>
 
           <table id="students" class="table table-striped table-sm" style="width:100%">

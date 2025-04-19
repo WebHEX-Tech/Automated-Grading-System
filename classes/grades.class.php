@@ -118,7 +118,31 @@ class Grades
         }
         return $data;
     }
+    public function updateMidtermGrade($grades_id, $grade)
+    {
+        $sql = "UPDATE student_grades SET midterm_grade = :grade WHERE grades_id = :grades_id";
+        $query = $this->db->connect()->prepare($sql);
+        $query->bindParam(':grade', $grade);
+        $query->bindParam(':grades_id', $grades_id);
+        return $query->execute();
+    }
 
+    public function updateFinalGrade($grades_id, $final_grade, $midterm_grade = null)
+    {
+        $sql = "UPDATE student_grades SET final_grade = :final_grade";
+        if ($midterm_grade !== null) {
+            $sql .= ", midterm_grade = :midterm_grade";
+        }
+        $sql .= " WHERE grades_id = :grades_id";
+
+        $query = $this->db->connect()->prepare($sql);
+        $query->bindParam(':final_grade', $final_grade);
+        if ($midterm_grade !== null) {
+            $query->bindParam(':midterm_grade', $midterm_grade);
+        }
+        $query->bindParam(':grades_id', $grades_id);
+        return $query->execute();
+    }
     public function delete($grades_id)
     {
         $query = "DELETE FROM student_grades WHERE grades_id = :grades_id";

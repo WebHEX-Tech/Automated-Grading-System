@@ -149,7 +149,7 @@ include './includes/head.php';
                                                 <input type="hidden" name="faculty_sub_id" value="<?= htmlspecialchars($item['faculty_sub_id']) ?>">
                                                 <button type="submit" class="border-0 w-100 bg-transparent">
                                                     <div class="d-flex align-items-center justify-content-center brand-bg-color p-4 fs-4 h-100 rounded">
-                                                        <span><?= htmlspecialchars($item['sub_code']) ?></span>
+                                                        <span><?= htmlspecialchars($item['sub_code'] . " (" . $item['yr_sec'] . ")") ?></span>
                                                     </div>
                                                 </button>
                                             </form>
@@ -172,7 +172,7 @@ include './includes/head.php';
                                         <input type="hidden" name="faculty_sub_id" value="<?= htmlspecialchars($item['faculty_sub_id']) ?>">
                                         <button type="submit" class="border-0 w-100 bg-transparent">
                                             <div class="d-flex align-items-center justify-content-center brand-bg-color p-4 fs-4 h-100 rounded">
-                                                <span><?= htmlspecialchars($item['sub_code']) ?></span>
+                                                <span><?= htmlspecialchars($item['sub_code'] . " (" . $item['yr_sec'] . ")") ?></span>
                                             </div>
                                         </button>
                                     </form>
