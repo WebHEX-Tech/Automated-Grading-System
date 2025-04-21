@@ -8,11 +8,11 @@ if (!isset($_SESSION['user_role']) || $_SESSION['user_role'] != 2) {
 }
 
 require_once '../tools/functions.php';
-require_once '../classes/sub_students.class.php';
+require_once '../classes/students.class.php';
 require_once '../classes/faculty_subs.class.php';
 
 $fac_subs = new Faculty_Subjects();
-$student = new Sub_Students();
+$student = new Students();
 
 $studentData = $student->getStudentById($_GET['student_data_id']);
 

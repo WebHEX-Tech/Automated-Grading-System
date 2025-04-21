@@ -22,12 +22,12 @@
       </a>
     </li>
 
-    <!-- <li class="nav-item">
-      <a href="./grade" class="nav-link link-dark d-flex align-items-center mb-2 <?= $grade_page ?>">
-        <i class='bx bxs-graduation fs-4'></i>
-        <span class="fs-6 ms-2">Grade</span>
+    <li class="nav-item">
+      <a href="./grade" class="nav-link link-dark d-flex align-items-center mb-2  <?= $grades_page ?>">
+        <i class='bx bx-bar-chart-alt-2 fs-4'></i>
+        <span class="fs-6 ms-2">Grades</span>
       </a>
-    </li> -->
+    </li>
 
     <li class="nav-item">
       <button class="btn btn-toggle link-dark d-flex align-items-center mb-2 nav-link <?= $userfaculty_page ?>"
@@ -253,7 +253,6 @@
         <hr>
       </div>
     </li>
-
 
     <li class="nav-item">
       <a href="./admin_settings" class="nav-link link-dark d-flex align-items-center mb-2  <?= $setting_page ?>">

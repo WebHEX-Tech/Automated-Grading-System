@@ -281,7 +281,7 @@ include './includes/head.php';
                                 <div class="d-flex align-items-center gap-1">
                                     <button type="button" class="btn brand-bg-color" id="markBtn">Mark as INC</button>
                                     <button type="button" class="btn brand-bg-color" id="postBtn"><i
-                                            class='bx bx-upload'></i> Post Grade</button>
+                                            class='bx bx-upload'></i> Apply Grade</button>
                                 </div>
                             <?php endif; ?>
                         </div>
@@ -350,7 +350,7 @@ include './includes/head.php';
                                             aria-label="Close"></button>
                                     </div>
                                     <div class="modal-body">
-                                        Are you sure you want to post this grade?<span class="text-danger"> This action cannot be undone.</span>
+                                        Are you sure you want to apply this grade?<span class="text-danger"> This action cannot be undone.</span>
                                     </div>
                                     <div class="modal-footer">
                                         <button type="button" class="btn btn-secondary"

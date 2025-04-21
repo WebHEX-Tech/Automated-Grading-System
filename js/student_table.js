@@ -3,7 +3,7 @@ $(document).ready(function() {
         dom: 'Brtp',
         responsive: true,
         fixedHeader: true,
-        pageLength: 5,
+        pageLength: 15,
         buttons: [{
             extend: 'pdf',
             split: ['excel', 'csv'],

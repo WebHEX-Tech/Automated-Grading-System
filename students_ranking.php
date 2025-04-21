@@ -24,22 +24,32 @@ $all_subs = $fac_subs->getByUser($_SESSION['emp_id']);
 $subject = $fac_subs->getProf($selected_faculty_sub_id);
 $studentList = $studentsBySub->showBySubject($selected_faculty_sub_id);
 $gradeEquivalents = $pointEqv->getByFacultySubject($selected_faculty_sub_id);
+$sub_type = "";
 
-// Prepare student data with calculated averages and numerical ratings
+if ($subject['subject_type'] == 'lecture') {
+    $sub_type = ' - LEC';
+} elseif ($subject['subject_type'] == 'laboratory') {
+    $sub_type = ' - LAB';
+} elseif ($subject['subject_type'] == 'combined') {
+    $sub_type = '';
+}
+
 $studentsWithGrades = [];
 foreach ($studentList as $item) {
-    $midtermAvg = (isset($item['midterm_grade']) && $item['midterm_grade'] !== null && $item['midterm_grade'] !== '') ? (float) $item['midterm_grade'] : null;
-    $finalGrade = (isset($item['final_grade']) && $item['final_grade'] !== null && $item['final_grade'] !== '') ? (float) $item['final_grade'] : null;
+    $midtermIsINC = isset($item['midterm_grade']) && strtoupper($item['midterm_grade']) == 'INC';
+    $finalIsINC = isset($item['final_grade']) && strtoupper($item['final_grade']) == 'INC';
+    $hasINC = $midtermIsINC || $finalIsINC;
 
-    // Calculate average grade if both grades exist and are not 0
+    $midtermAvg = (!$midtermIsINC && isset($item['midterm_grade']) && $item['midterm_grade'] !== null && $item['midterm_grade'] !== '') ? (float) $item['midterm_grade'] : null;
+    $finalGrade = (!$finalIsINC && isset($item['final_grade']) && $item['final_grade'] !== null && $item['final_grade'] !== '') ? (float) $item['final_grade'] : null;
+
     $averageGrade = null;
-    if ($midtermAvg !== null && $finalGrade !== null) {
+    if (!$hasINC && $midtermAvg !== null && $finalGrade !== null) {
         $averageGrade = ($midtermAvg + $finalGrade) / 2;
     }
 
-    // Get numerical rating if average exists and is not 0
     $numericalRating = null;
-    if ($averageGrade !== null && $averageGrade > 0 && !empty($gradeEquivalents)) {
+    if (!$hasINC && $averageGrade !== null && $averageGrade > 0 && !empty($gradeEquivalents)) {
         if ($averageGrade >= $gradeEquivalents['1_00']) {
             $numericalRating = 1.00;
         } elseif ($averageGrade >= $gradeEquivalents['1_25']) {
@@ -68,15 +78,23 @@ foreach ($studentList as $item) {
         'fullName' => $item['fullName'],
         'email' => $item['email'],
         'year_section' => $item['year_section'],
-        'midterm_grade' => $midtermAvg,
-        'final_grade' => $finalGrade,
+        'midterm_grade' => $midtermIsINC ? 'INC' : $midtermAvg,
+        'final_grade' => $finalIsINC ? 'INC' : $finalGrade,
         'average_grade' => $averageGrade,
-        'numerical_rating' => $numericalRating
+        'numerical_rating' => $hasINC ? 'INC' : $numericalRating,
+        'has_inc' => $hasINC
     ];
 }
 
-// Sort students by average grade (descending order), putting students with no grades at the end
 usort($studentsWithGrades, function ($a, $b) {
+    // Students with INC should come after those with grades
+    if ($a['has_inc'] && !$b['has_inc'])
+        return 1;
+    if (!$a['has_inc'] && $b['has_inc'])
+        return -1;
+    if ($a['has_inc'] && $b['has_inc'])
+        return 0;
+
     if ($a['average_grade'] === null && $b['average_grade'] === null)
         return 0;
     if ($a['average_grade'] === null)
@@ -86,11 +104,15 @@ usort($studentsWithGrades, function ($a, $b) {
     return $b['average_grade'] <=> $a['average_grade'];
 });
 
-// Calculate ranks (handling ties and students with no grades)
 $rank = 1;
 $prevGrade = null;
 $prevRank = 1;
 foreach ($studentsWithGrades as &$student) {
+    if ($student['has_inc']) {
+        $student['rank'] = '-';
+        continue;
+    }
+
     if ($student['average_grade'] === null || $student['average_grade'] <= 0) {
         $student['rank'] = 'No Grade';
         continue;
@@ -103,7 +125,7 @@ foreach ($studentsWithGrades as &$student) {
     $prevGrade = $student['average_grade'];
     $prevRank = $rank;
 }
-unset($student); // Break the reference
+unset($student);
 ?>
 
 <!DOCTYPE html>
@@ -140,9 +162,8 @@ include './includes/head.php';
                 <?php if (!empty($_GET['faculty_sub_id'])): ?>
                     <div class="d-flex flex-column align-items-center">
                         <h3 class="brand-color"><?= $subject ? ucwords($subject['sub_name']) : '' ?></h3>
-                        <h4><?= $subject ? $subject['sub_code'] : '' ?>
-                            <?= $subject ? '(' . $subject['yr_sec'] . ')' : '' ?>
-                        </h4>
+                        <h4><?= $subject ? $subject['sub_code'] . $sub_type : "" ?></h4>
+                        <h4 style="margin: 0; padding: 0;">(<?= $subject ? $subject['yr_sec'] : "" ?>)</h4>
                     </div>
                     <div class="search-keyword col-12 flex-lg-grow-0 d-flex justify-content-between gap-3 my-4 px-2">
                         <div class="d-flex justify-content-between">
@@ -177,16 +198,30 @@ include './includes/head.php';
                                     <td><?= htmlspecialchars($student['fullName']) ?></td>
                                     <td><?= htmlspecialchars($student['email']) ?></td>
                                     <td><?= htmlspecialchars($student['year_section']) ?></td>
-                                    <td><?= ($student['midterm_grade'] !== null && $student['midterm_grade'] > 0) ? $student['midterm_grade'] . '%' : 'No Grade' ?>
+                                    <td style="color: <?= ($student['midterm_grade'] === null || $student['midterm_grade'] <= 0) ? 'grey' : 'inherit' ?>;">
+                                        <?=
+                                            ($student['midterm_grade'] === 'INC') ? 'INC' :
+                                            (($student['midterm_grade'] !== null && $student['midterm_grade'] > 0) ? $student['midterm_grade'] . '%' : 'No Grade')
+                                            ?>
                                     </td>
-                                    <td><?= ($student['final_grade'] !== null && $student['final_grade'] > 0) ? $student['final_grade'] . '%' : 'No Grade' ?>
+                                    <td style="color: <?= ($student['final_grade'] === null || $student['final_grade'] <= 0) ? 'grey' : 'inherit' ?>;">
+                                        <?=
+                                            ($student['final_grade'] === 'INC') ? 'INC' :
+                                            (($student['final_grade'] !== null && $student['final_grade'] > 0) ? $student['final_grade'] . '%' : 'No Grade')
+                                            ?>
                                     </td>
-                                    <td><?= ($student['numerical_rating'] !== null && $student['average_grade'] > 0) ? number_format($student['numerical_rating'], 2) : 'No Grade' ?>
+                                    <td>
+                                        <?=
+                                            ($student['numerical_rating'] === 'INC') ? 'INC' :
+                                            (($student['numerical_rating'] !== null && $student['average_grade'] > 0) ? number_format($student['numerical_rating'], 2) : 'No Grade')
+                                            ?>
                                     </td>
                                     <td class="text-center <?=
-                                        $student['rank'] === 1 ? 'rank-1' :
-                                        ($student['rank'] === 2 ? 'rank-2' :
-                                            ($student['rank'] === 3 ? 'rank-3' : ''))
+                                        ($student['rank'] === 1 && !$student['has_inc']) ? 'rank-1' : (
+                                            ($student['rank'] === 2 && !$student['has_inc']) ? 'rank-2' : (
+                                                ($student['rank'] === 3 && !$student['has_inc']) ? 'rank-3' : ''
+                                            )
+                                        )
                                         ?>">
                                         <?= $student['rank'] ?>
                                     </td>
@@ -206,7 +241,7 @@ include './includes/head.php';
                 dom: 'Brtp',
                 responsive: true,
                 fixedHeader: true,
-                pageLength: 5,
+                pageLength: 15,
                 buttons: [{
                     extend: 'pdf',
                     split: ['excel', 'csv'],
@@ -215,7 +250,7 @@ include './includes/head.php';
                     'targets': [3],
                     'orderable': false,
                 }]
-            });
+            }); // This was the line with the issue - removed extra parenthesis
 
             dataTable.buttons().container().appendTo($('#MyButtons'));
 
@@ -247,7 +282,7 @@ include './includes/head.php';
 
                 return input;
             }
-        })
+        });
     </script>
 </body>
 

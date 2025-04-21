@@ -35,6 +35,15 @@ $subject = $fac_subs->getProf($_GET['faculty_sub_id']);
 $studentList = $studentsBySub->showBySubject($_GET['faculty_sub_id']);
 $midtermComp = $period->showMidterm($selected_faculty_sub_id);
 $finaltermComp = $period->showFinalterm($selected_faculty_sub_id);
+$sub_type = "";
+
+if ($subject['subject_type'] == 'lecture') {
+    $sub_type = ' - LEC';
+} elseif ($subject['subject_type'] == 'laboratory') {
+    $sub_type = ' - LAB';
+} elseif ($subject['subject_type'] == 'combined') {
+    $sub_type = '';
+}
 ?>
 
 <!DOCTYPE html>
@@ -93,7 +102,8 @@ include './includes/head.php';
 
                             <div class="d-flex flex-column align-items-center">
                                 <h3 class="brand-color"><?= ucwords($subject['sub_name']) ?></h3>
-                                <h4><?= $subject['sub_code'] ?> (<?= $subject['yr_sec'] ?>)</h4>
+                                <h4 style="margin-bottom: 0;"><?= $subject['sub_code'] . $sub_type ?></h4>
+                                <h4 style="margin: 0; padding: 0;">(<?= $subject['yr_sec'] ?>)</h4>
                             </div>
 
                             <div class="d-flex flex-row justify-content-end my-4">
@@ -125,7 +135,6 @@ include './includes/head.php';
                                         <th>#</th>
                                         <th>Student ID</th>
                                         <th>Student Name</th>
-                                        <th>Email</th>
                                         <th>Year & Section</th>
                                         <?php foreach ($midtermComp as $component): ?>
                                             <?php
@@ -137,15 +146,16 @@ include './includes/head.php';
                                                 <?= ucwords($component['component_type']) ?>
                                             </th>
                                         <?php endforeach; ?>
+
                                     </tr>
 
                                     <!-- Subheader: Component Number & Date -->
                                     <tr>
-                                        <th colspan="5"></th>
+                                        <th colspan="4"></th>
                                         <?php foreach ($midtermComp as $component): ?>
                                             <?php
                                             $componentId = $component['component_id'];
-                                            $items = $componentItemsMap[$componentId]; // Use pre-fetched items
+                                            $items = $componentItemsMap[$componentId]; 
                                             if (!empty($items)) {
                                                 foreach ($items as $item): ?>
                                                     <th class="text-center component-type-column">
@@ -175,13 +185,12 @@ include './includes/head.php';
                                                 </a>
                                             </td>
                                             <td><?= ucwords($student['fullName']) ?></td>
-                                            <td><?= $student['email'] ?></td>
                                             <td><?= $student['year_section'] ?></td>
 
                                             <?php foreach ($midtermComp as $component): ?>
                                                 <?php
                                                 $componentId = $component['component_id'];
-                                                $items = $componentItemsMap[$componentId]; // Use pre-fetched items
+                                                $items = $componentItemsMap[$componentId]; 
                                                 if (!empty($items)) {
                                                     foreach ($items as $item):
                                                         $scoreData = $scores->getAllScoreByItemStud($student['grades_id'], $item['items_id']);
@@ -224,7 +233,8 @@ include './includes/head.php';
 
                             <div class="d-flex flex-column align-items-center">
                                 <h3 class="brand-color"><?= ucwords($subject['sub_name']) ?></h3>
-                                <h4><?= $subject['sub_code'] ?> (<?= $subject['yr_sec'] ?>)</h4>
+                                <h4 style="margin-bottom: 0;"><?= $subject['sub_code'] . $sub_type ?></h4>
+                                <h4 style="margin: 0; padding: 0;">(<?= $subject['yr_sec'] ?>)</h4>
                             </div>
 
                             <div class="d-flex flex-row justify-content-end my-4">
@@ -256,7 +266,6 @@ include './includes/head.php';
                                         <th>#</th>
                                         <th>Student ID</th>
                                         <th>Student Name</th>
-                                        <th>Email</th>
                                         <th>Year & Section</th>
                                         <?php foreach ($finaltermComp as $component): ?>
                                             <?php
@@ -272,7 +281,7 @@ include './includes/head.php';
 
                                     <!-- Subheader: Component Number & Date -->
                                     <tr>
-                                        <th colspan="5"></th>
+                                        <th colspan="4"></th>
                                         <?php foreach ($finaltermComp as $component): ?>
                                             <?php
                                             $componentId = $component['component_id'];
@@ -306,7 +315,6 @@ include './includes/head.php';
                                                 </a>
                                             </td>
                                             <td><?= ucwords($student['fullName']) ?></td>
-                                            <td><?= $student['email'] ?></td>
                                             <td><?= $student['year_section'] ?></td>
 
                                             <?php foreach ($finaltermComp as $component): ?>
@@ -403,21 +411,21 @@ include './includes/head.php';
     <script>
         $(document).ready(function () {
             $('#student_table_midterm').DataTable({
-                pageLength: 5,
+                pageLength: 10,
                 scrollX: true,
                 lengthChange: false,
                 columnDefs: [{
-                    targets: [1, 2, 3, 4],
+                    targets: [1, 2, 3],
                     orderable: true,
                 }]
             });
 
             $('#student_table_finalterm').DataTable({
-                pageLength: 5,
+                pageLength: 10,
                 scrollX: true,
                 lengthChange: false,
                 columnDefs: [{
-                    targets: [1, 2, 3, 4],
+                    targets: [1, 2, 3],
                     orderable: true,
                 }]
             });

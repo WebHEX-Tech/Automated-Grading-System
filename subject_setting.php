@@ -24,6 +24,15 @@ $midtermPeriod = $period->getIdMidterm($selected_faculty_sub_id);
 $finaltermPeriod = $period->getIdFinalterm($selected_faculty_sub_id);
 $midtermComp = $period->showMidterm($selected_faculty_sub_id);
 $finaltermComp = $period->showFinalterm($selected_faculty_sub_id);
+$sub_type = "";
+
+if ($subject['subject_type'] == 'lecture') {
+  $sub_type = ' - LEC';
+} elseif ($subject['subject_type'] == 'laboratory') {
+  $sub_type = ' - LAB';
+} elseif ($subject['subject_type'] == 'combined') {
+  $sub_type = '';
+}
 ?>
 <!DOCTYPE html>
 <html lang="en">
@@ -112,8 +121,8 @@ include './includes/head.php';
               <div class="tab-pane fade show active" id="nav-Midterm" role="tabpanel" aria-labelledby="nav-Midterm-tab">
                 <div class="d-flex flex-column align-items-center">
                   <h3 class="brand-color"><?= $subject ? ucwords($subject['sub_name']) : '' ?></h3>
-                  <h4><?= $subject ? $subject['sub_code'] : '' ?>   <?= $subject ? '(' . $subject['yr_sec'] . ')' : '' ?>
-                  </h4>
+                  <h4><?= $subject ? $subject['sub_code'] . $sub_type : "" ?></h4>
+                  <h4 style="margin: 0; padding: 0;">(<?= $subject ? $subject['yr_sec'] : "" ?>)</h4>
                 </div>
 
                 <div class="row m-2 row-cols-1 row-cols-md-2 d-flex justify-content-end">
@@ -181,8 +190,8 @@ include './includes/head.php';
                 <div class="tab-pane fade show active" id="nav-Midterm" role="tabpanel" aria-labelledby="nav-Midterm-tab">
                   <div class="d-flex flex-column align-items-center">
                     <h3 class="brand-color"><?= $subject ? ucwords($subject['sub_name']) : '' ?></h3>
-                    <h4><?= $subject ? $subject['sub_code'] : '' ?>   <?= $subject ? '(' . $subject['yr_sec'] . ')' : '' ?>
-                    </h4>
+                    <h4><?= $subject ? $subject['sub_code'] . $sub_type : "" ?></h4>
+                    <h4 style="margin: 0; padding: 0;">(<?= $subject ? $subject['yr_sec'] : "" ?>)</h4>
                   </div>
 
                   <div class="row m-2 row-cols-1 row-cols-md-2 d-flex justify-content-end">
