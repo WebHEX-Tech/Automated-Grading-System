@@ -25,6 +25,12 @@
 .rank-3 {
   background-color: #fad051 !important;
 }
+.text-red {
+  color: red;
+}
+.text-gray {
+  color: gray;
+}
 .sticky-top {
   top: 0 !important;
   z-index: 100 !important;

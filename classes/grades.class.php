@@ -90,7 +90,6 @@ class Grades
         }
         return $data;
     }
-
     function showById($grades_id)
     {
         $sql = "SELECT g.*,

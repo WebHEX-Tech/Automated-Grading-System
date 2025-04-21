@@ -73,15 +73,57 @@ include '../includes/admin_head.php';
 
                 <div class="content container-fluid mw-100 border rounded shadow p-3">
 
-                    <div class="btn-toolbar d-flex justify-content-between">
-                        <div class="btn-group gap-3">
-                        </div>
-
+                    <div class="btn-toolbar d-flex justify-content-end gap-1">
                         <?php if ($is_current_year): ?>
+                            <button type="button" class="btn btn-outline-secondary brand-bg-color" data-bs-toggle="modal"
+                                data-bs-target="#importExcelModal">
+                                <i class='bx bx-import'></i> Import Excel
+                            </button>
+
                             <a href="./add_student?sched_id=<?= $_GET['sched_id'] ?>&department_id=<?= $_GET['department_id'] ?>&faculty_sub_id=<?= $_GET['faculty_sub_id'] ?>"
                                 class="btn btn-outline-secondary btn-add ms-3 brand-bg-color" type="button"><i
                                     class='bx bx-plus-circle'></i> Add Student</a>
                         <?php endif; ?>
+                    </div>
+
+                    <!-- Import Excel Modal -->
+                    <div class="modal fade" id="importExcelModal" tabindex="-1" aria-labelledby="importExcelModalLabel"
+                        aria-hidden="true">
+                        <div id="alertContainer2"></div>
+                        <div class="modal-dialog">
+                            <div class="modal-content">
+                                <div class="modal-header">
+                                    <h5 class="modal-title" id="importExcelModalLabel">Import Students from Excel</h5>
+                                    <button type="button" class="btn-close" data-bs-dismiss="modal"
+                                        aria-label="Close"></button>
+                                </div>
+                                <form id="importExcelForm" enctype="multipart/form-data">
+                                    <div class="modal-body">
+                                        <div class="mb-3">
+                                            <label for="excelFile" class="form-label">Select Excel File</label>
+                                            <input class="form-control" type="file" id="excelFile" name="excelFile"
+                                                accept=".xlsx, .xls" required>
+                                            <small class="text-muted">Only .xlsx or .xls files are accepted</small>
+                                        </div>
+                                        <div class="mb-3">
+                                            <a href="../templates/student_import_template.xlsx" download
+                                                class="btn btn-sm btn-outline-secondary">
+                                                <i class='bx bx-download'></i> Download Template
+                                            </a>
+                                        </div>
+                                        <input type="hidden" name="faculty_sub_id"
+                                            value="<?= $_GET['faculty_sub_id'] ?>">
+                                        <input type="hidden" name="sched_id" value="<?= $_GET['sched_id'] ?>">
+                                        <input type="hidden" name="department_id" value="<?= $_GET['department_id'] ?>">
+                                    </div>
+                                    <div class="modal-footer">
+                                        <button type="button" class="btn btn-secondary"
+                                            data-bs-dismiss="modal">Close</button>
+                                        <button type="submit" class="btn btn-primary">Import</button>
+                                    </div>
+                                </form>
+                            </div>
+                        </div>
                     </div>
 
                     <hr>
@@ -137,7 +179,7 @@ include '../includes/admin_head.php';
 
             <div class="modal fade" id="deleteConfirmationModal" tabindex="-1"
                 aria-labelledby="deleteConfirmationModalLabel" aria-hidden="true">
-                <div id="alertContainer"></div>
+                <div id="alertContainer1"></div>
                 <div class="modal-dialog modal-dialog-centered">
                     <div class="modal-content">
                         <div class="modal-header">
@@ -161,19 +203,90 @@ include '../includes/admin_head.php';
     <script>
         $(document).ready(function () {
             dataTable = $("#student_table").DataTable({
-                pageLength: 5,
+                pageLength: 10,
                 scrollX: true,
-                lengthChange: false, // Disable length change
+                lengthChange: false,
                 'columnDefs': [{
-                    'targets': [1, 2, 3, 4], /* column index */
-                    'orderable': true, /* true or false */
+                    'targets': [1, 2, 3, 4],
+                    'orderable': true,
                 }],
                 'columnDefs': [{
-                    'targets': [5], /* column index */
-                    'orderable': false, /* true or false */
+                    'targets': [5],
+                    'orderable': false,
                 }]
             });
+
+            $('#importExcelForm').on('submit', function (e) {
+                e.preventDefault();
+
+                const importBtn = $(this).find('button[type="submit"]');
+                importBtn.prop('disabled', true).html('<span class="spinner-border spinner-border-sm" role="status" aria-hidden="true"></span> Importing...');
+
+                var formData = new FormData(this);
+
+                $.ajax({
+                    url: './import_students.php',
+                    type: 'POST',
+                    data: formData,
+                    processData: false,
+                    contentType: false,
+                    success: function (response) {
+                        console.log("Raw response:", response);
+
+                        try {
+                            const data = typeof response === 'string' ? JSON.parse(response) : response;
+                            console.log("Parsed data:", data);
+                            if (data.success) {
+                                showAlert2(data.message, 'success');
+                                $('#importExcelModal').modal('hide');
+                                setTimeout(() => location.reload(), 1000);
+                            } else {
+                                showAlert2(data.message, 'danger');
+                            }
+                        } catch (e) {
+                            showAlert2('An error occurred while processing the response.', 'danger');
+                            console.error('Parsing error:', e, response);
+                        }
+                    },
+                    error: function (xhr, status, error) {
+                        showAlert2('An error occurred: ' + error, 'danger');
+                        console.error('AJAX error:', error);
+                    },
+                    complete: function () {
+                        importBtn.prop('disabled', false).text('Import');
+                    }
+                });
+            });
         });
+
+
+        function showAlert1(message, type) {
+            const alertContainer = document.getElementById('alertContainer1');
+            const alertHTML = `
+                    <div class="alert alert-${type} d-flex flex-row align-items-center gap-2 position-fixed top-0 start-50 translate-middle-x w-auto mt-4 z-index-1050" role="alert">
+                        <strong>${type === 'success' ? `Success! <i class='bx bx-check-circle'></i>` : 'Error!'}</strong> ${message}
+                    </div>
+                `;
+            alertContainer.innerHTML = alertHTML;
+
+            setTimeout(() => {
+                alertContainer.innerHTML = '';
+            }, 5000);
+        }
+
+        function showAlert2(message, type) {
+            const alertContainer = document.getElementById('alertContainer2');
+            const alertHTML = `
+                    <div class="alert alert-${type} d-flex flex-row align-items-center gap-2 position-fixed bottom-0 start-50 translate-middle-x w-auto mt-4 z-index-1050" role="alert">
+                        <strong>${type === 'success' ? `Success! <i class='bx bx-check-circle'></i>` : 'Error!'}</strong> ${message}
+                    </div>
+                `;
+            alertContainer.innerHTML = alertHTML;
+
+            setTimeout(() => {
+                alertContainer.innerHTML = '';
+            }, 5000);
+        }
 
         document.addEventListener('DOMContentLoaded', function () {
             const deleteButtons = document.querySelectorAll('.delete-btn');
@@ -199,7 +312,7 @@ include '../includes/admin_head.php';
                         .then(response => response.json())
                         .then(data => {
                             if (data.success) {
-                                showAlert(data.message, 'success');
+                                showAlert1(data.message, 'success');
                                 setTimeout(() => location.reload(), 1000);
                             } else {
                                 alert(data.message);
@@ -211,16 +324,6 @@ include '../includes/admin_head.php';
                         });
                 }
             });
-
-            function showAlert(message, type) {
-                const alertContainer = document.getElementById('alertContainer');
-                const alertHTML = `
-          <div class="alert alert-${type} d-flex flex-row align-items-center gap-2 position-fixed top-0 start-50 translate-middle-x w-auto mt-4 z-index-1050" role="alert">
-            <strong>${type === 'success' ? `Successfully Deleted! <i class='bx bx-check-circle' ></i>` : 'Error!'}</strong> ${message}
-          </div>
-        `;
-                alertContainer.innerHTML = alertHTML;
-            }
         });
     </script>
 </body>

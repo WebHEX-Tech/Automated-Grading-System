@@ -21,6 +21,15 @@ $studentsBySub = new Grades();
 $all_subs = $fac_subs->getByUser($_SESSION['emp_id']);
 $subject = $fac_subs->getProf($selected_faculty_sub_id);
 $studentList = $studentsBySub->showBySubject($selected_faculty_sub_id);
+$sub_type = "";
+
+if ($subject['subject_type'] == 'lecture') {
+  $sub_type = ' - LEC';
+} elseif ($subject['subject_type'] == 'laboratory') {
+  $sub_type = ' - LAB';
+} elseif ($subject['subject_type'] == 'combined') {
+  $sub_type = '';
+}
 ?>
 
 <!DOCTYPE html>
@@ -83,13 +92,21 @@ include './includes/head.php';
           ?>
           <div class="d-flex flex-column align-items-center">
             <h3 class="brand-color"><?= $subject ? ucwords($subject['sub_name']) : '' ?></h3>
-            <h4><?= $subject ? $subject['sub_code'] : '' ?>   <?= $subject ? '(' . $subject['yr_sec'] . ')' : '' ?>
-            </h4>
+            <h4><?= $subject ? $subject['sub_code'] . $sub_type : "" ?></h4>
+            <h4 style="margin: 0; padding: 0;">(<?= $subject ? $subject['yr_sec'] : "" ?>)</h4>
           </div>
           <div class="search-keyword col-12 flex-lg-grow-0 d-flex justify-content-between gap-3 my-4 px-2">
-            <div class="d-flex justify-content-between">
+            <div class="d-flex justify-content-between gap-1">
               <div id="MyButtons" class="d-flex me-1 mb-md-2 mb-lg-0 col-12 col-md-auto"></div>
-              <a href="./students_ranking?faculty_sub_id=<?= $selected_faculty_sub_id ?>" class="btn brand-bg-color">Students Ranking</a>
+              <?php if ($subject['subject_type'] === 'laboratory'): ?>
+                <a href="./students_ranking?faculty_sub_id=<?= $selected_faculty_sub_id ?>"
+                  class="btn brand-bg-color">Students Ranking</a>
+              <?php endif; ?>
+
+              <?php if ($subject['subject_type'] === 'lecture' || $subject['subject_type'] === 'combined'): ?>
+                <a href="./students_complete_grade?faculty_sub_id=<?= $selected_faculty_sub_id ?>" class="btn brand-bg-color">View
+                  Complete Grades</a>
+              <?php endif; ?>
             </div>
             <div class="input-group" style="width: 40% !important;">
               <input type="text" name="keyword" id="keyword" placeholder="Search" class="form-control">

@@ -76,7 +76,7 @@ include './includes/head.php';
 
       <div class="m-4">
         <div class="details">
-          <p class="fw-bolder">Name: <span class="fw-bold brand-color"><?= ucwords($_SESSION['name']) ?></span></p>
+          <p class="fw-bolder">Name: <span class="fw-bold brand-color"><?= ucwords($_SESSION['name']) . '(' . $_SESSION['emp_id'] . ')' ?></span></p>
           <p class="fw-bolder">Designation: <span
               class="fw-bold brand-color"><?= $info ? ucwords($info['designation']) : 'N/A' ?></span></p>
           <p class="fw-bolder">Academic Rank: <span

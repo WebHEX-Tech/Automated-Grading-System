@@ -1,187 +1,136 @@
-<?php 
+<?php
 
 session_start();
 
 if (!isset($_SESSION['user_role']) || (isset($_SESSION['user_role']) && $_SESSION['user_role'] != 2)) {
   header('location: ../login');
 }
+
+require_once '../classes/curr_year.class.php';
+
+$currYear = new Curr_year();
+if (isset($_GET['keyword']) && !empty($_GET['keyword'])) {
+  $keyword = $_GET['keyword'];
+  $results = $currYear->searchByYearStart($keyword);
+  if (empty($results)) {
+    echo "<script> alert('No Curriculum found'); window.location.href='./index.php'; </script>";
+    exit;
+  }
+} else {
+  $curr_yearArray = $currYear->show();
+}
 ?>
 
 <!DOCTYPE html>
 <html lang="en">
-<?php 
-	$title = 'Admin | Grades';
-  $grade_page = 'active';
-	include '../includes/admin_head.php';
+<?php
+$title = 'Admin | Grades';
+$grades_page = 'active';
+include '../includes/admin_head.php';
 ?>
+
 <body>
   <div class="home">
     <div class="side">
       <?php
-        require_once('../includes/admin_sidepanel.php')
-      ?> 
+      require_once('../includes/admin_sidepanel.php')
+        ?>
     </div>
     <main>
-      <div class="header" >
-      <?php
-        require_once('../includes/admin_header.php')
-      ?>
+      <div class="header">
+        <?php
+        require_once('../includes/admin_header.php');
+        ?>
       </div>
-      
-      <div class="flex-md-nowrap p-1 title_page shadow sticky-top" style="background-color: whitesmoke;" >
+
+      <div class="flex-md-nowrap p-1 title_page shadow" style="background-color: whitesmoke;">
         <div class="d-flex align-items-center">
           <div class="container-fluid d-flex justify-content-center">
-            <span class="fs-2 fw-bold h1 m-0 brand-color">Department of Computer Science</span>
+            <span class='fs-2 fw-bold h1 m-0 brand-color'>
+              Grades Posted
+            </span>
           </div>
         </div>
       </div>
 
       <div class="m-4">
-        <div class="row row-cols-1 row-cols-sm-1 row-cols-md-4">
-          <div class="col">
-            <select type="button" class="btn border dropdown-toggle form-select border-danger mb-4" data-bs-toggle="dropdown">
-              <option>Apply to all</option>
-              <option>CS140</option>
-              <option>CS137</option>
-            </select>
-          </div>
+        <div class="search-keyword col-12 flex-lg-grow-0 d-flex mb-3">
+          <form class="input-group">
+            <input type="text" name="keyword" id="keyword" placeholder="Search" class="form-control">
+            <button class="btn btn-outline-secondary brand-bg-color" type="button" name="keyword"
+              onclick="searchYearStart()"><i class='bx bx-search' aria-hidden="true"></i></button>
+          </form>
         </div>
-        
-        <div class="content brand-border-color mw-100 rounded shadow py-3">
-          <nav>
-            <div class="nav nav-tabs" id="nav-tab" role="tablist">
-              <button class="nav-link text-dark active" id="nav-midterm-tab" data-bs-toggle="tab" data-bs-target="#nav-midterm" type="button" role="tab" aria-controls="nav-midterm" aria-selected="true">Midterm</button>
-              <button class="nav-link text-dark" id="nav-finalterm-tab" data-bs-toggle="tab" data-bs-target="#nav-finalterm" type="button" role="tab" aria-controls="nav-finalterm" aria-selected="false">Final Term</button>
-            </div>
-          </nav>
-          <div class="tab-content" id="nav-tabContent">
-            <div class="tab-pane fade show active" id="nav-midterm" role="tabpanel" aria-labelledby="nav-midterm-tab">
-              <div class="row m-2 row-cols-1 row-cols-md-2 d-flex justify-content-between">
-                <form class="d-flex justify-content-start align-items-center">
-                  <label class="me-2">Number of absences:</label>
-                  <input class="border-bottom px-2" id="disabledTextInput" type="number" title="3" value="7" disabled>
-                  <i class='bx bx-edit ms-2' id="edit_att_req"></i>
-                </form>
-                <div class="col-3 d-flex justify-content-end">
-                  <a href="./add_standard-setting.php" class="btn btn-outline-secondary btn-add ms-3 brand-bg-color" type="button"><i class='bx bx-plus-circle'></i></a>
+
+        <div class="curriculum row row-cols-1 row-cols-md-2 row-cols-lg-3 g-3">
+          <?php
+          require_once '../classes/curr_year.class.php';
+          $curr_year = new Curr_year();
+          $curr_yearArray = $curr_year->show();
+
+          if ($curr_yearArray) {
+            foreach ($curr_yearArray as $item) {
+              // Check if keyword is set and if the item matches the keyword
+              $displayItem = true;
+              if (isset($_GET['keyword']) && !empty($_GET['keyword'])) {
+                $keyword = strtolower($_GET['keyword']);
+                if (strtolower($item['year_start']) != $keyword) {
+                  $displayItem = false;
+                }
+              }
+
+              if ($displayItem) {
+                ?>
+
+                <div class="col">
+                  <div
+                    class="d-flex align-items-center justify-content-between brand-bg-color p-4 fs-4 rounded position-relative">
+                    <a href="./select_department_grade?curr_year_id=<?= $item['curr_year_id'] ?>" class="stretched-link"></a>
+                    <i class='bx bxs-folder-open text-white opacity-50'></i>
+                    <div class="d-flex flex-column justify-content-start me-3">
+                      <span>Curriculum</span>
+                      <span><?= $item['year_start'] ?> - <?= $item['year_end'] ?></span>
+                    </div>
+                  </div>
                 </div>
-              </div>
 
-              <div class="d-flex justify-content-end">
-              </div>
+                <?php
+              }
+            }
+          }
+          ?>
 
-              <table id="subject_setting" class="table table-striped cell-border" style="width:100%">
-                <thead>
-                  <tr>
-                    <th>Criteria</th>
-                    <th>Weight</th>
-                    <th width="5%">action</th>
-                  </tr>
-                </thead>
-                <tbody>
-                  <tr>
-                    <td>Attendance</td>
-                    <td>5% </td>
-                    <td class="text-center">
-                      <a href="# "><i class='bx bx-edit text-success' ></i></a>
-                      <i class='bx bx-trash-alt text-danger' ></i>
-                    </td>
-                  </tr>
-                  <tr>
-                    <td>Quiz</td>
-                    <td>30% </td>
-                    <td class="text-center">
-                      <a href="# "><i class='bx bx-edit text-success' ></i></a>
-                      <i class='bx bx-trash-alt text-danger' ></i>
-                    </td>
-                  </tr>
-                  <tr>
-                    <td>Activity</td>
-                    <td>15% </td>
-                    <td class="text-center">
-                      <a href="# "><i class='bx bx-edit text-success' ></i></a>
-                      <i class='bx bx-trash-alt text-danger' ></i>
-                    </td>
-                  </tr>
-                  <tr>
-                    <td>Major Exam</td>
-                    <td>50% </td>
-                    <td class="text-center">
-                      <a href="# "><i class='bx bx-edit text-success' ></i></a>
-                      <i class='bx bx-trash-alt text-danger' ></i>
-                    </td>
-                  </tr>
-                </tbody>
-              </table>
-            </div>
-            <div class="tab-pane fade" id="nav-finalterm" role="tabpanel" aria-labelledby="nav-finalterm-tab">
-            <div class="tab-pane fade show active" id="nav-midterm" role="tabpanel" aria-labelledby="nav-midterm-tab">
-              <div class="row m-2 row-cols-1 row-cols-md-2 d-flex justify-content-between">
-                <form class="d-flex justify-content-start align-items-center">
-                  <label class="me-2">Number of absences:</label>
-                  <input class="border-bottom px-2" id="disabledTextInput2" type="number" title="3" disabled>
-                  <i class='bx bx-edit ms-2' id="edit_att_req2"></i>
-                </form>
-                <div class="col-3 d-flex justify-content-end">
-                  <a href="./add_standard-setting.php" class="btn btn-outline-secondary btn-add ms-3 brand-bg-color" type="button"><i class='bx bx-plus-circle'></i></a>
-                </div>
-              </div>
-
-              <div class="d-flex justify-content-end">
-              </div>
-
-              <table id="subject_setting" class="table table-striped cell-border" style="width:100%">
-                <thead>
-                  <tr>
-                    <th>Criteria</th>
-                    <th>Weight</th>
-                    <th width="5%">action</th>
-                  </tr>
-                </thead>
-                <tbody>
-                  <tr>
-                    <td>Attendance</td>
-                    <td>10% </td>
-                    <td class="text-center">
-                      <a href="# "><i class='bx bx-edit text-success' ></i></a>
-                      <i class='bx bx-trash-alt text-danger' ></i>
-                    </td>
-                  </tr>
-                  <tr>
-                    <td>Quiz</td>
-                    <td>20% </td>
-                    <td class="text-center">
-                      <a href="# "><i class='bx bx-edit text-success' ></i></a>
-                      <i class='bx bx-trash-alt text-danger' ></i>
-                    </td>
-                  </tr>
-                  <tr>
-                    <td>Activity</td>
-                    <td>20% </td>
-                    <td class="text-center">
-                      <a href="# "><i class='bx bx-edit text-success' ></i></a>
-                      <i class='bx bx-trash-alt text-danger' ></i>
-                    </td>
-                  </tr>
-                  <tr>
-                    <td>Major Exam</td>
-                    <td>50% </td>
-                    <td class="text-center">
-                      <a href="# "><i class='bx bx-edit text-success' ></i></a>
-                      <i class='bx bx-trash-alt text-danger' ></i>
-                    </td>
-                  </tr>
-                </tbody>
-              </table>
-            </div>
-          </div>
         </div>
       </div>
-
     </main>
   </div>
 
   <script src="./js/main.js"></script>
+  <script>
+    function searchYearStart() {
+      var keyword = document.getElementById('keyword').value.trim();
+      if (keyword !== '') {
+        fetch('search.php?keyword=' + encodeURIComponent(keyword))
+          .then(response => {
+            if (response.ok) {
+              return response.text();
+            }
+            throw new Error('Network response was not ok.');
+          })
+          .then(data => {
+            if (data === 'none') {
+              document.getElementById('searchResult').textContent = 'No matching items found.';
+            } else {
+              document.getElementById('searchResult').textContent = data;
+            }
+          })
+          .catch(error => {
+            console.error('There was a problem with the fetch operation:', error);
+          });
+      }
+    }
+  </script>
 
 </body>
+
 </html>

@@ -97,7 +97,6 @@ include '../includes/admin_head.php';
                                     <option value="Associate Degree" <?= (isset($_POST['degree_level']) && $_POST['degree_level'] == 'Associate Degree') ? 'selected' : '' ?>>Associate Degree</option>
                                     <option value="Bachelor's Degree" <?= (isset($_POST['degree_level']) && $_POST['degree_level'] == "Bachelor's Degree") ? 'selected' : '' ?>>Bachelor's Degree</option>
                                     <option value="Master's Degree" <?= (isset($_POST['degree_level']) && $_POST['degree_level'] == "Master's Degree") ? 'selected' : '' ?>>Master's Degree</option>
-                                    <option value="Doctoral's Degree" <?= (isset($_POST['degree_level']) && $_POST['degree_level'] == "Doctoral's Degree") ? 'selected' : '' ?>>Doctoral's Degree</option>
                                 </select>
                             </div>
                         </div>
