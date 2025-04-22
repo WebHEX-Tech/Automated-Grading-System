@@ -108,12 +108,12 @@ include './includes/head.php';
 
                             <div class="d-flex flex-row justify-content-end my-4">
                                 <a class="btn btn-outline-secondary btn-add ms-3 brand-bg-color add-btn"
-                                    href="./column_select?active_period=midterm&faculty_sub_id=<?= $selected_faculty_sub_id ?>">
+                                    href="./column_select?active_period=finalterm&faculty_sub_id=<?= $selected_faculty_sub_id ?>">
                                     Edit Columns
                                 </a>
                                 <button class="btn btn-outline-secondary btn-add ms-3 brand-bg-color add-btn"
                                     type="button" data-bs-toggle="modal" data-bs-target="#addComponentModal"
-                                    data-period="midterm">
+                                    data-period="finalterm">
                                     <i class='bx bx-plus-circle'></i>
                                 </button>
                             </div>
@@ -155,7 +155,7 @@ include './includes/head.php';
                                         <?php foreach ($midtermComp as $component): ?>
                                             <?php
                                             $componentId = $component['component_id'];
-                                            $items = $componentItemsMap[$componentId]; 
+                                            $items = $componentItemsMap[$componentId];
                                             if (!empty($items)) {
                                                 foreach ($items as $item): ?>
                                                     <th class="text-center component-type-column">
@@ -190,7 +190,7 @@ include './includes/head.php';
                                             <?php foreach ($midtermComp as $component): ?>
                                                 <?php
                                                 $componentId = $component['component_id'];
-                                                $items = $componentItemsMap[$componentId]; 
+                                                $items = $componentItemsMap[$componentId];
                                                 if (!empty($items)) {
                                                     foreach ($items as $item):
                                                         $scoreData = $scores->getAllScoreByItemStud($student['grades_id'], $item['items_id']);
@@ -237,16 +237,26 @@ include './includes/head.php';
                                 <h4 style="margin: 0; padding: 0;">(<?= $subject['yr_sec'] ?>)</h4>
                             </div>
 
-                            <div class="d-flex flex-row justify-content-end my-4">
-                                <a class="btn btn-outline-secondary btn-add ms-3 brand-bg-color add-btn"
-                                    href="./column_select?active_period=finalterm&faculty_sub_id=<?= $selected_faculty_sub_id ?>">
-                                    Edit Columns
-                                </a>
-                                <button class="btn btn-outline-secondary btn-add ms-3 brand-bg-color add-btn"
-                                    type="button" data-bs-toggle="modal" data-bs-target="#addComponentModal"
-                                    data-period="finalterm">
-                                    <i class='bx bx-plus-circle'></i>
-                                </button>
+                            <div class="d-flex justify-content-between align-items-center">
+                                <div>
+                                    <button class="btn btn-outline-secondary btn-add ms-3 brand-bg-color add-btn"
+                                        type="button" data-bs-toggle="modal" data-bs-target="#applyAllGradesModal"
+                                        data-period="<?= $selected_tab ?>">
+                                        <i class='bx bx-upload'></i> Apply All Grades
+                                    </button>
+                                </div>
+
+                                <div class="d-flex flex-row justify-content-end my-4">
+                                    <a class="btn btn-outline-secondary btn-add ms-3 brand-bg-color add-btn"
+                                        href="./column_select?active_period=midterm&faculty_sub_id=<?= $selected_faculty_sub_id ?>">
+                                        Edit Columns
+                                    </a>
+                                    <button class="btn btn-outline-secondary btn-add ms-3 brand-bg-color add-btn"
+                                        type="button" data-bs-toggle="modal" data-bs-target="#addComponentModal"
+                                        data-period="midterm">
+                                        <i class='bx bx-plus-circle'></i>
+                                    </button>
+                                </div>
                             </div>
 
                             <?php
@@ -354,7 +364,6 @@ include './includes/head.php';
             </div>
         </main>
 
-        <!-- Modal for Adding Component -->
         <div class="modal fade" id="addComponentModal" tabindex="-1" aria-labelledby="addComponentModalLabel"
             aria-hidden="true">
             <div class="modal-dialog">
@@ -369,7 +378,6 @@ include './includes/head.php';
                                 <?php
                                 $facultySubId = $selected_faculty_sub_id;
 
-                                // Check which tab is currently selected
                                 $activePeriod = isset($_GET['active_period']) ? $_GET['active_period'] : 'midterm';
                                 $selectedComponents = ($activePeriod === 'finalterm') ? $finaltermComp : $midtermComp;
 
@@ -404,6 +412,30 @@ include './includes/head.php';
             </div>
         </div>
 
+        <div class="modal fade" id="applyAllGradesModal" tabindex="-1" aria-labelledby="applyAllGradesModalLabel"
+            aria-hidden="true">
+            <div class="modal-dialog modal-dialog-centered">
+                <div class="modal-content">
+                    <div class="modal-header">
+                        <h5 class="modal-title" id="applyAllGradesModalLabel">Apply All Grades</h5>
+                        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                    </div>
+                    <div class="modal-body">
+                        Are you sure you want to apply grades for all students in this subject?
+                        <span class="text-danger">This action cannot be undone, make sure all grades are graded correctly.</span>
+                    </div>
+                    <div class="modal-footer">
+                        <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancel</button>
+                        <form method="POST" action="./apply_all_grades.php" style="display: inline;">
+                            <input type="hidden" name="faculty_sub_id" value="<?= $selected_faculty_sub_id ?>">
+                            <input type="hidden" name="active_period"
+                                value="<?= $_GET['active_period'] ?? 'midterm' ?>">
+                            <button type="submit" class="btn btn-primary">Confirm</button>
+                        </form>
+                    </div>
+                </div>
+            </div>
+        </div>
 
     </div>
 

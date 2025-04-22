@@ -14,7 +14,7 @@ require_once '../classes/faculty_subs.class.php';
 $fac_subs = new Faculty_Subjects();
 $student = new Students();
 
-$studentData = $student->getStudentById($_GET['student_data_id']);
+$studentData = $student->getStudentByDataId($_GET['student_data_id']);
 
 $success = false;
 $errors = '';
