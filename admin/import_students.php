@@ -77,31 +77,36 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_FILES['excelFile'])) {
                     throw new Exception("Line $lineNumber: Invalid email format. Only @wmsu.edu.ph emails are allowed");
                 }
 
-                $student->faculty_sub_id = htmlentities($faculty_sub_id);
-                $student->student_id = htmlentities($student_id);
-                $student->student_firstname = ucwords(strtolower(htmlentities($firstname)));
-                $student->student_middlename = !empty($middlename) ? ucwords(strtolower(htmlentities($middlename))) : '';
-                $student->student_lastname = ucwords(strtolower(htmlentities($lastname)));
-                $student->email = htmlentities($email);
-                $student->year_section = htmlentities($year_section);
-                $student->suffix = htmlentities($suffix);
+                $existingStudent = $student->getStudentById($student_id);
+                if ($existingStudent) {
+                    throw new Exception($existingStudent['student_id'] .' already exists.');
+                } else {
+                    $student->faculty_sub_id = htmlentities($faculty_sub_id);
+                    $student->student_id = htmlentities($student_id);
+                    $student->student_firstname = ucwords(strtolower(htmlentities($firstname)));
+                    $student->student_middlename = !empty($middlename) ? ucwords(strtolower(htmlentities($middlename))) : '';
+                    $student->student_lastname = ucwords(strtolower(htmlentities($lastname)));
+                    $student->email = htmlentities($email);
+                    $student->year_section = htmlentities($year_section);
+                    $student->suffix = htmlentities($suffix);
 
-                if ($student->add()) {
-                    $newStudent = $student->getStudentById($student_id);
-                    if ($newStudent) {
-                        $student_data_id = $newStudent['student_data_id'];
+                    if ($student->add()) {
+                        $newStudent = $student->getStudentById($student_id);
+                        if ($newStudent) {
+                            $student_data_id = $newStudent['student_data_id'];
 
-                        $grades->student_data_id = $student_data_id;
-                        $grades->faculty_sub_id = htmlentities($faculty_sub_id);
+                            $grades->student_data_id = $student_data_id;
+                            $grades->faculty_sub_id = htmlentities($faculty_sub_id);
 
-                        if (!$grades->add()) {
-                            throw new Exception("Line $lineNumber: Failed to add student " . $newStudent['student_data_id'] . " to subject");
+                            if (!$grades->add()) {
+                                throw new Exception("Line $lineNumber: Failed to add student " . $newStudent['student_data_id'] . " to subject");
+                            }
+                        } else {
+                            throw new Exception('Failed to retrieve the new student data.');
                         }
                     } else {
-                        throw new Exception('Failed to retrieve the new student data.');
+                        throw new Exception('Failed to add the new student.');
                     }
-                } else {
-                    throw new Exception('Failed to add the new student.');
                 }
 
                 $successCount++;
