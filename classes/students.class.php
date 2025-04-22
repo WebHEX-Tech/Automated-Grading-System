@@ -61,6 +61,18 @@ class Students
         }
         return $data;
     }
+    function getStudentByDataId($student_id)
+    {
+        $sql = "SELECT * FROM students WHERE student_data_id = :student_id";
+
+        $query = $this->db->connect()->prepare($sql);
+        $query->bindParam(':student_id', $student_id);
+        $data = null;
+        if ($query->execute()) {
+            $data = $query->fetch();
+        }
+        return $data;
+    }
 
     function searchByStudentName($keyword)
     {
